@@ -6,8 +6,8 @@
 #include "NtupleAnalysisUtils/PlotUtils.h"
 #include "NtupleAnalysisUtils/CanvasOptions.h"
 #include "NtupleAnalysisUtils/AtlasStyle.h"
-#include "TrackingPerfPlots/IDPVMTree.h"
 #include "NtupleAnalysisUtils/DefaultPlotting.h"
+#include "IDPVMNtupleAnalysis/IDPVMTree.h"
 
 void DumpResults(const std::string & fname){
 

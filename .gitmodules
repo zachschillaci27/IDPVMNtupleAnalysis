@@ -1,0 +1,3 @@
+[submodule "NtupleAnalysisUtils"]
+	path = NtupleAnalysisUtils
+	url = https://:@gitlab.cern.ch:8443/goblirsc/NtupleAnalysisUtils.git

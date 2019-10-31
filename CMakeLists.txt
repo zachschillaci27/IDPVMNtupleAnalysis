@@ -9,6 +9,7 @@ atlas_depends_on_subdirs(
   PRIVATE
   PathResolver/PathResolver
   PUBLIC
+  NtupleAnalysisUtils
   ${extra_dep} )
 
 # External dependencies:
@@ -20,7 +21,7 @@ atlas_add_library( IDPVMNtupleAnalysis
   PUBLIC_HEADERS IDPVMNtupleAnalysis
   INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} 
   PRIVATE_INCLUDE_DIRS Root 
-  LINK_LIBRARIES ${ROOT_LIBRARIES} pthread PathResolver
+  LINK_LIBRARIES ${ROOT_LIBRARIES} NtupleAnalysisUtils
   # ${extra_libs}
   )
 
