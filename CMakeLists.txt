@@ -25,6 +25,16 @@ atlas_add_library( IDPVMNtupleAnalysis
   # ${extra_libs}
   )
 
+  atlas_add_executable( ExtractResolution
+    util/ExtractResolution.cxx
+    INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} 
+    LINK_LIBRARIES ${ROOT_LIBRARIES} IDPVMNtupleAnalysis )
+
+  atlas_add_executable( IDPVMBinExtractor
+    util/IDPVMBinExtractor.cxx
+    INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} 
+    LINK_LIBRARIES ${ROOT_LIBRARIES} IDPVMNtupleAnalysis )
+
   atlas_add_executable( ReadIDPVMTree
     util/ReadIDPVMTree.cxx
     INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} 
