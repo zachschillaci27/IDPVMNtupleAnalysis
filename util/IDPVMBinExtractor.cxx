@@ -45,6 +45,7 @@ int main (int, char**){
     if (th1f) {
         const std::vector<std::string> plotnames = {
             "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/z0resolutionRMS_vs_eta",
+            "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/z0pullmeanRMS_vs_eta",
             "IDPerformanceMon/Tracks/SelectedGoodTracks/truthphi",
             "IDPerformanceMon/Tracks/SelectedGoodTracks/truththeta",
         };

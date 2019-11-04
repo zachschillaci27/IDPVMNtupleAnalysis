@@ -24,7 +24,7 @@ void DumpResults(const std::string & fname){
     Selection<IDPVMTree> passedTrack = hasTrack && matched;
     Selection<IDPVMTree> passedTruth = hasTruth && !isUnassociated && primary;
 
-    std::vector<double> eta_bins = IDPVMTemplates::get1DBinning(IDPVMDefs::eta, IDPVMDefs::resolution);
+    std::vector<double> eta_bins = IDPVMTemplates::getResolutionBinning(IDPVMDefs::eta);
     TH1D h_eta("h_eta","; #eta; Yield",eta_bins.size()-1,&(eta_bins[0]));
     TProfile hp_eta("hp_eta","; #eta; ",eta_bins.size()-1,&(eta_bins[0]));    
     TH1D h_pt("h_pt","; p_{t} [GeV];  Yield",10,95,105);

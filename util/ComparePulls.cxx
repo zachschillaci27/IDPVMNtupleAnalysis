@@ -11,7 +11,7 @@
 #include "IDPVMNtupleAnalysis/IDPVMUtilities.h"
 #include "IDPVMNtupleAnalysis/ResolutionHelper.h"
 
-template <class H1, class H2> void CompareWithIDPVM(H1 hNtuple, H2* hIDPVM, const std::string & pname) {
+template <class H1, class H2> void CompareWithIDPVM(H1 hNtuple, H2* hIDPVM, const std::string & pname) {    
     TCanvas *can = new TCanvas("CompareWithIDPVM", "", 800, 600);
 
     hNtuple->Draw();
@@ -47,6 +47,8 @@ int main (int, char**){
 
     TH2D hPull_d0_vs_eta = IDPVMTemplates::getPullHistTemplate(IDPVMDefs::d0, IDPVMDefs::eta);
     TH2D hPull_z0_vs_eta = IDPVMTemplates::getPullHistTemplate(IDPVMDefs::z0, IDPVMDefs::eta);
+    TH2D hPull_phi_vs_eta = IDPVMTemplates::getPullHistTemplate(IDPVMDefs::phi, IDPVMDefs::eta);
+    TH2D hPull_theta_vs_eta = IDPVMTemplates::getPullHistTemplate(IDPVMDefs::theta, IDPVMDefs::eta);
 
     PlotFillInstructionWithRef<TH2D, IDPVMTree> d0Pull_eta ("d0Pull_eta", [](TH2D* h, IDPVMTree &t){ 
         h->Fill(t.truth_eta(), (t.track_d0() - t.truth_d0())/t.trackErr_d0() );}, hPull_d0_vs_eta);
@@ -54,26 +56,46 @@ int main (int, char**){
     PlotFillInstructionWithRef<TH2D, IDPVMTree> z0Pull_eta ("z0Pull_eta", [](TH2D* h, IDPVMTree &t){ 
         h->Fill(t.truth_eta(), (t.track_z0() - t.truth_z0())/t.trackErr_z0() );}, hPull_z0_vs_eta);
 
+    PlotFillInstructionWithRef<TH2D, IDPVMTree> phiPull_eta ("phiPull_eta", [](TH2D* h, IDPVMTree &t){ 
+        h->Fill(t.truth_eta(), (t.track_phi() - t.truth_phi())/t.trackErr_phi() );}, hPull_phi_vs_eta);
+
+    PlotFillInstructionWithRef<TH2D, IDPVMTree> thetaPull_eta ("thetaPull_eta", [](TH2D* h, IDPVMTree &t){ 
+        h->Fill(t.truth_eta(), (t.track_theta() - t.truth_theta())/t.trackErr_theta() );}, hPull_theta_vs_eta);
+
     Plot<TH2D> d0PullTH2D(myPhysVal, matchedPrimaryTracks, d0Pull_eta);
     Plot<TH2D> z0PullTH2D(myPhysVal, matchedPrimaryTracks, z0Pull_eta);
+    Plot<TH2D> phiPullTH2D(myPhysVal, matchedPrimaryTracks, phiPull_eta);
+    Plot<TH2D> thetaPullTH2D(myPhysVal, matchedPrimaryTracks, thetaPull_eta);
 
     d0PullTH2D.populate();
     z0PullTH2D.populate();
+    phiPullTH2D.populate();
+    thetaPullTH2D.populate();
 
     std::pair<Plot<TH1D>, Plot<TH1D>> d0Pulls = GetPulls(d0PullTH2D, IDPVMDefs::d0);
     std::pair<Plot<TH1D>, Plot<TH1D>> z0Pulls = GetPulls(z0PullTH2D, IDPVMDefs::z0);
+    std::pair<Plot<TH1D>, Plot<TH1D>> phiPulls = GetPulls(phiPullTH2D, IDPVMDefs::phi);
+    std::pair<Plot<TH1D>, Plot<TH1D>> thetaPulls = GetPulls(thetaPullTH2D, IDPVMDefs::theta);
 
     TH1* d0PullWidthIDPVM = ReadHistogram<TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/d0pullresolutionRMS_vs_eta");
     TH1* z0PullWidthIDPVM = ReadHistogram<TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/z0pullresolutionRMS_vs_eta");
+    TH1* phiPullWidthIDPVM = ReadHistogram<TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/phipullresolutionRMS_vs_eta");
+    TH1* thetaPullWidthIDPVM = ReadHistogram<TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/thetapullresolutionRMS_vs_eta");
 
     TH1* d0PullMeanIDPVM = ReadHistogram<TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/d0pullmeanRMS_vs_eta");
     TH1* z0PullMeanIDPVM = ReadHistogram<TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/z0pullmeanRMS_vs_eta");
+    TH1* phiPullMeanIDPVM = ReadHistogram<TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/phipullmeanRMS_vs_eta");
+    TH1* thetaPullMeanIDPVM = ReadHistogram<TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/thetapullmeanRMS_vs_eta");
 
     CompareWithIDPVM<Plot<TH1D>, TH1>(d0Pulls.first, d0PullWidthIDPVM, "d0PullWidth");
     CompareWithIDPVM<Plot<TH1D>, TH1>(z0Pulls.first, z0PullWidthIDPVM, "z0PullWidth");
+    CompareWithIDPVM<Plot<TH1D>, TH1>(phiPulls.first, phiPullWidthIDPVM, "phiPullWidth");
+    CompareWithIDPVM<Plot<TH1D>, TH1>(thetaPulls.first, thetaPullWidthIDPVM, "thetaPullWidth");
 
     CompareWithIDPVM<Plot<TH1D>, TH1>(d0Pulls.second, d0PullMeanIDPVM, "d0PullMean");
     CompareWithIDPVM<Plot<TH1D>, TH1>(z0Pulls.second, z0PullMeanIDPVM, "z0PullMean");
+    CompareWithIDPVM<Plot<TH1D>, TH1>(phiPulls.second, phiPullMeanIDPVM, "phiPullMean");
+    CompareWithIDPVM<Plot<TH1D>, TH1>(thetaPulls.second, thetaPullMeanIDPVM, "thetaPullMean");
 
     return 0;
 }

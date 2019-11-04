@@ -17,11 +17,6 @@ namespace IDPVMDefs {
         qOverPt=4,
         eta=5,
     } variable;
-    typedef enum {
-        null=0,
-        resolution=1,
-        efficiency=2,
-    } plot;
 }
 
 namespace IDPVMLabels {
@@ -32,9 +27,10 @@ namespace IDPVMLabels {
 
 namespace IDPVMTemplates {
     const std::vector<double> populateLogLinearBinning(int nBins, double absXmin, double absXmax, bool symmetriseAroundZero = true);
-    const std::vector<double> get1DBinning(IDPVMDefs::variable var, IDPVMDefs::plot plt = IDPVMDefs::null); 
-    TH2D getResolutionHistTemplate(IDPVMDefs::variable var, IDPVMDefs::variable versus = IDPVMDefs::eta); 
-    TH2D getPullHistTemplate(IDPVMDefs::variable var, IDPVMDefs::variable versus = IDPVMDefs::eta);
+    const std::vector<double> getResolutionBinning(IDPVMDefs::variable var); 
+
+    TH2D getResolutionHistTemplate(IDPVMDefs::variable var, IDPVMDefs::variable versus); 
+    TH2D getPullHistTemplate(IDPVMDefs::variable var, IDPVMDefs::variable versus);
 }
 
 #endif
