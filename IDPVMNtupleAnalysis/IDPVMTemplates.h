@@ -35,6 +35,7 @@ namespace IDPVMTemplates {
     TH2D getPullHistTemplate(IDPVMDefs::variable var, IDPVMDefs::variable versus);
 
     TH1D getEfficiencyHistTemplate(IDPVMDefs::variable var); 
+    TH1D getFakeRateHistTemplate(IDPVMDefs::variable var); 
 }
 
 #endif

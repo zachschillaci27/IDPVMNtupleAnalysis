@@ -23,7 +23,7 @@ void CompareWithIDPVM(std::vector<std::pair<Plot<TH1>, Plot<TH1>>> thePlotPairs)
         thePair.second.setPlotFormat(PlotFormat().MarkerStyle(kOpenCircle).MarkerColor(kBlue + 1).LineColor(kBlue + 1));
 
         PlotContent<TH1> theContent({thePair.first, thePair.second}, {"ITk Step 3.0", "IDPVM Ntuple Validation"}, thePair.first.getName(), "",
-                                     CanvasOptions().ratioAxisTitle("w.r.t. IDPVM"));
+                                     CanvasOptions().yAxisTitle(thePair.second->GetYaxis()->GetTitle()).ratioAxisTitle("Ntuple/IDPVM"));
         DefaultPlotting::draw1DWithRatio(theContent);
     }
 }
@@ -32,15 +32,16 @@ int main (int, char**) {
 
     SetAtlasStyle();
 
-    const std::string myphysval = "/Users/zschillaci/CERN/Working/Datasets/Tracking/IDPVM/Results/MyPhysVal.root";
+    const std::string myphysval = "/Users/zschillaci/CERN/Working/Datasets/Tracking/IDPVM/Results/sglmu100/MyPhysVal.root";
     Sample<IDPVMTree> myPhysVal("", myphysval, "IDPerformanceMon/Ntuples/IDPerformanceMon_NtuplesTruthToReco");   
 
-    Selection<IDPVMTree> matchedPrimaryTracks = IDPVMSelections::isMatchedPrimary();
+    Selection<IDPVMTree> selResolutions = IDPVMSelections::forResolution();
 
     TH2D hPull_d0_vs_eta = IDPVMTemplates::getPullHistTemplate(IDPVMDefs::d0, IDPVMDefs::eta);
     TH2D hPull_z0_vs_eta = IDPVMTemplates::getPullHistTemplate(IDPVMDefs::z0, IDPVMDefs::eta);
     TH2D hPull_phi_vs_eta = IDPVMTemplates::getPullHistTemplate(IDPVMDefs::phi, IDPVMDefs::eta);
     TH2D hPull_theta_vs_eta = IDPVMTemplates::getPullHistTemplate(IDPVMDefs::theta, IDPVMDefs::eta);
+    TH2D hPull_qOverPt_vs_eta = IDPVMTemplates::getPullHistTemplate(IDPVMDefs::qOverPt, IDPVMDefs::eta);
 
     PlotFillInstructionWithRef<TH2D, IDPVMTree> d0Pull_eta ("d0Pull_eta", [](TH2D* h, IDPVMTree &t){ 
         h->Fill(t.truth_eta(), (t.track_d0() - t.truth_d0())/t.trackErr_d0() );}, hPull_d0_vs_eta);
@@ -54,36 +55,45 @@ int main (int, char**) {
     PlotFillInstructionWithRef<TH2D, IDPVMTree> thetaPull_eta ("thetaPull_eta", [](TH2D* h, IDPVMTree &t){ 
         h->Fill(t.truth_eta(), (t.track_theta() - t.truth_theta())/t.trackErr_theta() );}, hPull_theta_vs_eta);
 
-    Plot<TH2D> d0PullTH2D(myPhysVal, matchedPrimaryTracks, d0Pull_eta);
-    Plot<TH2D> z0PullTH2D(myPhysVal, matchedPrimaryTracks, z0Pull_eta);
-    Plot<TH2D> phiPullTH2D(myPhysVal, matchedPrimaryTracks, phiPull_eta);
-    Plot<TH2D> thetaPullTH2D(myPhysVal, matchedPrimaryTracks, thetaPull_eta);
+    PlotFillInstructionWithRef<TH2D, IDPVMTree> qOverPtPull_eta ("qOverPtPull_eta", [](TH2D* h, IDPVMTree &t){ 
+        h->Fill(t.truth_eta(), (t.track_qOverPt() - t.truth_qOverPt())/t.trackErr_qOverPt() );}, hPull_qOverPt_vs_eta);
+
+    Plot<TH2D> d0PullTH2D(myPhysVal, selResolutions, d0Pull_eta);
+    Plot<TH2D> z0PullTH2D(myPhysVal, selResolutions, z0Pull_eta);
+    Plot<TH2D> phiPullTH2D(myPhysVal, selResolutions, phiPull_eta);
+    Plot<TH2D> thetaPullTH2D(myPhysVal, selResolutions, thetaPull_eta);
+    Plot<TH2D> qOverPtPullTH2D(myPhysVal, selResolutions, qOverPtPull_eta);
 
     d0PullTH2D.populate();
     z0PullTH2D.populate();
     phiPullTH2D.populate();
     thetaPullTH2D.populate();
+    qOverPtPullTH2D.populate();
 
     std::pair<Plot<TH1>, Plot<TH1>> d0Pulls = GetPulls(d0PullTH2D, IDPVMDefs::d0);
     std::pair<Plot<TH1>, Plot<TH1>> z0Pulls = GetPulls(z0PullTH2D, IDPVMDefs::z0);
     std::pair<Plot<TH1>, Plot<TH1>> phiPulls = GetPulls(phiPullTH2D, IDPVMDefs::phi);
     std::pair<Plot<TH1>, Plot<TH1>> thetaPulls = GetPulls(thetaPullTH2D, IDPVMDefs::theta);
+    std::pair<Plot<TH1>, Plot<TH1>> qOverPtPulls = GetPulls(qOverPtPullTH2D, IDPVMDefs::qOverPt);
 
     Plot<TH1> d0PullWidthIDPVM = LoadIDPVMHistogram<TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/d0pullresolutionRMS_vs_eta");
     Plot<TH1> z0PullWidthIDPVM = LoadIDPVMHistogram<TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/z0pullresolutionRMS_vs_eta");
     Plot<TH1> phiPullWidthIDPVM = LoadIDPVMHistogram<TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/phipullresolutionRMS_vs_eta");
     Plot<TH1> thetaPullWidthIDPVM = LoadIDPVMHistogram<TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/thetapullresolutionRMS_vs_eta");
+    Plot<TH1> qOverPtPullWidthIDPVM = LoadIDPVMHistogram<TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/qoverptpullresolutionRMS_vs_eta");
 
     Plot<TH1> d0PullMeanIDPVM = LoadIDPVMHistogram<TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/d0pullmeanRMS_vs_eta");
     Plot<TH1> z0PullMeanIDPVM = LoadIDPVMHistogram<TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/z0pullmeanRMS_vs_eta");
     Plot<TH1> phiPullMeanIDPVM = LoadIDPVMHistogram<TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/phipullmeanRMS_vs_eta");
     Plot<TH1> thetaPullMeanIDPVM = LoadIDPVMHistogram<TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/thetapullmeanRMS_vs_eta");
+    Plot<TH1> qOverPtPullMeanIDPVM = LoadIDPVMHistogram<TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/qoverptpullmeanRMS_vs_eta");
 
     std::vector<std::pair<Plot<TH1>, Plot<TH1>>> PullWidths = {
         std::make_pair(d0PullWidthIDPVM, d0Pulls.first),
         std::make_pair(z0PullWidthIDPVM, z0Pulls.first),
         std::make_pair(phiPullWidthIDPVM, phiPulls.first),
         std::make_pair(thetaPullWidthIDPVM, thetaPulls.first),  
+        std::make_pair(qOverPtPullWidthIDPVM, qOverPtPulls.first),  
     };
 
     std::vector<std::pair<Plot<TH1>, Plot<TH1>>> PullMeans = {
@@ -91,6 +101,7 @@ int main (int, char**) {
         std::make_pair(z0PullMeanIDPVM, z0Pulls.second),
         std::make_pair(phiPullMeanIDPVM, phiPulls.second),
         std::make_pair(thetaPullMeanIDPVM, thetaPulls.second),  
+        std::make_pair(qOverPtPullMeanIDPVM, qOverPtPulls.second),  
     };
 
     CompareWithIDPVM(PullWidths);

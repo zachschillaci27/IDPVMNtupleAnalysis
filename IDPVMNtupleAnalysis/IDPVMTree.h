@@ -9,6 +9,7 @@ class IDPVMTree: public NtupleBranchMgr{
     public:
         IDPVMTree(TTree* t);
      /// List of branch members
+        NtupleBranch <Int_t>                        acceptedAssocTruth;
         NtupleBranch <Int_t>                        hasTrack;
         NtupleBranch <Int_t>                        hasTruth;
         NtupleBranch <Double_t>                     trackErr_d0;

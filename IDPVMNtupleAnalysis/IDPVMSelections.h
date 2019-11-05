@@ -11,12 +11,17 @@ namespace IDPVMSelections {
     Selection<IDPVMTree> isMatched();
     Selection<IDPVMTree> isFake();
     Selection<IDPVMTree> isUnassociated();
+    Selection<IDPVMTree> isAcceptedAssocTruth();
     Selection<IDPVMTree> isPrimary();
 
-    Selection<IDPVMTree> isMatchedPrimary();
+    Selection<IDPVMTree> trackKinematics();
+    Selection<IDPVMTree> truthKinematics();
 
-    Selection<IDPVMTree> forFakeNum();
+    Selection<IDPVMTree> forResolution();
+    Selection<IDPVMTree> forFakeRateNum();
+    Selection<IDPVMTree> forFakeRateDen();
     Selection<IDPVMTree> forEfficiencyNum();
+    Selection<IDPVMTree> forEfficiencyDen();
 }
 
 #endif

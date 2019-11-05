@@ -11,15 +11,13 @@
 #include "IDPVMNtupleAnalysis/IDPVMUtilities.h"
 #include "IDPVMNtupleAnalysis/IDPVMSelections.h"
 
-void CompareWithIDPVM(Plot<TEfficiency> effIDPVM, Plot<TH1> eff) {
+void CompareWithIDPVM(Plot<TProfile> effIDPVM, Plot<TH1> eff) {
     TCanvas *can = new TCanvas("CompareWithIDPVM", "", 800, 600);
 
     eff->SetMarkerStyle(kOpenCircle);
     eff->SetMarkerColor(kBlue + 1);
     eff->SetLineColor(kBlue + 1);
     eff->Draw();
-
-    eff->GetYaxis()->SetRangeUser(0.80 , 1.10);
  
     effIDPVM->SetMarkerStyle(kFullDotLarge);
     effIDPVM->SetMarkerColor(kRed + 1);
@@ -43,20 +41,20 @@ int main (int, char**) {
     const std::string myphysval = "/Users/zschillaci/CERN/Working/Datasets/Tracking/IDPVM/Results/ttbar/MyPhysVal.root";
     Sample<IDPVMTree> myPhysVal("", myphysval, "IDPerformanceMon/Ntuples/IDPerformanceMon_NtuplesTruthToReco");   
 
-    Selection<IDPVMTree> selEfficiencyNum = IDPVMSelections::forEfficiencyNum();
-    Selection<IDPVMTree> selEfficiencyDen = IDPVMSelections::forEfficiencyDen();
+    Selection<IDPVMTree> selFakeRateNum = IDPVMSelections::forFakeRateNum();
+    Selection<IDPVMTree> selFakeRateDen = IDPVMSelections::forFakeRateDen();
 
-    TH1D h_eta = IDPVMTemplates::getEfficiencyHistTemplate(IDPVMDefs::eta);
-    TH1D h_pt = IDPVMTemplates::getEfficiencyHistTemplate(IDPVMDefs::pt);
+    TH1D h_eta = IDPVMTemplates::getFakeRateHistTemplate(IDPVMDefs::eta);
+    TH1D h_pt = IDPVMTemplates::getFakeRateHistTemplate(IDPVMDefs::pt);
 
-    PlotFillInstructionWithRef<TH1D, IDPVMTree> truthEta("truthEta", [](TH1D* h, IDPVMTree &t){ h->Fill(t.truth_eta());}, h_eta);
-    PlotFillInstructionWithRef<TH1D, IDPVMTree> truthPt("truthPt", [](TH1D* h, IDPVMTree &t){ h->Fill(t.truth_pt() / 1000.);}, h_pt);
+    PlotFillInstructionWithRef<TH1D, IDPVMTree> trackEta("trackEta", [](TH1D* h, IDPVMTree &t){ h->Fill(t.track_eta());}, h_eta);
+    PlotFillInstructionWithRef<TH1D, IDPVMTree> trackPt("trackPt", [](TH1D* h, IDPVMTree &t){ h->Fill(t.track_pt() / 1000.);}, h_pt);
 
-    Plot<TH1D> etaEffNum(myPhysVal, selEfficiencyNum, truthEta);
-    Plot<TH1D> etaEffDen(myPhysVal, selEfficiencyDen, truthEta);
+    Plot<TH1D> etaEffNum(myPhysVal, selFakeRateNum, trackEta);
+    Plot<TH1D> etaEffDen(myPhysVal, selFakeRateDen, trackEta);
 
-    Plot<TH1D> ptEffNum(myPhysVal, selEfficiencyNum, truthPt);
-    Plot<TH1D> ptEffDen(myPhysVal, selEfficiencyDen, truthPt);
+    Plot<TH1D> ptEffNum(myPhysVal, selFakeRateNum, trackPt);
+    Plot<TH1D> ptEffDen(myPhysVal, selFakeRateDen, trackPt);
 
     etaEffNum.populate();
     etaEffDen.populate();
@@ -67,8 +65,8 @@ int main (int, char**) {
     Plot<TH1> etaEff = PlotUtils::getRatio(etaEffNum, etaEffDen, PlotUtils::efficiencyErrors);
     Plot<TH1> ptEff = PlotUtils::getRatio(ptEffNum, ptEffDen, PlotUtils::efficiencyErrors);
 
-    Plot<TEfficiency> etaEffIDPVM = LoadIDPVMHistogram<TEfficiency>(myphysval, "IDPerformanceMon/Tracks/SelectedGoodTracks/trackeff_vs_eta");
-    Plot<TEfficiency> ptEffIDPVM = LoadIDPVMHistogram<TEfficiency>(myphysval, "IDPerformanceMon/Tracks/SelectedGoodTracks/trackeff_vs_pt");
+    Plot<TProfile> etaEffIDPVM = LoadIDPVMHistogram<TProfile>(myphysval, "IDPerformanceMon/Tracks/SelectedFakeTracks/track_fakerate_vs_eta");
+    Plot<TProfile> ptEffIDPVM = LoadIDPVMHistogram<TProfile>(myphysval, "IDPerformanceMon/Tracks/SelectedFakeTracks/track_fakerate_vs_pt");
 
     CompareWithIDPVM(etaEffIDPVM, etaEff);
     CompareWithIDPVM(ptEffIDPVM, ptEff);

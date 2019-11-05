@@ -1,6 +1,7 @@
 #include "IDPVMNtupleAnalysis/IDPVMTree.h"
 
 IDPVMTree::IDPVMTree( TTree* t): NtupleBranchMgr(t),
+    acceptedAssocTruth    ("acceptedAssocTruth",     t, this),
     hasTrack              ("hasTrack",               t, this),
     hasTruth              ("hasTruth",               t, this),
     trackErr_d0           ("trackErr_d0",            t, this),
