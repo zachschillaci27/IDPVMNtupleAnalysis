@@ -1,6 +1,6 @@
 #include "IDPVMNtupleAnalysis/ResolutionHelper.h"
 
-ResOutput GetIterativeRMS(const Plot<TH2D> & hist2D, const unsigned int nbin, bool verbose) {
+ResolOutput GetIterativeRMS(const Plot<TH2D> & hist2D, const unsigned int nbin, bool verbose) {
     //Get RMS of distribution using iterative RMS approach
 
     Plot<TH1D> hist1D("hist1D", hist2D->ProjectionY("hist1D", nbin, nbin));
@@ -75,41 +75,41 @@ ResOutput GetIterativeRMS(const Plot<TH2D> & hist2D, const unsigned int nbin, bo
         }
     }
 
-    return ResOutput{mean, dMean, RMS, dRMS};
+    return ResolOutput{mean, dMean, RMS, dRMS};
 }
 
-Plot<TH1D> GetResolution(const Plot<TH2D> & hist2D, IDPVMDefs::variable var) {
-    //Method for generating resolution plots (as a Plot<TH1D>)
+Plot<TH1> GetResolution(const Plot<TH2D> & hist2D, IDPVMDefs::variable var) {
+    //Method for generating resolution plots (as a Plot<TH1>)
 
-    TH1D *h_res = hist2D->ProjectionX("hist1D");
+    TH1 *h_res = hist2D->ProjectionX("hist1D");
     h_res->Reset();
     h_res->GetYaxis()->SetTitle(IDPVMLabels::getResolutionLabel(var).c_str());
 
     double units = ((var == IDPVMDefs::d0) || (var == IDPVMDefs::z0)) ? 1000. : 1.;
 
     for (unsigned int i = 1; i <= h_res->GetNbinsX(); ++i) {
-        ResOutput results = GetIterativeRMS(hist2D, i);
+        ResolOutput results = GetIterativeRMS(hist2D, i);
                 
         h_res->SetBinContent(i, units * results.RMS);
         h_res->SetBinError(i, units * results.dRMS);
     }
   
-  return Plot<TH1D>("h_res", h_res, IDPVMLabels::getResolutionLabel(var), "PL");
+  return Plot<TH1>(hist2D.getName() + "-ResolutionPlot", h_res);
 }
 
-std::pair<Plot<TH1D>, Plot<TH1D>> GetPulls(const Plot<TH2D> & hist2D, IDPVMDefs::variable var) {
-    //Method for generating pull plots (as a Plot<TH1D>)
+std::pair<Plot<TH1>, Plot<TH1>> GetPulls(const Plot<TH2D> & hist2D, IDPVMDefs::variable var) {
+    //Method for generating pull plots (as a Plot<TH1>)
 
-    TH1D *h_pullWidth = hist2D->ProjectionX("hist1D_pullWidth");
+    TH1 *h_pullWidth = hist2D->ProjectionX("hist1D_pullWidth");
     h_pullWidth->Reset();
     h_pullWidth->GetYaxis()->SetTitle(IDPVMLabels::getPullWidthLabel(var).c_str());
 
-    TH1D *h_pullMean = hist2D->ProjectionX("hist1D_pullMean");
+    TH1 *h_pullMean = hist2D->ProjectionX("hist1D_pullMean");
     h_pullMean->Reset();
     h_pullMean->GetYaxis()->SetTitle(IDPVMLabels::getPullMeanLabel(var).c_str());
 
     for (unsigned int i = 1; i <= h_pullWidth->GetNbinsX(); ++i) {
-        ResOutput results = GetIterativeRMS(hist2D, i);
+        ResolOutput results = GetIterativeRMS(hist2D, i);
 
         h_pullWidth->SetBinContent(i, results.RMS);
         h_pullWidth->SetBinError(i, results.dRMS);
@@ -118,6 +118,6 @@ std::pair<Plot<TH1D>, Plot<TH1D>> GetPulls(const Plot<TH2D> & hist2D, IDPVMDefs:
         h_pullMean->SetBinError(i, results.dMean);
     }
   
-  return std::make_pair(Plot<TH1D>("h_pullWidth", h_pullWidth, IDPVMLabels::getPullWidthLabel(var), "PL"), 
-                        Plot<TH1D>("h_pullMean", h_pullMean, IDPVMLabels::getPullMeanLabel(var), "PL"));
+  return std::make_pair(Plot<TH1>(hist2D.getName() + "-PullWidthPlot", h_pullWidth), 
+                        Plot<TH1>(hist2D.getName() + "-PullMeanPlot", h_pullMean));
 }

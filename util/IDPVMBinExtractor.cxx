@@ -1,7 +1,7 @@
 #include "IDPVMNtupleAnalysis/IDPVMUtilities.h"
 #include "TH1F.h"
 
-template <class HistoType> std::vector<double> ExtractBinArray(HistoType* histo) {
+template <class HistoType> std::vector<double> ExtractBinArray(HistoType histo) {
     
     const unsigned int nbins = histo->GetXaxis()->GetNbins();
     
@@ -25,7 +25,7 @@ std::string FormatBinArray(const std::vector<double> & bins) {
     return fmtbins;
 }
 
-template <class HistoType> void DumpBinArray(HistoType* histo) {
+template <class HistoType> void DumpBinArray(HistoType histo) {
 
     std::vector<double> bins = ExtractBinArray<HistoType>(histo);
     std::string fmtbins = FormatBinArray(bins);
@@ -50,11 +50,11 @@ int main (int, char**){
             "IDPerformanceMon/Tracks/SelectedGoodTracks/truththeta",
         };
 
-        const std::map<std::string, TH1F*> histograms = ReadHistograms<TH1F>(myphysval, plotnames);
+        const std::map<std::string, Plot<TH1>> histograms = LoadIDPVMHistograms<TH1>(myphysval, plotnames);
 
         for (auto & histo : histograms) {
             std::cout << "Getting binning for " << histo.first << " ... " << std::endl;
-            DumpBinArray<TH1F>(histo.second);
+            DumpBinArray<Plot<TH1>>(histo.second);
         }
     }
 

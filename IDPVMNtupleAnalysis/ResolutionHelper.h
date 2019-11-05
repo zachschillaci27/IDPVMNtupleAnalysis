@@ -9,15 +9,15 @@
 #include "TFitResult.h"
 #include <utility>
  
-struct ResOutput {
+struct ResolOutput {
     double mean;
     double dMean;
     double RMS;
     double dRMS;
 };
 
-ResOutput GetIterativeRMS(const Plot<TH2D> & hist2D, const unsigned int nbin, bool verbose = false);
-Plot<TH1D> GetResolution(const Plot<TH2D> & hist2D, IDPVMDefs::variable var);
-std::pair<Plot<TH1D>, Plot<TH1D>> GetPulls(const Plot<TH2D> & hist2D, IDPVMDefs::variable var);
+ResolOutput GetIterativeRMS(const Plot<TH2D> & hist2D, const unsigned int nbin, bool verbose = false);
+Plot<TH1> GetResolution(const Plot<TH2D> & hist2D, IDPVMDefs::variable var);
+std::pair<Plot<TH1>, Plot<TH1>> GetPulls(const Plot<TH2D> & hist2D, IDPVMDefs::variable var);
 
 #endif

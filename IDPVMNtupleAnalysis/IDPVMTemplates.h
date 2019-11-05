@@ -1,6 +1,7 @@
 #ifndef __IDPVMTEMPLATES__H
 #define __IDPVMTEMPLATES__H
 
+#include "TH1D.h"
 #include "TH2D.h"
 #include <algorithm>    // std::transform, std::reverse
 #include <iostream>
@@ -15,7 +16,8 @@ namespace IDPVMDefs {
         phi=2,
         theta=3,
         qOverPt=4,
-        eta=5,
+        pt=5,
+        eta=6,
     } variable;
 }
 
@@ -31,6 +33,8 @@ namespace IDPVMTemplates {
 
     TH2D getResolutionHistTemplate(IDPVMDefs::variable var, IDPVMDefs::variable versus); 
     TH2D getPullHistTemplate(IDPVMDefs::variable var, IDPVMDefs::variable versus);
+
+    TH1D getEfficiencyHistTemplate(IDPVMDefs::variable var); 
 }
 
 #endif
