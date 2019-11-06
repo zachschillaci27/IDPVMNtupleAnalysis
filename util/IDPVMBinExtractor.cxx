@@ -37,7 +37,7 @@ template <class HistoType> void DumpBinArray(HistoType histo) {
 
 int main (int, char**){
 
-    const std::string myphysval = "/Users/zschillaci/CERN/Working/Datasets/Tracking/IDPVM/Results/MyPhysVal.root";
+    const std::string myphysval = "/Users/zschillaci/CERN/Working/Datasets/Tracking/IDPVM/MyPhysVal.root";
 
     bool th1f = true;
 

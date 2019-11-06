@@ -43,7 +43,7 @@ int main (int, char**){
 
     SetAtlasStyle();
 
-    DumpResults("/Users/zschillaci/CERN/Working/Datasets/Tracking/IDPVM/Results/sglmu100/MyPhysVal.root");
+    DumpResults("/Users/zschillaci/CERN/Working/Datasets/Tracking/IDPVM/sglmu100/MyPhysVal.root");
 
     return 0;
 }

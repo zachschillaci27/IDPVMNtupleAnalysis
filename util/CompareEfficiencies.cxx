@@ -19,7 +19,7 @@ void CompareWithIDPVM(Plot<TEfficiency> effIDPVM, Plot<TH1> eff) {
     eff->SetLineColor(kBlue + 1);
     eff->Draw();
 
-    eff->GetYaxis()->SetRangeUser(0.80 , 1.10);
+    eff->GetYaxis()->SetRangeUser(0.75 , 1.05);
  
     effIDPVM->SetMarkerStyle(kFullDotLarge);
     effIDPVM->SetMarkerColor(kRed + 1);
@@ -40,7 +40,7 @@ int main (int, char**) {
 
     SetAtlasStyle();
 
-    const std::string myphysval = "/Users/zschillaci/CERN/Working/Datasets/Tracking/IDPVM/Results/ttbar/MyPhysVal.root";
+    const std::string myphysval = "/Users/zschillaci/CERN/Working/Datasets/Tracking/IDPVM/ttbar/MyPhysVal.root";
     Sample<IDPVMTree> myPhysVal("", myphysval, "IDPerformanceMon/Ntuples/IDPerformanceMon_NtuplesTruthToReco");   
 
     Selection<IDPVMTree> selEfficiencyNum = IDPVMSelections::forEfficiencyNum();
