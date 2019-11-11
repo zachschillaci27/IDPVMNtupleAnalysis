@@ -7,21 +7,22 @@
 namespace IDPVMSelections {
     Selection<IDPVMTree> hasTrack();
     Selection<IDPVMTree> hasTruth();
-    
+
+    Selection<IDPVMTree> passedTrack();
+    Selection<IDPVMTree> passedTruth();
+
     Selection<IDPVMTree> isMatched();
     Selection<IDPVMTree> isFake();
-    Selection<IDPVMTree> isUnassociated();
-    Selection<IDPVMTree> isAcceptedAssocTruth();
+
+    Selection<IDPVMTree> isAssociated();
+    Selection<IDPVMTree> isSelectedByPileupSwitch();
     Selection<IDPVMTree> isPrimary();
 
-    Selection<IDPVMTree> trackKinematics();
-    Selection<IDPVMTree> truthKinematics();
-
     Selection<IDPVMTree> forResolution();
-    Selection<IDPVMTree> forFakeRateNum();
     Selection<IDPVMTree> forFakeRateDen();
-    Selection<IDPVMTree> forEfficiencyNum();
+    Selection<IDPVMTree> forFakeRateNum();
     Selection<IDPVMTree> forEfficiencyDen();
+    Selection<IDPVMTree> forEfficiencyNum();
 }
 
 #endif

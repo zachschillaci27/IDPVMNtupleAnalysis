@@ -8,51 +8,52 @@ Selection<IDPVMTree> IDPVMSelections::hasTruth() {
    return Selection<IDPVMTree>("hasTruth",[](IDPVMTree &t){return t.hasTruth();});
 }
 
+Selection<IDPVMTree> IDPVMSelections::passedTrack() {  
+   return Selection<IDPVMTree>("passedTrack",[](IDPVMTree &t){return t.passedTrackSelection();});
+}
+
+Selection<IDPVMTree> IDPVMSelections::passedTruth() {  
+   return Selection<IDPVMTree>("passedTruth",[](IDPVMTree &t){return t.passedTruthSelection();});
+}
+
 Selection<IDPVMTree> IDPVMSelections::isMatched() {  
    return Selection<IDPVMTree>("isMatched",[](IDPVMTree &t){return (t.track_truthMatchProb() > 0.5);});
 }
 
 Selection<IDPVMTree> IDPVMSelections::isFake() {  
-   return Selection<IDPVMTree>("isFake",[](IDPVMTree &t){return t.track_isFake();});
+   return Selection<IDPVMTree>("isFake",[](IDPVMTree &t){return (t.track_truthMatchProb() < 0.5);});
 }
 
-Selection<IDPVMTree> IDPVMSelections::isUnassociated() {  
-   return Selection<IDPVMTree>("isUnassociated",[](IDPVMTree &t){return t.truth_unassociated();});
+Selection<IDPVMTree> IDPVMSelections::isAssociated() {  
+   return Selection<IDPVMTree>("isAssociated",[](IDPVMTree &t){return t.truth_associated();});
 }
 
-Selection<IDPVMTree> IDPVMSelections::isAcceptedAssocTruth() {  
-   return Selection<IDPVMTree>("isAcceptedAssocTruth",[](IDPVMTree &t){return t.acceptedAssocTruth();});
+Selection<IDPVMTree> IDPVMSelections::isSelectedByPileupSwitch() {  
+   return Selection<IDPVMTree>("isSelectedByPileupSwitch",[](IDPVMTree &t){return t.truth_selectedByPileupSwitch();});
 }
 
 Selection<IDPVMTree> IDPVMSelections::isPrimary() {  
-   return Selection<IDPVMTree>("isPrimary",[](IDPVMTree &t){return (t.truth_barcode() != 0 && t.truth_barcode() < 200000);});
-}
-
-Selection<IDPVMTree> IDPVMSelections::trackKinematics() {  
-   return Selection<IDPVMTree>("trackKinematics",[](IDPVMTree &t){return (t.track_pt() > 1000. && fabs(t.track_eta()) < 4.0);});
-}
-
-Selection<IDPVMTree> IDPVMSelections::truthKinematics() {  
-   return Selection<IDPVMTree>("truthKinematics",[](IDPVMTree &t){return (t.truth_pt() > 1000. && fabs(t.truth_eta()) < 4.0);});
+   return Selection<IDPVMTree>("isPrimary",[](IDPVMTree &t){return (t.truth_barcode() > 0 && t.truth_barcode() < 200000);});
 }
 
 Selection<IDPVMTree> IDPVMSelections::forResolution() {  
-   return (IDPVMSelections::trackKinematics() && IDPVMSelections::truthKinematics() &&
-           IDPVMSelections::isMatched() && IDPVMSelections::isPrimary() && IDPVMSelections::isAcceptedAssocTruth());
-}
-
-Selection<IDPVMTree> IDPVMSelections::forFakeRateNum() {  
-   return (IDPVMSelections::trackKinematics() && IDPVMSelections::isFake());
+   return (IDPVMSelections::hasTrack() && IDPVMSelections::hasTruth() && 
+           IDPVMSelections::passedTrack() && IDPVMSelections::passedTruth() && IDPVMSelections::isMatched() && IDPVMSelections::isAssociated() &&
+           IDPVMSelections::isPrimary());
 }
 
 Selection<IDPVMTree> IDPVMSelections::forFakeRateDen() {  
-   return (IDPVMSelections::trackKinematics());
+   return (IDPVMSelections::hasTrack() && IDPVMSelections::passedTrack());
 }
 
-Selection<IDPVMTree> IDPVMSelections::forEfficiencyNum() {  
-   return (IDPVMSelections::truthKinematics() && !IDPVMSelections::isUnassociated() && IDPVMSelections::isMatched());
+Selection<IDPVMTree> IDPVMSelections::forFakeRateNum() {  
+   return (IDPVMSelections::forFakeRateDen() && IDPVMSelections::isFake());
 }
 
 Selection<IDPVMTree> IDPVMSelections::forEfficiencyDen() {  
-   return (IDPVMSelections::truthKinematics());
+   return (IDPVMSelections::hasTruth() && IDPVMSelections::passedTruth());
+}
+
+Selection<IDPVMTree> IDPVMSelections::forEfficiencyNum() {
+   return (IDPVMSelections::forEfficiencyDen() && IDPVMSelections::passedTrack() && IDPVMSelections::isMatched() && IDPVMSelections::isAssociated());
 }
