@@ -39,7 +39,7 @@ int main (int, char**) {
     SetAtlasStyle();
 
     const std::string myphysval = "/Users/zschillaci/CERN/Working/Datasets/Tracking/IDPVM/MyPhysVal.root";
-    Sample<IDPVMTree> myPhysVal("", myphysval, "IDPerformanceMon/Ntuples/IDPerformanceMon_NtuplesTruthToReco");   
+    Sample<IDPVMTree> ntuple("", myphysval, "IDPerformanceMon/Ntuples/IDPerformanceMon_NtuplesTruthToReco");   
 
     Selection<IDPVMTree> selFakeRateNum = IDPVMSelections::forFakeRateNum();
     Selection<IDPVMTree> selFakeRateDen = IDPVMSelections::forFakeRateDen();
@@ -50,11 +50,11 @@ int main (int, char**) {
     PlotFillInstructionWithRef<TH1D, IDPVMTree> trackEta("trackEta", [](TH1D* h, IDPVMTree &t){ h->Fill(t.track_eta());}, h_eta);
     PlotFillInstructionWithRef<TH1D, IDPVMTree> trackPt("trackPt", [](TH1D* h, IDPVMTree &t){ h->Fill(t.track_pt() / 1000.);}, h_pt);
 
-    Plot<TH1D> etaEffNum(myPhysVal, selFakeRateNum, trackEta);
-    Plot<TH1D> etaEffDen(myPhysVal, selFakeRateDen, trackEta);
+    Plot<TH1D> etaEffNum(ntuple, selFakeRateNum, trackEta);
+    Plot<TH1D> etaEffDen(ntuple, selFakeRateDen, trackEta);
 
-    Plot<TH1D> ptEffNum(myPhysVal, selFakeRateNum, trackPt);
-    Plot<TH1D> ptEffDen(myPhysVal, selFakeRateDen, trackPt);
+    Plot<TH1D> ptEffNum(ntuple, selFakeRateNum, trackPt);
+    Plot<TH1D> ptEffDen(ntuple, selFakeRateDen, trackPt);
 
     etaEffNum.populate();
     etaEffDen.populate();

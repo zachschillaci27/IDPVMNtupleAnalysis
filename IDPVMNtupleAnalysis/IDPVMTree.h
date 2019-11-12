@@ -31,7 +31,6 @@ class IDPVMTree: public NtupleBranchMgr{
         NtupleBranch <Double_t>                     track_truthMatchProb;
         NtupleBranch <Double_t>                     track_z0;
         NtupleBranch <Double_t>                     track_z0Sin;
-        NtupleBranch <Int_t>                        truth_associated;
         NtupleBranch <Int_t>                        truth_selectedByPileupSwitch;
         NtupleBranch <Int_t>                        truth_barcode;
         NtupleBranch <Int_t>                        truth_pdgId;

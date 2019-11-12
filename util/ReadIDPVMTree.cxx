@@ -13,7 +13,7 @@
 
 void DumpResults(const std::string & fname){
 
-    Sample<IDPVMTree> myPhysVal("", fname, "IDPerformanceMon/Ntuples/IDPerformanceMon_NtuplesTruthToReco");   
+    Sample<IDPVMTree> ntuple("", fname, "IDPerformanceMon/Ntuples/IDPerformanceMon_NtuplesTruthToReco");   
     
     Selection<IDPVMTree> hasTruth = IDPVMSelections::hasTruth();
     Selection<IDPVMTree> hasTrack = IDPVMSelections::hasTrack();
@@ -27,12 +27,12 @@ void DumpResults(const std::string & fname){
     PlotFillInstructionWithRef<TH1D, IDPVMTree> truthPt("truthPt", [](TH1D* h, IDPVMTree &t){ h->Fill(t.truth_pt() * 0.001);}, h_pt);
     PlotFillInstructionWithRef<TH1D, IDPVMTree> trackPt("trackPt", [](TH1D* h, IDPVMTree &t){ h->Fill(t.track_pt() * 0.001);}, h_pt);
 
-    PlotContent<TH1D> plot_yields_eta({Plot<TH1D> (myPhysVal, hasTruth, truthEta, "Truth eta", "PL", PlotFormat().MarkerStyle(kFullDotLarge).Color(kRed)),
-                                        Plot<TH1D> (myPhysVal, hasTrack, trackEta, "Track eta", "PL", PlotFormat().MarkerStyle(kFullDotLarge).Color(kBlue))},
+    PlotContent<TH1D> plot_yields_eta({Plot<TH1D> (ntuple, hasTruth, truthEta, "Truth eta", "PL", PlotFormat().MarkerStyle(kFullDotLarge).Color(kRed)),
+                                       Plot<TH1D> (ntuple, hasTrack, trackEta, "Track eta", "PL", PlotFormat().MarkerStyle(kFullDotLarge).Color(kBlue))},
                                        {""}, "IDPVM/Track_vs_Truth_eta","", CanvasOptions().ratioAxisTitle("vs. Truth"));
 
-    PlotContent<TH1D> plot_yields_pt({Plot<TH1D> (myPhysVal, hasTruth, truthPt, "Truth pt", "PL", PlotFormat().MarkerStyle(kFullDotLarge).Color(kRed)),
-                                      Plot<TH1D> (myPhysVal, hasTrack, trackPt, "Track pt", "PL", PlotFormat().MarkerStyle(kFullDotLarge).Color(kBlue))},
+    PlotContent<TH1D> plot_yields_pt({Plot<TH1D> (ntuple, hasTruth, truthPt, "Truth pt", "PL", PlotFormat().MarkerStyle(kFullDotLarge).Color(kRed)),
+                                      Plot<TH1D> (ntuple, hasTrack, trackPt, "Track pt", "PL", PlotFormat().MarkerStyle(kFullDotLarge).Color(kBlue))},
                                       {""}, "IDPVM/Track_vs_Truth_pt","", CanvasOptions().ratioAxisTitle("vs. Truth"));
 
     DefaultPlotting::draw1DWithRatio(plot_yields_eta);

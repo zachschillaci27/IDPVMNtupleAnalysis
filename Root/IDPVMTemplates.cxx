@@ -101,7 +101,7 @@ const std::vector<double> IDPVMTemplates::populateLogLinearBinning(int nBins, do
 
 const std::vector<double> IDPVMTemplates::getResolutionBinning(IDPVMDefs::variable var) {
    if (var == IDPVMDefs::eta) {
-      return {-4.000,-3.875,-3.750,-3.625,-3.500,-3.375,-3.250,-3.125,-3.000,-2.875,-2.750,-2.625,-2.500,-2.375,-2.250,-2.125,-2.000,-1.875,-1.750,-1.625,-1.500,-1.375,-1.250,-1.125,-1.000,-0.875,-0.750,-0.625,-0.500,-0.375,-0.250,-0.125,0.000,0.125,0.250,0.375,0.500,0.625,0.750,0.875,1.000,1.125,1.250,1.375,1.500,1.625,1.750,1.875,2.000,2.125,2.250,2.375,2.500,2.625,2.750,2.875,3.000,3.125,3.250,3.375,3.500,3.625,3.750,4.000};
+      return {-4.000,-3.875,-3.750,-3.625,-3.500,-3.375,-3.250,-3.125,-3.000,-2.875,-2.750,-2.625,-2.500,-2.375,-2.250,-2.125,-2.000,-1.875,-1.750,-1.625,-1.500,-1.375,-1.250,-1.125,-1.000,-0.875,-0.750,-0.625,-0.500,-0.375,-0.250,-0.125,0.000,0.125,0.250,0.375,0.500,0.625,0.750,0.875,1.000,1.125,1.250,1.375,1.500,1.625,1.750,1.875,2.000,2.125,2.250,2.375,2.500,2.625,2.750,2.875,3.000,3.125,3.250,3.375,3.500,3.625,3.750,3.875,4.000};
    }
 
     return {};
@@ -110,31 +110,31 @@ const std::vector<double> IDPVMTemplates::getResolutionBinning(IDPVMDefs::variab
 TH2D IDPVMTemplates::getResolutionHistTemplate(IDPVMDefs::variable var, IDPVMDefs::variable versus) {
    std::vector<double> vsBins = IDPVMTemplates::getResolutionBinning(versus);
    if (var == IDPVMDefs::d0) {
-      std::vector<double> d0Bins = IDPVMTemplates::populateLogLinearBinning(1000, 3e-4, 30);
+      std::vector<double> d0Bins = IDPVMTemplates::populateLogLinearBinning(1000, 3e-4, 30, true);
       if (versus == IDPVMDefs::eta) {
          return TH2D("d0Resolution", ";truth #eta;d_{0}^{track} - d_{0}^{truth} [mm]", vsBins.size() - 1, &(vsBins[0]), d0Bins.size() - 1, &(d0Bins[0]));
       }
    }
    if (var == IDPVMDefs::z0) {
-      std::vector<double> z0Bins = IDPVMTemplates::populateLogLinearBinning(1000, 1e-3, 200.0);
+      std::vector<double> z0Bins = IDPVMTemplates::populateLogLinearBinning(1000, 1e-3, 200.0, true);
       if (versus == IDPVMDefs::eta) {
          return TH2D("z0Resolution", ";truth #eta;z_{0}^{track} - z_{0}^{truth} [mm]", vsBins.size() - 1, &(vsBins[0]), z0Bins.size() - 1, &(z0Bins[0]));
       }
    }
    if (var == IDPVMDefs::phi) {
-      std::vector<double> phiBins = IDPVMTemplates::populateLogLinearBinning(1000, 1e-5, 1e-1);
+      std::vector<double> phiBins = IDPVMTemplates::populateLogLinearBinning(1000, 1e-5, 1e-1, true);
       if (versus == IDPVMDefs::eta) {
          return TH2D("phiResolution", ";truth #eta;#phi^{track} - #phi^{truth} [rad]", vsBins.size() - 1, &(vsBins[0]), phiBins.size() - 1, &(phiBins[0]));
       }
    }
    if (var == IDPVMDefs::theta) {
-      std::vector<double> thetaBins = IDPVMTemplates::populateLogLinearBinning(2000, 1e-7, 1e-1);
+      std::vector<double> thetaBins = IDPVMTemplates::populateLogLinearBinning(2000, 1e-7, 1e-1, true);
       if (versus == IDPVMDefs::eta) {
          return TH2D("thetaResolution", ";truth #eta;#theta^{track} - #theta^{truth} [rad]", vsBins.size() - 1, &(vsBins[0]), thetaBins.size() - 1, &(thetaBins[0]));
       }
    }
    if (var == IDPVMDefs::qOverPt) {
-      std::vector<double> qOverPtBins = IDPVMTemplates::populateLogLinearBinning(2000, 1e-5, 50);
+      std::vector<double> qOverPtBins = IDPVMTemplates::populateLogLinearBinning(2000, 1e-5, 50, true);
       if (versus == IDPVMDefs::eta) {
          return TH2D("qOverPtResolution", ";truth #eta;#(q/p_{T})^{track} - #(q/p_{T})^{truth} [MeV^{-1}]", vsBins.size() - 1, &(vsBins[0]), qOverPtBins.size() - 1, &(qOverPtBins[0]));
       }
@@ -145,7 +145,7 @@ TH2D IDPVMTemplates::getResolutionHistTemplate(IDPVMDefs::variable var, IDPVMDef
 
 TH2D IDPVMTemplates::getPullHistTemplate(IDPVMDefs::variable var, IDPVMDefs::variable versus) {
    std::vector<double> vsBins = IDPVMTemplates::getResolutionBinning(versus);
-   std::vector<double> pullBins = IDPVMTemplates::populateLogLinearBinning(1000, 2e-2, 100);
+   std::vector<double> pullBins = IDPVMTemplates::populateLogLinearBinning(1000, 2e-2, 100, true);
    if (var == IDPVMDefs::d0) {
       if (versus == IDPVMDefs::eta) {
          return TH2D("d0Pull", ";truth #eta;(d_{0}^{track} - d_{0}^{truth})/#sigma_{d_{0}}", vsBins.size() - 1, &(vsBins[0]), pullBins.size() - 1, &(pullBins[0]));

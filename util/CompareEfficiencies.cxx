@@ -41,7 +41,7 @@ int main (int, char**) {
     SetAtlasStyle();
 
     const std::string myphysval = "/Users/zschillaci/CERN/Working/Datasets/Tracking/IDPVM/MyPhysVal.root";
-    Sample<IDPVMTree> myPhysVal("", myphysval, "IDPerformanceMon/Ntuples/IDPerformanceMon_NtuplesTruthToReco");   
+    Sample<IDPVMTree> ntuple("", myphysval, "IDPerformanceMon/Ntuples/IDPerformanceMon_NtuplesTruthToReco");   
 
     Selection<IDPVMTree> selEfficiencyNum = IDPVMSelections::forEfficiencyNum();
     Selection<IDPVMTree> selEfficiencyDen = IDPVMSelections::forEfficiencyDen();
@@ -52,11 +52,11 @@ int main (int, char**) {
     PlotFillInstructionWithRef<TH1D, IDPVMTree> truthEta("truthEta", [](TH1D* h, IDPVMTree &t){ h->Fill(t.truth_eta());}, h_eta);
     PlotFillInstructionWithRef<TH1D, IDPVMTree> truthPt("truthPt", [](TH1D* h, IDPVMTree &t){ h->Fill(t.truth_pt() / 1000.);}, h_pt);
 
-    Plot<TH1D> etaEffNum(myPhysVal, selEfficiencyNum, truthEta);
-    Plot<TH1D> etaEffDen(myPhysVal, selEfficiencyDen, truthEta);
+    Plot<TH1D> etaEffNum(ntuple, selEfficiencyNum, truthEta);
+    Plot<TH1D> etaEffDen(ntuple, selEfficiencyDen, truthEta);
 
-    Plot<TH1D> ptEffNum(myPhysVal, selEfficiencyNum, truthPt);
-    Plot<TH1D> ptEffDen(myPhysVal, selEfficiencyDen, truthPt);
+    Plot<TH1D> ptEffNum(ntuple, selEfficiencyNum, truthPt);
+    Plot<TH1D> ptEffDen(ntuple, selEfficiencyDen, truthPt);
 
     etaEffNum.populate();
     etaEffDen.populate();

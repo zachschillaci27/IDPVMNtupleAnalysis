@@ -3,7 +3,8 @@
 ResolOutput GetIterativeRMS(const Plot<TH2D> & hist2D, const unsigned int nbin, bool verbose) {
     //Get RMS of distribution using iterative RMS approach
 
-    Plot<TH1D> hist1D("hist1D", hist2D->ProjectionY("hist1D", nbin, nbin));
+    const std::string hname = hist2D->GetName() + std::string("py_bin") + std::to_string(nbin);
+    Plot<TH1D> hist1D("hist1D", hist2D->ProjectionY(hname.c_str(), nbin, nbin));
 
     //Parameters to iterative RMS convergence technique
     // convergence
@@ -12,7 +13,7 @@ ResolOutput GetIterativeRMS(const Plot<TH2D> & hist2D, const unsigned int nbin, 
     unsigned int nIters = 0;
     const unsigned int nMaxIters = 100;
     // width of cutting range in [RMS]
-    const unsigned int nRMS_width = 3.0;
+    const double nRMS_width = 3.0;
 
     // min and max range of the histogram:
     double xmin = 0.;
@@ -62,18 +63,18 @@ ResolOutput GetIterativeRMS(const Plot<TH2D> & hist2D, const unsigned int nbin, 
         }
     }
 
-    if (!converged) {
-        std::cout << "Iterative RMS procedure failed to converge, extracting RMS vis Gaussian fit ..." << std::endl;
+    // if (!converged) {
+    //     std::cout << "Iterative RMS procedure failed to converge, extracting RMS vis Gaussian fit ..." << std::endl;
 
-        // evaluate mean and with via the Gauss fit
-        TFitResultPtr fit = hist1D->Fit("gaus", "QS0");
-        if (fit.Get() && (0 == (fit->Status() % 1000))) {
-            mean = fit->Parameter(1);
-            dMean = fit->ParError(1);
-            RMS  = fit->Parameter(2);
-            dRMS = fit->ParError(2);
-        }
-    }
+    //     // evaluate mean and with via the Gauss fit
+    //     TFitResultPtr fit = hist1D->Fit("gaus", "QS0");
+    //     if (fit.Get() && (0 == (fit->Status() % 1000))) {
+    //         mean = fit->Parameter(1);
+    //         dMean = fit->ParError(1);
+    //         RMS  = fit->Parameter(2);
+    //         dRMS = fit->ParError(2);
+    //     }
+    // }
 
     return ResolOutput{mean, dMean, RMS, dRMS};
 }

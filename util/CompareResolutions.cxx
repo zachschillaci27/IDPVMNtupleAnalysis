@@ -34,8 +34,8 @@ int main (int, char**) {
 
     SetAtlasStyle();
 
-    const std::string myphysval = "/Users/zschillaci/CERN/Working/Datasets/Tracking/IDPVM/MyPhysVal.root";
-    Sample<IDPVMTree> myPhysVal("", myphysval, "IDPerformanceMon/Ntuples/IDPerformanceMon_NtuplesTruthToReco");   
+    const std::string myphysval = "/Users/zschillaci/CERN/Working/Datasets/Tracking/IDPVM/sglmu100/alternative/MyPhysVal.root";
+    Sample<IDPVMTree> ntuple("", myphysval, "IDPerformanceMon/Ntuples/IDPerformanceMon_NtuplesTruthToReco");   
 
     Selection<IDPVMTree> selResolutions = IDPVMSelections::forResolution();
 
@@ -60,11 +60,11 @@ int main (int, char**) {
     PlotFillInstructionWithRef<TH2D, IDPVMTree> qOverPtResolution_eta ("qOverPtResolution_eta", [](TH2D* h, IDPVMTree &t){ 
         h->Fill(t.truth_eta(), (t.track_qOverPt() - t.truth_qOverPt())/t.truth_qOverPt());}, hRes_qOverPt_vs_eta);
 
-    Plot<TH2D> d0ResTH2D(myPhysVal, selResolutions, d0Resolution_eta);
-    Plot<TH2D> z0ResTH2D(myPhysVal, selResolutions, z0Resolution_eta);
-    Plot<TH2D> phiResTH2D(myPhysVal, selResolutions, phiResolution_eta);
-    Plot<TH2D> thetaResTH2D(myPhysVal, selResolutions, thetaResolution_eta);
-    Plot<TH2D> qOverPtResTH2D(myPhysVal, selResolutions, qOverPtResolution_eta);
+    Plot<TH2D> d0ResTH2D(ntuple, selResolutions, d0Resolution_eta);
+    Plot<TH2D> z0ResTH2D(ntuple, selResolutions, z0Resolution_eta);
+    Plot<TH2D> phiResTH2D(ntuple, selResolutions, phiResolution_eta);
+    Plot<TH2D> thetaResTH2D(ntuple, selResolutions, thetaResolution_eta);
+    Plot<TH2D> qOverPtResTH2D(ntuple, selResolutions, qOverPtResolution_eta);
 
     d0ResTH2D.populate();
     z0ResTH2D.populate();

@@ -7,6 +7,7 @@
 namespace IDPVMSelections {
     Selection<IDPVMTree> hasTrack();
     Selection<IDPVMTree> hasTruth();
+    Selection<IDPVMTree> isAssociated();
 
     Selection<IDPVMTree> passedTrack();
     Selection<IDPVMTree> passedTruth();
@@ -14,7 +15,6 @@ namespace IDPVMSelections {
     Selection<IDPVMTree> isMatched();
     Selection<IDPVMTree> isFake();
 
-    Selection<IDPVMTree> isAssociated();
     Selection<IDPVMTree> isSelectedByPileupSwitch();
     Selection<IDPVMTree> isPrimary();
 
