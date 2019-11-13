@@ -48,11 +48,16 @@ template <class HistoType> std::map<std::string, Plot<HistoType>> LoadIDPVMHisto
 
     return theHistograms;
 }
+template <class HistoIn, class HistoOut> Plot<HistoOut>  CastIDPVMHistogram(const std::string & myphysval, const std::string & plotname) {
+    
+    Plot<HistoIn> h_temp = LoadIDPVMHistogram<HistoIn>(myphysval, plotname);
+    return Plot<HistoOut>(GetPlotTitle(plotname), dynamic_cast<HistoOut*>(h_temp()));
+}
 
-Plot<TH1> LoadIDPVMEfficiency(const std::string & myphysval, const std::string & effname) {
+Plot<TH1> LoadIDPVMEfficiency(const std::string & myphysval, const std::string & plotname) {
 
-    Plot<TEfficiency> theTEff = LoadIDPVMHistogram<TEfficiency>(myphysval, effname);
-    TH1* theTH1 = PlotUtils::getRatio(theTEff->GetPassedHistogram()->Clone("passed"), theTEff->GetTotalHistogram()->Clone("total"), PlotUtils::efficiencyErrors);
+    Plot<TEfficiency> h_temp = LoadIDPVMHistogram<TEfficiency>(myphysval, plotname);
+    TH1* h_out = PlotUtils::getRatio(h_temp->GetPassedHistogram()->Clone("passed"), h_temp->GetTotalHistogram()->Clone("total"), PlotUtils::efficiencyErrors);
 
-    return Plot<TH1>(GetPlotTitle(effname), theTH1);
+    return Plot<TH1>(GetPlotTitle(plotname), h_out);
 }

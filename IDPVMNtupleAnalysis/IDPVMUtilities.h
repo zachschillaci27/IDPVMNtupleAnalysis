@@ -17,7 +17,9 @@ template <class HistoType> Plot<HistoType> LoadIDPVMHistogram(const std::string 
 
 template <class HistoType> std::map<std::string, Plot<HistoType>> LoadIDPVMHistograms(const std::string & myphysval, const std::vector<std::string> & plotnames);
 
-Plot<TH1> LoadIDPVMEfficiency(const std::string & myphysval, const std::string & effname);
+template <class HistoIn, class HistoOut> Plot<HistoOut>  CastIDPVMHistogram(const std::string & myphysval, const std::string & plotname);
+
+Plot<TH1> LoadIDPVMEfficiency(const std::string & myphysval, const std::string & plotname);
 
 #include "IDPVMUtilities.ixx"
 

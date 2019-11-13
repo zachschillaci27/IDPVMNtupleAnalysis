@@ -11,30 +11,20 @@
 #include "IDPVMNtupleAnalysis/IDPVMUtilities.h"
 #include "IDPVMNtupleAnalysis/IDPVMSelections.h"
 
-void CompareWithIDPVM(Plot<TProfile> effIDPVM, Plot<TH1> eff, const std::vector<std::string> & labels) {
-    TCanvas *can = new TCanvas("CompareWithIDPVM", "", 800, 600);
+void CompareWithIDPVM(std::vector<std::pair<Plot<TH1>, Plot<TH1>>> thePlotPairs, const std::vector<std::string> & labels) { 
+    for (auto & thePair : thePlotPairs) {
+        thePair.first.setLegendTitle("IDPVM");
+        thePair.first.setLegendOption("PL");
+        thePair.first.setPlotFormat(PlotFormat().MarkerStyle(kFullDotLarge).MarkerColor(kRed + 1).LineColor(kRed + 1));
+        
+        thePair.second.setLegendTitle("Ntuple");
+        thePair.second.setLegendOption("PL");
+        thePair.second.setPlotFormat(PlotFormat().MarkerStyle(kOpenCircle).MarkerColor(kBlue + 1).LineColor(kBlue + 1));
 
-    eff->SetMarkerStyle(kOpenCircle);
-    eff->SetMarkerColor(kBlue + 1);
-    eff->SetLineColor(kBlue + 1);
-    eff->Draw();
- 
-    effIDPVM->SetMarkerStyle(kFullDotLarge);
-    effIDPVM->SetMarkerColor(kRed + 1);
-    effIDPVM->SetLineColor(kRed + 1);
-    effIDPVM->Draw("SAME");
-
-    std::vector<PlotUtils::LegendEntry> legendEntries = {
-        PlotUtils::LegendEntry(effIDPVM(), "IDPVM", "PL"),
-        PlotUtils::LegendEntry(eff(), "Ntuple", "PL")
-    };
-
-    PlotUtils::drawLegend(legendEntries, 0.75, 0.75, 0.90, 0.90);
-
-    CanvasOptions opts = CanvasOptions().labelLumiTag("HL-LHC").labelSqrtsTag("14 TeV");
-    opts.drawLabels(labels);
-
-    PlotUtils::saveCanvas(can, effIDPVM.getName());
+        PlotContent<TH1> theContent({thePair.first, thePair.second}, labels, thePair.first.getName(), "",
+                                     CanvasOptions().labelLumiTag("HL-LHC").labelSqrtsTag("14 TeV").yAxisTitle(thePair.second->GetYaxis()->GetTitle()).ratioAxisTitle("Ntuple/IDPVM"));
+        DefaultPlotting::draw1DWithRatio(theContent);
+    }
 }
 
 int main (int, char**) {
@@ -68,11 +58,15 @@ int main (int, char**) {
     Plot<TH1> etaEff = PlotUtils::getRatio(etaEffNum, etaEffDen, PlotUtils::efficiencyErrors);
     Plot<TH1> ptEff = PlotUtils::getRatio(ptEffNum, ptEffDen, PlotUtils::efficiencyErrors);
 
-    Plot<TProfile> etaEffIDPVM = LoadIDPVMHistogram<TProfile>(myphysval, "IDPerformanceMon/Tracks/SelectedFakeTracks/track_fakerate_vs_eta");
-    Plot<TProfile> ptEffIDPVM = LoadIDPVMHistogram<TProfile>(myphysval, "IDPerformanceMon/Tracks/SelectedFakeTracks/track_fakerate_vs_pt");
+    Plot<TH1> etaEffIDPVM = CastIDPVMHistogram<TProfile, TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedFakeTracks/track_fakerate_vs_eta");
+    Plot<TH1> ptEffIDPVM = CastIDPVMHistogram<TProfile, TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedFakeTracks/track_fakerate_vs_pt");
 
-    CompareWithIDPVM(etaEffIDPVM, etaEff, {"IDPVM Ntuple Validation", "t#bar{t}"});
-    CompareWithIDPVM(ptEffIDPVM, ptEff, {"IDPVM Ntuple Validation", "t#bar{t}"});
+    std::vector<std::pair<Plot<TH1>, Plot<TH1>>> Efficiencies = {
+        std::make_pair(etaEffIDPVM, etaEff),
+        std::make_pair(ptEffIDPVM, ptEff),
+    }; 
+
+    CompareWithIDPVM(Efficiencies, {"IDPVM Ntuple Validation", "t#bar{t}"});
 
     return 0;
 }
