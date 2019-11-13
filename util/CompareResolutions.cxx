@@ -12,7 +12,7 @@
 #include "IDPVMNtupleAnalysis/IDPVMSelections.h"
 #include "IDPVMNtupleAnalysis/ResolutionHelper.h"
 
-void CompareWithIDPVM(std::vector<std::pair<Plot<TH1>, Plot<TH1>>> thePlotPairs) {    
+void CompareWithIDPVM(std::vector<std::pair<Plot<TH1>, Plot<TH1>>> thePlotPairs, const std::vector<std::string> & labels) { 
     for (auto & thePair : thePlotPairs) {
         thePair.first.setLegendTitle("IDPVM");
         thePair.first.setLegendOption("PL");
@@ -24,8 +24,8 @@ void CompareWithIDPVM(std::vector<std::pair<Plot<TH1>, Plot<TH1>>> thePlotPairs)
 
         const bool logY = (thePair.first.getName().find("z0") == std::string::npos) ? false : true;
 
-        PlotContent<TH1> theContent({thePair.first, thePair.second}, {"ITk Step 3.0", "IDPVM Ntuple Validation"}, thePair.first.getName(), "",
-                                     CanvasOptions().logY(logY).yAxisTitle(thePair.second->GetYaxis()->GetTitle()).ratioAxisTitle("Ntuple/IDPVM"));
+        PlotContent<TH1> theContent({thePair.first, thePair.second}, labels, thePair.first.getName(), "",
+                                     CanvasOptions().labelLumiTag("HL-LHC").labelSqrtsTag("14 TeV").logY(logY).yAxisTitle(thePair.second->GetYaxis()->GetTitle()).ratioAxisTitle("Ntuple/IDPVM"));
         DefaultPlotting::draw1DWithRatio(theContent);
     }
 }
@@ -34,22 +34,31 @@ int main (int, char**) {
 
     SetAtlasStyle();
 
-    const std::string myphysval = "/Users/zschillaci/CERN/Working/Datasets/Tracking/IDPVM/sglmu100/alternative/MyPhysVal.root";
+    const std::string myphysval = "/Users/zschillaci/CERN/Working/Datasets/Tracking/IDPVM/sglmu100/MyPhysVal.root";
     Sample<IDPVMTree> ntuple("", myphysval, "IDPerformanceMon/Ntuples/IDPerformanceMon_NtuplesTruthToReco");   
 
     Selection<IDPVMTree> selResolutions = IDPVMSelections::forResolution();
 
+    TH2D hRes_pt_vs_eta = IDPVMTemplates::getResolutionHistTemplate(IDPVMDefs::pt, IDPVMDefs::eta);
     TH2D hRes_d0_vs_eta = IDPVMTemplates::getResolutionHistTemplate(IDPVMDefs::d0, IDPVMDefs::eta);
     TH2D hRes_z0_vs_eta = IDPVMTemplates::getResolutionHistTemplate(IDPVMDefs::z0, IDPVMDefs::eta);
+    TH2D hRes_z0sin_vs_eta = IDPVMTemplates::getResolutionHistTemplate(IDPVMDefs::z0sin, IDPVMDefs::eta);
     TH2D hRes_phi_vs_eta = IDPVMTemplates::getResolutionHistTemplate(IDPVMDefs::phi, IDPVMDefs::eta);
     TH2D hRes_theta_vs_eta = IDPVMTemplates::getResolutionHistTemplate(IDPVMDefs::theta, IDPVMDefs::eta);
     TH2D hRes_qOverPt_vs_eta = IDPVMTemplates::getResolutionHistTemplate(IDPVMDefs::qOverPt, IDPVMDefs::eta);
+    TH2D hRes_qOverP_vs_eta = IDPVMTemplates::getResolutionHistTemplate(IDPVMDefs::qOverP, IDPVMDefs::eta);
+
+    PlotFillInstructionWithRef<TH2D, IDPVMTree> ptResolution_eta ("ptResolution_eta", [](TH2D* h, IDPVMTree &t){ 
+        h->Fill(t.truth_eta(), (t.track_pt() - t.truth_pt()) / 1000.);}, hRes_pt_vs_eta);
 
     PlotFillInstructionWithRef<TH2D, IDPVMTree> d0Resolution_eta ("d0Resolution_eta", [](TH2D* h, IDPVMTree &t){ 
         h->Fill(t.truth_eta(), (t.track_d0() - t.truth_d0()));}, hRes_d0_vs_eta);
 
     PlotFillInstructionWithRef<TH2D, IDPVMTree> z0Resolution_eta ("z0Resolution_eta", [](TH2D* h, IDPVMTree &t){ 
         h->Fill(t.truth_eta(), (t.track_z0() - t.truth_z0()));}, hRes_z0_vs_eta);
+
+    PlotFillInstructionWithRef<TH2D, IDPVMTree> z0sinResolution_eta ("z0sinResolution_eta", [](TH2D* h, IDPVMTree &t){ 
+        h->Fill(t.truth_eta(), (t.track_z0sin() - t.truth_z0sin()));}, hRes_z0sin_vs_eta);
 
     PlotFillInstructionWithRef<TH2D, IDPVMTree> phiResolution_eta ("phiResolution_eta", [](TH2D* h, IDPVMTree &t){ 
         h->Fill(t.truth_eta(), (t.track_phi() - t.truth_phi()));}, hRes_phi_vs_eta);
@@ -60,39 +69,57 @@ int main (int, char**) {
     PlotFillInstructionWithRef<TH2D, IDPVMTree> qOverPtResolution_eta ("qOverPtResolution_eta", [](TH2D* h, IDPVMTree &t){ 
         h->Fill(t.truth_eta(), (t.track_qOverPt() - t.truth_qOverPt())/t.truth_qOverPt());}, hRes_qOverPt_vs_eta);
 
+    PlotFillInstructionWithRef<TH2D, IDPVMTree> qOverPResolution_eta ("qOverPResolution_eta", [](TH2D* h, IDPVMTree &t){ 
+        h->Fill(t.truth_eta(), (t.track_qOverP() - t.truth_qOverP()));}, hRes_qOverP_vs_eta);
+
+    Plot<TH2D> ptResTH2D(ntuple, selResolutions, ptResolution_eta);
     Plot<TH2D> d0ResTH2D(ntuple, selResolutions, d0Resolution_eta);
     Plot<TH2D> z0ResTH2D(ntuple, selResolutions, z0Resolution_eta);
+    Plot<TH2D> z0sinResTH2D(ntuple, selResolutions, z0sinResolution_eta);
     Plot<TH2D> phiResTH2D(ntuple, selResolutions, phiResolution_eta);
     Plot<TH2D> thetaResTH2D(ntuple, selResolutions, thetaResolution_eta);
     Plot<TH2D> qOverPtResTH2D(ntuple, selResolutions, qOverPtResolution_eta);
+    Plot<TH2D> qOverPResTH2D(ntuple, selResolutions, qOverPResolution_eta);
 
+    ptResTH2D.populate();
     d0ResTH2D.populate();
     z0ResTH2D.populate();
+    z0sinResTH2D.populate();
     phiResTH2D.populate();
     thetaResTH2D.populate();
     qOverPtResTH2D.populate();
+    qOverPResTH2D.populate();
 
+    Plot<TH1> ptRes = GetResolution(ptResTH2D, IDPVMDefs::pt);
     Plot<TH1> d0Res = GetResolution(d0ResTH2D, IDPVMDefs::d0);
     Plot<TH1> z0Res = GetResolution(z0ResTH2D, IDPVMDefs::z0);
+    Plot<TH1> z0sinRes = GetResolution(z0sinResTH2D, IDPVMDefs::z0sin);
     Plot<TH1> phiRes = GetResolution(phiResTH2D, IDPVMDefs::phi);
     Plot<TH1> thetaRes = GetResolution(thetaResTH2D, IDPVMDefs::theta);
     Plot<TH1> qOverPtRes = GetResolution(qOverPtResTH2D, IDPVMDefs::qOverPt);
+    Plot<TH1> qOverPRes = GetResolution(qOverPResTH2D, IDPVMDefs::qOverP);
 
+    Plot<TH1> ptResIDPVM = LoadIDPVMHistogram<TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/ptresolutionRMS_vs_eta");
     Plot<TH1> d0ResIDPVM = LoadIDPVMHistogram<TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/d0resolutionRMS_vs_eta");
     Plot<TH1> z0ResIDPVM = LoadIDPVMHistogram<TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/z0resolutionRMS_vs_eta");
+    Plot<TH1> z0sinResIDPVM = LoadIDPVMHistogram<TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/z0sinresolutionRMS_vs_eta");
     Plot<TH1> phiResIDPVM = LoadIDPVMHistogram<TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/phiresolutionRMS_vs_eta");
     Plot<TH1> thetaResIDPVM = LoadIDPVMHistogram<TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/thetaresolutionRMS_vs_eta");
     Plot<TH1> qOverPtResIDPVM = LoadIDPVMHistogram<TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/qoverptresolutionRMS_vs_eta");
+    Plot<TH1> qOverPResIDPVM = LoadIDPVMHistogram<TH1>(myphysval, "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/qoverpresolutionRMS_vs_eta");
 
     std::vector<std::pair<Plot<TH1>, Plot<TH1>>> Resolutions = {
+        std::make_pair(ptResIDPVM, ptRes),
         std::make_pair(d0ResIDPVM, d0Res),
         std::make_pair(z0ResIDPVM, z0Res),
+        std::make_pair(z0sinResIDPVM, z0sinRes),
         std::make_pair(phiResIDPVM, phiRes),
         std::make_pair(thetaResIDPVM, thetaRes),  
         std::make_pair(qOverPtResIDPVM, qOverPtRes),  
+        std::make_pair(qOverPResIDPVM, qOverPRes),
     }; 
 
-    CompareWithIDPVM(Resolutions);
+    CompareWithIDPVM(Resolutions, {"IDPVM Ntuple Validation", "Single #mu, 100 GeV"});
 
     return 0;
 }

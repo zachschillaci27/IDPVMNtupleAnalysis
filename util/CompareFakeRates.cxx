@@ -11,7 +11,7 @@
 #include "IDPVMNtupleAnalysis/IDPVMUtilities.h"
 #include "IDPVMNtupleAnalysis/IDPVMSelections.h"
 
-void CompareWithIDPVM(Plot<TProfile> effIDPVM, Plot<TH1> eff) {
+void CompareWithIDPVM(Plot<TProfile> effIDPVM, Plot<TH1> eff, const std::vector<std::string> & labels) {
     TCanvas *can = new TCanvas("CompareWithIDPVM", "", 800, 600);
 
     eff->SetMarkerStyle(kOpenCircle);
@@ -31,6 +31,9 @@ void CompareWithIDPVM(Plot<TProfile> effIDPVM, Plot<TH1> eff) {
 
     PlotUtils::drawLegend(legendEntries, 0.75, 0.75, 0.90, 0.90);
 
+    CanvasOptions opts = CanvasOptions().labelLumiTag("HL-LHC").labelSqrtsTag("14 TeV");
+    opts.drawLabels(labels);
+
     PlotUtils::saveCanvas(can, effIDPVM.getName());
 }
 
@@ -38,7 +41,7 @@ int main (int, char**) {
 
     SetAtlasStyle();
 
-    const std::string myphysval = "/Users/zschillaci/CERN/Working/Datasets/Tracking/IDPVM/MyPhysVal.root";
+    const std::string myphysval = "/Users/zschillaci/CERN/Working/Datasets/Tracking/IDPVM/ttbar/MyPhysVal.root";
     Sample<IDPVMTree> ntuple("", myphysval, "IDPerformanceMon/Ntuples/IDPerformanceMon_NtuplesTruthToReco");   
 
     Selection<IDPVMTree> selFakeRateNum = IDPVMSelections::forFakeRateNum();
@@ -68,8 +71,8 @@ int main (int, char**) {
     Plot<TProfile> etaEffIDPVM = LoadIDPVMHistogram<TProfile>(myphysval, "IDPerformanceMon/Tracks/SelectedFakeTracks/track_fakerate_vs_eta");
     Plot<TProfile> ptEffIDPVM = LoadIDPVMHistogram<TProfile>(myphysval, "IDPerformanceMon/Tracks/SelectedFakeTracks/track_fakerate_vs_pt");
 
-    CompareWithIDPVM(etaEffIDPVM, etaEff);
-    CompareWithIDPVM(ptEffIDPVM, ptEff);
+    CompareWithIDPVM(etaEffIDPVM, etaEff, {"IDPVM Ntuple Validation", "t#bar{t}"});
+    CompareWithIDPVM(ptEffIDPVM, ptEff, {"IDPVM Ntuple Validation", "t#bar{t}"});
 
     return 0;
 }

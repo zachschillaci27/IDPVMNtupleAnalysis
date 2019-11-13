@@ -11,13 +11,15 @@
 
 namespace IDPVMDefs {
     typedef enum {
-        d0=0,
-        z0=1,
-        phi=2,
-        theta=3,
-        qOverPt=4,
-        pt=5,
-        eta=6,
+        eta=0,
+        pt=1,
+        d0=2,
+        z0=3,
+        z0sin=4, 
+        phi=5,
+        theta=6,
+        qOverPt=7,
+        qOverP=8,
     } variable;
 }
 
@@ -28,6 +30,7 @@ namespace IDPVMLabels {
 }
 
 namespace IDPVMTemplates {
+    const std::vector<double> populateLinearBinning(int nBins, double xMin, double xMax);
     const std::vector<double> populateLogLinearBinning(int nBins, double absXmin, double absXmax, bool symmetriseAroundZero = true);
     const std::vector<double> getResolutionBinning(IDPVMDefs::variable var); 
 

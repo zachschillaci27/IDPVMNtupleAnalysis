@@ -15,8 +15,8 @@ namespace IDPVMSelections {
     Selection<IDPVMTree> isMatched();
     Selection<IDPVMTree> isFake();
 
-    Selection<IDPVMTree> isSelectedByPileupSwitch();
     Selection<IDPVMTree> isPrimary();
+    Selection<IDPVMTree> isSecondary();
 
     Selection<IDPVMTree> forResolution();
     Selection<IDPVMTree> forFakeRateDen();

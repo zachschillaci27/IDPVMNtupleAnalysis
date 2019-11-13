@@ -28,12 +28,12 @@ Selection<IDPVMTree> IDPVMSelections::isFake() {
    return Selection<IDPVMTree>("isFake",[](IDPVMTree &t){return (t.track_truthMatchProb() < 0.5);});
 }
 
-Selection<IDPVMTree> IDPVMSelections::isSelectedByPileupSwitch() {  
-   return Selection<IDPVMTree>("isSelectedByPileupSwitch",[](IDPVMTree &t){return t.truth_selectedByPileupSwitch();});
-}
-
 Selection<IDPVMTree> IDPVMSelections::isPrimary() {  
    return Selection<IDPVMTree>("isPrimary",[](IDPVMTree &t){return (t.truth_barcode() > 0 && t.truth_barcode() < 200000);});
+}
+
+Selection<IDPVMTree> IDPVMSelections::isSecondary() {  
+   return Selection<IDPVMTree>("isSecondary",[](IDPVMTree &t){return (t.truth_barcode() >= 200000);});
 }
 
 Selection<IDPVMTree> IDPVMSelections::forResolution() {  

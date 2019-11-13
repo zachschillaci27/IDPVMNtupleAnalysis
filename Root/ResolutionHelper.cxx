@@ -86,7 +86,7 @@ Plot<TH1> GetResolution(const Plot<TH2D> & hist2D, IDPVMDefs::variable var) {
     h_res->Reset();
     h_res->GetYaxis()->SetTitle(IDPVMLabels::getResolutionLabel(var).c_str());
 
-    double units = ((var == IDPVMDefs::d0) || (var == IDPVMDefs::z0)) ? 1000. : 1.;
+    double units = ((var == IDPVMDefs::d0) || (var == IDPVMDefs::z0) || (var == IDPVMDefs::z0sin)) ? 1000. : 1.;
 
     for (unsigned int i = 1; i <= h_res->GetNbinsX(); ++i) {
         ResolOutput results = GetIterativeRMS(hist2D, i);

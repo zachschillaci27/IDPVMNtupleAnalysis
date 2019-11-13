@@ -17,9 +17,10 @@ class IDPVMTree: public NtupleBranchMgr{
         NtupleBranch <Double_t>                     trackErr_phi;
         NtupleBranch <Double_t>                     trackErr_qOverP;
         NtupleBranch <Double_t>                     trackErr_qOverPt;
+        NtupleBranch <Double_t>                     trackErr_pt;
         NtupleBranch <Double_t>                     trackErr_theta;
         NtupleBranch <Double_t>                     trackErr_z0;
-        NtupleBranch <Double_t>                     trackErr_z0Sin;
+        NtupleBranch <Double_t>                     trackErr_z0sin;
         NtupleBranch <Double_t>                     track_charge;
         NtupleBranch <Double_t>                     track_d0;
         NtupleBranch <Double_t>                     track_eta;
@@ -30,7 +31,7 @@ class IDPVMTree: public NtupleBranchMgr{
         NtupleBranch <Double_t>                     track_theta;
         NtupleBranch <Double_t>                     track_truthMatchProb;
         NtupleBranch <Double_t>                     track_z0;
-        NtupleBranch <Double_t>                     track_z0Sin;
+        NtupleBranch <Double_t>                     track_z0sin;
         NtupleBranch <Int_t>                        truth_selectedByPileupSwitch;
         NtupleBranch <Int_t>                        truth_barcode;
         NtupleBranch <Int_t>                        truth_pdgId;
@@ -43,6 +44,6 @@ class IDPVMTree: public NtupleBranchMgr{
         NtupleBranch <Double_t>                     truth_qOverPt;
         NtupleBranch <Double_t>                     truth_theta;
         NtupleBranch <Double_t>                     truth_z0;
-        NtupleBranch <Double_t>                     truth_z0Sin;
+        NtupleBranch <Double_t>                     truth_z0sin;
 };
 #endif // NTAU__IDPVMTREE__H

@@ -12,7 +12,7 @@
 #include "IDPVMNtupleAnalysis/IDPVMSelections.h"
 #include "IDPVMNtupleAnalysis/ResolutionHelper.h"
 
-void CompareWithIDPVM(std::vector<std::pair<Plot<TH1>, Plot<TH1>>> thePlotPairs) {    
+void CompareIDPVM(std::vector<std::pair<Plot<TH1>, Plot<TH1>>> thePlotPairs, const std::vector<std::string> & labels) {    
     for (auto & thePair : thePlotPairs) {
         thePair.first.setLegendTitle("IDPVM - Reference");
         thePair.first.setLegendOption("PL");
@@ -25,8 +25,8 @@ void CompareWithIDPVM(std::vector<std::pair<Plot<TH1>, Plot<TH1>>> thePlotPairs)
         const std::string fname = thePair.first.getName() + "-Binning";
         const bool logY = (thePair.first.getName().find("z0") == std::string::npos) ? false : true;
 
-        PlotContent<TH1> theContent({thePair.first, thePair.second}, {"ITk Step 3.0", "IDPVM Binning Migrations"}, fname, "",
-                                     CanvasOptions().logY(logY).yAxisTitle(thePair.second->GetYaxis()->GetTitle()).ratioAxisTitle("Alt/Ref"));
+        PlotContent<TH1> theContent({thePair.first, thePair.second}, labels, fname, "",
+                                     CanvasOptions().labelLumiTag("HL-LHC").labelSqrtsTag("14 TeV").logY(logY).yAxisTitle(thePair.second->GetYaxis()->GetTitle()).ratioAxisTitle("Alt/Ref"));
         DefaultPlotting::draw1DWithRatio(theContent);
     }
 }
@@ -58,7 +58,7 @@ int main (int, char**) {
         std::make_pair(qOverPtResIDPVM, qOverPtResAlternativeIDPVM),  
     }; 
 
-    CompareWithIDPVM(Resolutions);
+    CompareIDPVM(Resolutions, {"IDPVM Binning Migrations"});
 
     return 0;
 }

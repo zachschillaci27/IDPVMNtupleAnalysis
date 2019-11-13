@@ -6,7 +6,7 @@ template <class HistoType> std::vector<double> ExtractBinArray(HistoType histo) 
     const unsigned int nbins = histo->GetXaxis()->GetNbins();
     
     std::vector<double> bins = {};
-    for (unsigned int i = 1; i < nbins; ++i) { bins.push_back(histo->GetXaxis()->GetBinLowEdge(i)); }
+    for (unsigned int i = 1; i <= nbins; ++i) { bins.push_back(histo->GetXaxis()->GetBinLowEdge(i)); }
     bins.push_back(histo->GetXaxis()->GetBinUpEdge(nbins));
     
     return bins;
@@ -37,24 +37,40 @@ template <class HistoType> void DumpBinArray(HistoType histo) {
 
 int main (int, char**){
 
-    const std::string myphysval = "/Users/zschillaci/CERN/Working/Datasets/Tracking/IDPVM/MyPhysVal.root";
+    const std::string myphysval = "/Users/zschillaci/CERN/Working/Datasets/Tracking/IDPVM/ttbar/MyPhysVal.root";
 
     bool th1f = true;
+    bool tprofile = true;
 
     //TH1F*
+    // if (th1f) {
+    //     const std::vector<std::string> plotnames = {
+    //         "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/z0resolutionRMS_vs_eta",
+    //         "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/z0pullmeanRMS_vs_eta",
+    //         "IDPerformanceMon/Tracks/SelectedGoodTracks/truthphi",
+    //         "IDPerformanceMon/Tracks/SelectedGoodTracks/truththeta",
+    //     };
+
+    //     const std::map<std::string, Plot<TH1>> histograms = LoadIDPVMHistograms<TH1>(myphysval, plotnames);
+
+    //     for (auto & histo : histograms) {
+    //         std::cout << "Getting binning for " << histo.first << " ... " << std::endl;
+    //         DumpBinArray<Plot<TH1>>(histo.second);
+    //     }
+    // }
+
+    //TProfile*
     if (th1f) {
         const std::vector<std::string> plotnames = {
-            "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/z0resolutionRMS_vs_eta",
-            "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/z0pullmeanRMS_vs_eta",
-            "IDPerformanceMon/Tracks/SelectedGoodTracks/truthphi",
-            "IDPerformanceMon/Tracks/SelectedGoodTracks/truththeta",
+            "IDPerformanceMon/Tracks/SelectedFakeTracks/track_fakerate_vs_eta",
+            "IDPerformanceMon/Tracks/SelectedFakeTracks/track_fakerate_vs_pt",
         };
 
-        const std::map<std::string, Plot<TH1>> histograms = LoadIDPVMHistograms<TH1>(myphysval, plotnames);
+        const std::map<std::string, Plot<TProfile>> histograms = LoadIDPVMHistograms<TProfile>(myphysval, plotnames);
 
         for (auto & histo : histograms) {
             std::cout << "Getting binning for " << histo.first << " ... " << std::endl;
-            DumpBinArray<Plot<TH1>>(histo.second);
+            DumpBinArray<Plot<TProfile>>(histo.second);
         }
     }
 

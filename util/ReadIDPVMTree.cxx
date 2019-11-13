@@ -29,11 +29,11 @@ void DumpResults(const std::string & fname){
 
     PlotContent<TH1D> plot_yields_eta({Plot<TH1D> (ntuple, hasTruth, truthEta, "Truth eta", "PL", PlotFormat().MarkerStyle(kFullDotLarge).Color(kRed)),
                                        Plot<TH1D> (ntuple, hasTrack, trackEta, "Track eta", "PL", PlotFormat().MarkerStyle(kFullDotLarge).Color(kBlue))},
-                                       {""}, "IDPVM/Track_vs_Truth_eta","", CanvasOptions().ratioAxisTitle("vs. Truth"));
+                                       {""}, "IDPVM/Track_vs_Truth_eta","", CanvasOptions().labelLumiTag("HL-LHC").labelSqrtsTag("14 TeV").ratioAxisTitle("vs. Truth"));
 
     PlotContent<TH1D> plot_yields_pt({Plot<TH1D> (ntuple, hasTruth, truthPt, "Truth pt", "PL", PlotFormat().MarkerStyle(kFullDotLarge).Color(kRed)),
                                       Plot<TH1D> (ntuple, hasTrack, trackPt, "Track pt", "PL", PlotFormat().MarkerStyle(kFullDotLarge).Color(kBlue))},
-                                      {""}, "IDPVM/Track_vs_Truth_pt","", CanvasOptions().ratioAxisTitle("vs. Truth"));
+                                      {""}, "IDPVM/Track_vs_Truth_pt","", CanvasOptions().labelLumiTag("HL-LHC").labelSqrtsTag("14 TeV").ratioAxisTitle("vs. Truth"));
 
     DefaultPlotting::draw1DWithRatio(plot_yields_eta);
     DefaultPlotting::draw1DWithRatio(plot_yields_pt);
