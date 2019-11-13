@@ -48,3 +48,11 @@ template <class HistoType> std::map<std::string, Plot<HistoType>> LoadIDPVMHisto
 
     return theHistograms;
 }
+
+Plot<TH1> LoadIDPVMEfficiency(const std::string & myphysval, const std::string & effname) {
+
+    Plot<TEfficiency> theTEff = LoadIDPVMHistogram<TEfficiency>(myphysval, effname);
+    TH1* theTH1 = PlotUtils::getRatio(theTEff->GetPassedHistogram()->Clone("passed"), theTEff->GetTotalHistogram()->Clone("total"), PlotUtils::efficiencyErrors);
+
+    return Plot<TH1>(GetPlotTitle(effname), theTH1);
+}
