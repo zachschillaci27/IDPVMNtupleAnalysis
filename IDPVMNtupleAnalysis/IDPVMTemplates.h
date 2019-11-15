@@ -24,6 +24,7 @@ namespace IDPVMDefs {
 }
 
 namespace IDPVMLabels {
+    const std::string getVarName(IDPVMDefs::variable);
     const std::string getResolutionLabel(IDPVMDefs::variable);
     const std::string getPullWidthLabel(IDPVMDefs::variable);
     const std::string getPullMeanLabel(IDPVMDefs::variable);
