@@ -176,9 +176,7 @@ const std::vector<double> IDPVMTemplates::getResolutionBinning(IDPVMDefs::variab
       return IDPVMTemplates::populateLinearBinning(64, -4.0, 4.0);
    }
    if (var == IDPVMDefs::pt) {
-      std::vector<double> bins = {};
-      for (int ipt = 0; ipt <= 49; ipt++) { bins.push_back(1000. * std::exp((ipt - 49.0) / 6.804)); }
-      return bins;
+      return IDPVMTemplates::populateLogLinearBinning(49, 0.745, 1000.0, false);
    }
 
     return {};

@@ -16,7 +16,7 @@ Within the cloned repository, fetch the submodule via
 git submodule update --init --recursive
 ```
 
-# Headers/Classes
+# Headers & Classes
 
 ## IDPVMTree
 
@@ -38,6 +38,6 @@ Plot filler definitions (as defined in NtupleAnalysisUtils) used for populating 
 
 Common selection definitions (as defined in NtupleAnalysisUtils) for various IDPVM plots.
 
-# ResolutionHelper
+## ResolutionHelper
 
 Helper methods to compute the iterative RMS for resolution and pull plots.
