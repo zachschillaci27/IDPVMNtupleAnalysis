@@ -76,6 +76,13 @@ ResolOutput GetIterativeRMS(const Plot<TH2D> & hist2D, const unsigned int nbin, 
     //     }
     // }
 
+    if (verbose) {
+        TCanvas *can = new TCanvas();
+        hist1D->Draw();
+        PlotUtils::saveCanvas(can, hname);
+        delete can;
+    }
+
     return ResolOutput{mean, dMean, RMS, dRMS};
 }
 
@@ -94,8 +101,11 @@ Plot<TH1> GetResolution(const Plot<TH2D> & hist2D, IDPVMDefs::variable var) {
         h_res->SetBinContent(i, units * results.RMS);
         h_res->SetBinError(i, units * results.dRMS);
     }
-  
-  return Plot<TH1>(hist2D.getName() + "-ResolutionPlot", h_res);
+    
+    Plot<TH1> theRes(hist2D.getName() + "-ResolutionPlot", h_res);
+    delete h_res;
+
+    return theRes;
 }
 
 std::pair<Plot<TH1>, Plot<TH1>> GetPulls(const Plot<TH2D> & hist2D, IDPVMDefs::variable var) {
@@ -118,7 +128,11 @@ std::pair<Plot<TH1>, Plot<TH1>> GetPulls(const Plot<TH2D> & hist2D, IDPVMDefs::v
         h_pullMean->SetBinContent(i, results.mean);
         h_pullMean->SetBinError(i, results.dMean);
     }
-  
-  return std::make_pair(Plot<TH1>(hist2D.getName() + "-PullWidthPlot", h_pullWidth), 
-                        Plot<TH1>(hist2D.getName() + "-PullMeanPlot", h_pullMean));
+
+    std::pair<Plot<TH1>, Plot<TH1>> thePulls = std::make_pair(Plot<TH1>(hist2D.getName() + "-PullWidthPlot", h_pullWidth), 
+                                                              Plot<TH1>(hist2D.getName() + "-PullMeanPlot", h_pullMean));
+    delete h_pullWidth;
+    delete h_pullMean;
+
+    return thePulls;
 }

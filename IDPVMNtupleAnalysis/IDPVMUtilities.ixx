@@ -28,10 +28,14 @@ template <class HistoType> Plot<HistoType> LoadIDPVMHistogram(const std::string 
     std::cout << "Reading histogram " << plotname << " from file " << myphysval << std::endl;
 
     TFile* theFile = TFile::Open(myphysval.c_str(), "READ");
+    
     HistoType* h_out = GetHistogram<HistoType>(theFile, plotname);
     delete theFile;
 
-    return Plot<HistoType>(GetPlotTitle(plotname), h_out);
+    Plot<HistoType> thePlot(GetPlotTitle(plotname), h_out);
+    delete h_out;
+
+    return thePlot;
 }
 
 template <class HistoType> std::map<std::string, Plot<HistoType>> LoadIDPVMHistograms(const std::string & myphysval, const std::vector<std::string> & plotnames) {
@@ -41,7 +45,11 @@ template <class HistoType> std::map<std::string, Plot<HistoType>> LoadIDPVMHisto
     std::map<std::string, Plot<HistoType>> theHistograms = {};
     for (auto & pname : plotnames) {
         std::cout << "Reading histogram " << pname << " from file " << myphysval << std::endl;
-        theHistograms[pname] = Plot<HistoType>(GetPlotTitle(pname), GetHistogram<HistoType>(theFile, pname));
+        
+        HistoType* h_out = GetHistogram<HistoType>(theFile, pname);
+
+        theHistograms[pname] = Plot<HistoType>(GetPlotTitle(pname), h_out);
+        delete h_out;
     }
 
     delete theFile;
@@ -57,7 +65,12 @@ template <class HistoIn, class HistoOut> Plot<HistoOut>  CastIDPVMHistogram(cons
 Plot<TH1> LoadIDPVMEfficiency(const std::string & myphysval, const std::string & plotname) {
 
     Plot<TEfficiency> h_temp = LoadIDPVMHistogram<TEfficiency>(myphysval, plotname);
+
+    // convert to TH1 for easier plotting
     TH1* h_out = PlotUtils::getRatio(h_temp->GetPassedHistogram()->Clone("passed"), h_temp->GetTotalHistogram()->Clone("total"), PlotUtils::efficiencyErrors);
 
-    return Plot<TH1>(GetPlotTitle(plotname), h_out);
+    Plot<TH1> thePlot(GetPlotTitle(plotname), h_out);
+    delete h_out;
+
+    return thePlot;
 }
