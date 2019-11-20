@@ -77,10 +77,14 @@ ResolOutput GetIterativeRMS(const Plot<TH2D> & hist2D, const unsigned int nbin, 
     // }
 
     if (verbose) {
+        gStyle->SetOptStat(1);
         TCanvas *can = new TCanvas();
         hist1D->Draw();
+        hist1D->GetXaxis()->SetRangeUser(hist1D->GetXaxis()->GetBinLowEdge(1), hist1D->GetXaxis()->GetBinUpEdge(hist1D->GetXaxis()->GetNbins()));
+        hist1D()->SetStats(kTRUE);
         PlotUtils::saveCanvas(can, hname);
         delete can;
+        gStyle->SetOptStat(0);
     }
 
     return ResolOutput{mean, dMean, RMS, dRMS};
