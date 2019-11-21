@@ -3,7 +3,7 @@
 
 #include "TH1D.h"
 #include "TH2D.h"
-#include <algorithm>    // std::transform, std::reverse
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <vector>

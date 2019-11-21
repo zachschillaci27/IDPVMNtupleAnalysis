@@ -16,8 +16,9 @@ struct ResolOutput {
     double dRMS;
 };
 
-ResolOutput GetIterativeRMS(const Plot<TH2D> & hist2D, const unsigned int nbin, bool verbose = false);
-Plot<TH1> GetResolution(const Plot<TH2D> & hist2D, IDPVMDefs::variable var);
+ResolOutput GetGaussFit(const Plot<TH2D> & hist2D, const unsigned int nbin);
+ResolOutput GetIterativeRMS(const Plot<TH2D> & hist2D, const unsigned int nbin, const bool save = false);
+Plot<TH1> GetResolution(const Plot<TH2D> & hist2D, IDPVMDefs::variable var, const bool save = false);
 std::pair<Plot<TH1>, Plot<TH1>> GetPulls(const Plot<TH2D> & hist2D, IDPVMDefs::variable var);
 
 #endif
