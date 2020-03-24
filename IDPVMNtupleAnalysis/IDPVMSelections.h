@@ -5,6 +5,8 @@
 #include "IDPVMNtupleAnalysis/IDPVMTree.h"
 
 namespace IDPVMSelections {
+    Selection<IDPVMTree> dummy();
+
     Selection<IDPVMTree> hasTrack();
     Selection<IDPVMTree> hasTruth();
     Selection<IDPVMTree> isAssociated();

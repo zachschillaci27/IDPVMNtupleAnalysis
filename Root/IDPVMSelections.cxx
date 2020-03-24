@@ -1,5 +1,9 @@
 #include "IDPVMNtupleAnalysis/IDPVMSelections.h"
 
+Selection<IDPVMTree> IDPVMSelections::dummy() {  
+   return Selection<IDPVMTree>("dummy",[](IDPVMTree &){return true;});
+}
+
 Selection<IDPVMTree> IDPVMSelections::hasTrack() {  
    return Selection<IDPVMTree>("hasTrack",[](IDPVMTree &t){return t.hasTrack();});
 }

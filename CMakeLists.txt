@@ -60,3 +60,8 @@ atlas_add_library( IDPVMNtupleAnalysis
     util/ReadIDPVMTree.cxx
     INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} 
     LINK_LIBRARIES ${ROOT_LIBRARIES} IDPVMNtupleAnalysis )
+
+  atlas_add_executable( CheckEventRate
+    util/CheckEventRate.cxx
+    INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} 
+    LINK_LIBRARIES ${ROOT_LIBRARIES} IDPVMNtupleAnalysis )

@@ -51,7 +51,7 @@ ResolOutput GetIterativeRMS(const Plot<TH2D> & hist2D, const unsigned int nbin, 
     double RMS = hist1D->GetRMS();
     double dRMS = hist1D->GetRMSError();
 
-    // iteratively cut tails untill the RMS gets stable about mean
+    // iteratively cut tails until the RMS gets stable about mean
     // RMS stable: when input histogram range after cutting by 
     // +- 3*RMS is same as the range before cutting
     while (nIters < nMaxIters) {    

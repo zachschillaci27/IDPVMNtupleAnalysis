@@ -34,7 +34,7 @@ void CompareWithIDPVM(std::vector<std::pair<Plot<TH1>, Plot<TH1>>> thePlotPairs,
 int main (int argc, char** argv) {
     SetAtlasStyle();
 
-    const std::string myphysval = "/Users/zschillaci/CERN/Working/Datasets/Tracking/IDPVM/ttbar/alternative/MyPhysVal.root";
+    const std::string myphysval = "/Users/zschillaci/CERN/Working/Datasets/Tracking/IDPVM/sglmu100/alternative/MyPhysVal.root";
     Sample<IDPVMTree> ntuple("", myphysval, "IDPerformanceMon/Ntuples/IDPerformanceMon_NtuplesTruthToReco");   
 
     Selection<IDPVMTree> selResolutions = IDPVMSelections::forResolution();
@@ -96,7 +96,8 @@ int main (int argc, char** argv) {
         std::make_pair(qOverPResIDPVM, qOverPRes),
     }; 
 
-    CompareWithIDPVM(Resolutions, {"IDPVM Ntuple Validation", "t#bar{t}"});
+    // CompareWithIDPVM(Resolutions, {"IDPVM Ntuple Validation", "t#bar{t}"});
+    CompareWithIDPVM(Resolutions, {"IDPVM Ntuple Validation", "Single #mu 100 GeV"});
 
     return 0;
 }
