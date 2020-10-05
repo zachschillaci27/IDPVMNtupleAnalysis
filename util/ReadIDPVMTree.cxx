@@ -13,7 +13,7 @@
 
 void DumpResults(const std::string & fname){
 
-    Sample<IDPVMTree> ntuple("", fname, "SquirrelPlots/Ntuples/SquirrelPlots_NtuplesTruthToReco");   
+    Sample<IDPVMTree> ntuple("Ntuple", fname, "SquirrelPlots/Ntuples/SquirrelPlots_NtuplesTruthToReco");   
         
     Selection<IDPVMTree> hasTruth = IDPVMSelections::hasTruth();
     Selection<IDPVMTree> hasTrack = IDPVMSelections::hasTrack();

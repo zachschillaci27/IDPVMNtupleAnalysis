@@ -33,14 +33,14 @@ int main (int, char**) {
     const std::string myphysval = "/Users/zschillaci/CERN/Working/IDPVMAnalysis/run/PHYSVAL.CL18.root";
     Sample<IDPVMTree> ntuple("Ntuple", myphysval, "SquirrelPlots/Ntuples/SquirrelPlots_NtuplesTruthToReco");   
     
-    std::map<IDPVMDefs::variable, std::string> mapEfficiency{
+    std::map<IDPVMDefs::variable, std::string> mapIDPVM{
         {IDPVMDefs::eta, "SquirrelPlots/Tracks/Efficiency/efficiency_vs_eta"},
         {IDPVMDefs::pt,  "SquirrelPlots/Tracks/Efficiency/efficiency_vs_pt"},
         {IDPVMDefs::d0,  "SquirrelPlots/Tracks/Efficiency/efficiency_vs_d0"},
         {IDPVMDefs::z0,  "SquirrelPlots/Tracks/Efficiency/efficiency_vs_z0"},
     };
     
-    for (auto & var : mapEfficiency) {
+    for (auto & var : mapIDPVM) {
         auto nominal = LoadIDPVMEfficiency(myphysval, var.second); // nominal plot from IDPVM
 
         auto varReader = NtupleVarReaderProvider::generateVarReader(var.first, IDPVMDefs::truth); // truth variable reader
