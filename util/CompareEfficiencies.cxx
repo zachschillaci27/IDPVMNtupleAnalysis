@@ -10,63 +10,55 @@
 #include "IDPVMNtupleAnalysis/IDPVMTemplates.h"
 #include "IDPVMNtupleAnalysis/IDPVMUtilities.h"
 #include "IDPVMNtupleAnalysis/IDPVMSelections.h"
+#include "IDPVMNtupleAnalysis/NtupleVarReader.h"
 
-void CompareWithIDPVM(std::vector<std::pair<Plot<TH1>, Plot<TH1>>> thePlotPairs, const std::vector<std::string> & labels) { 
-    for (auto & thePair : thePlotPairs) {
-        thePair.first.setLegendTitle("IDPVM");
-        thePair.first.setLegendOption("PL");
-        thePair.first.setPlotFormat(PlotFormat().MarkerStyle(kFullDotLarge).MarkerColor(kRed + 1).LineColor(kRed + 1));
-        
-        thePair.second.setLegendTitle("Ntuple");
-        thePair.second.setLegendOption("PL");
-        thePair.second.setPlotFormat(PlotFormat().MarkerStyle(kOpenCircle).MarkerColor(kBlue + 1).LineColor(kBlue + 1));
+void CompareWithIDPVM(Plot<TH1> nominal, Plot<TH1> alternative, const std::vector<std::string> & labels) { 
+    nominal.setLegendTitle("IDPVM");
+    nominal.setLegendOption("PL");
+    nominal.setPlotFormat(PlotFormat().MarkerStyle(kFullDotLarge).MarkerColor(kRed + 1).LineColor(kRed + 1));
+    
+    alternative.setLegendTitle("Ntuple");
+    alternative.setLegendOption("PL");
+    alternative.setPlotFormat(PlotFormat().MarkerStyle(kOpenCircle).MarkerColor(kBlue + 1).LineColor(kBlue + 1));
 
-        PlotContent<TH1> theContent({thePair.first, thePair.second}, labels, thePair.first.getName(), "",
-                                     CanvasOptions().labelLumiTag("HL-LHC").labelSqrtsTag("14 TeV").yAxisTitle(thePair.second->GetYaxis()->GetTitle()).ratioAxisTitle("Ntuple/IDPVM"));
-        DefaultPlotting::draw1DWithRatio(theContent);
-    }
+    PlotContent<TH1> theContent({nominal, alternative}, labels, nominal.getName(), "",
+                                    CanvasOptions().yAxisTitle(alternative->GetYaxis()->GetTitle()).ratioAxisTitle("Ntuple/IDPVM"));
+    DefaultPlotting::draw1DWithRatio(theContent);
 }
 
 int main (int, char**) {
 
     SetAtlasStyle();
 
-    const std::string myphysval = "/Users/zschillaci/CERN/Working/Datasets/Tracking/IDPVM/ttbar/alternative/MyPhysVal.root";
-    Sample<IDPVMTree> ntuple("", myphysval, "IDPerformanceMon/Ntuples/IDPerformanceMon_NtuplesTruthToReco");   
+    const std::string myphysval = "/Users/zschillaci/CERN/Working/IDPVMAnalysis/run/PHYSVAL.CL18.root";
+    Sample<IDPVMTree> ntuple("Ntuple", myphysval, "SquirrelPlots/Ntuples/SquirrelPlots_NtuplesTruthToReco");   
+    
+    std::map<IDPVMDefs::variable, std::string> mapEfficiency{
+        {IDPVMDefs::eta, "SquirrelPlots/Tracks/Efficiency/efficiency_vs_eta"},
+        {IDPVMDefs::pt,  "SquirrelPlots/Tracks/Efficiency/efficiency_vs_pt"},
+        {IDPVMDefs::d0,  "SquirrelPlots/Tracks/Efficiency/efficiency_vs_d0"},
+        {IDPVMDefs::z0,  "SquirrelPlots/Tracks/Efficiency/efficiency_vs_z0"},
+    };
+    
+    for (auto & var : mapEfficiency) {
+        auto nominal = LoadIDPVMEfficiency(myphysval, var.second); // nominal plot from IDPVM
 
-    Selection<IDPVMTree> selEfficiencyNum = IDPVMSelections::forEfficiencyNum();
-    Selection<IDPVMTree> selEfficiencyDen = IDPVMSelections::forEfficiencyDen();
+        auto varReader = NtupleVarReaderProvider::generateVarReader(var.first, IDPVMDefs::truth); // truth variable reader
+        auto htemplate = IDPVMTemplates::getEfficiencyHistTemplate(var.first); // hist template
 
-    TH1D h_eta = IDPVMTemplates::getEfficiencyHistTemplate(IDPVMDefs::eta);
-    TH1D h_pt = IDPVMTemplates::getEfficiencyHistTemplate(IDPVMDefs::pt);
+        PlotFillInstructionWithRef<TH1D, IDPVMTree> filler(IDPVMLabels::getVarName(var.first), // plot filler
+            [&varReader](TH1D* h, IDPVMTree &t){ h->Fill(varReader(t)); },
+            htemplate
+        );
 
-    PlotFillInstructionWithRef<TH1D, IDPVMTree> truthEta("truthEta", [](TH1D* h, IDPVMTree &t){ h->Fill(t.truth_eta());}, h_eta);
-    PlotFillInstructionWithRef<TH1D, IDPVMTree> truthPt("truthPt", [](TH1D* h, IDPVMTree &t){ h->Fill(t.truth_pt() / 1000.);}, h_pt);
+        Plot<TH1D> num(ntuple, IDPVMSelections::forEfficiencyNum(), filler); // numerator plot
+        Plot<TH1D> den(ntuple, IDPVMSelections::forEfficiencyDen(), filler); // denominator plot
 
-    Plot<TH1D> etaEffNum(ntuple, selEfficiencyNum, truthEta);
-    Plot<TH1D> etaEffDen(ntuple, selEfficiencyDen, truthEta);
-
-    Plot<TH1D> ptEffNum(ntuple, selEfficiencyNum, truthPt);
-    Plot<TH1D> ptEffDen(ntuple, selEfficiencyDen, truthPt);
-
-    etaEffNum.populate();
-    etaEffDen.populate();
-
-    ptEffNum.populate();
-    ptEffDen.populate();
-
-    Plot<TH1> etaEff = PlotUtils::getRatio(etaEffNum, etaEffDen, PlotUtils::efficiencyErrors);
-    Plot<TH1> ptEff = PlotUtils::getRatio(ptEffNum, ptEffDen, PlotUtils::efficiencyErrors);
-
-    Plot<TH1> etaEffIDPVM = LoadIDPVMEfficiency(myphysval, "IDPerformanceMon/Tracks/SelectedGoodTracks/trackeff_vs_eta");
-    Plot<TH1> ptEffIDPVM = LoadIDPVMEfficiency(myphysval, "IDPerformanceMon/Tracks/SelectedGoodTracks/trackeff_vs_pt");
-
-    std::vector<std::pair<Plot<TH1>, Plot<TH1>>> Efficiencies = {
-        std::make_pair(etaEffIDPVM, etaEff),
-        std::make_pair(ptEffIDPVM, ptEff),
-    }; 
-
-    CompareWithIDPVM(Efficiencies, {"IDPVM Ntuple Validation", "t#bar{t}"});
+        num.populate();
+        den.populate();
+    
+        CompareWithIDPVM(nominal, PlotUtils::getRatio(num, den, PlotUtils::efficiencyErrors), {"IDPVM Ntuple Validation", "t#bar{t}"});
+    }
 
     return 0;
 }

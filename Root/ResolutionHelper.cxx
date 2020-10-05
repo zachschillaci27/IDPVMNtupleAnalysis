@@ -20,7 +20,7 @@ ResolOutput GetGaussFit(const Plot<TH2D> & hist2D, const unsigned int nbin) {
         dRMS = fit->ParError(2);
     }
 
-    return ResolOutput{mean, dMean, RMS, dRMS};
+    return ResolOutput{mean, dMean, RMS, dRMS, true};
 }
 
 ResolOutput GetIterativeRMS(const Plot<TH2D> & hist2D, const unsigned int nbin, const bool save) {
@@ -93,7 +93,7 @@ ResolOutput GetIterativeRMS(const Plot<TH2D> & hist2D, const unsigned int nbin, 
         delete can;
     }
 
-    return ResolOutput{mean, dMean, RMS, dRMS};
+    return ResolOutput{mean, dMean, RMS, dRMS, converged};
 }
 
 Plot<TH1> GetResolution(const Plot<TH2D> & hist2D, IDPVMDefs::variable var, const bool save) {
@@ -105,7 +105,7 @@ Plot<TH1> GetResolution(const Plot<TH2D> & hist2D, IDPVMDefs::variable var, cons
 
     double units = ((var == IDPVMDefs::d0) || (var == IDPVMDefs::z0) || (var == IDPVMDefs::z0sin)) ? 1000. : 1.;
 
-    for (unsigned int i = 1; i <= h_res->GetNbinsX(); ++i) {
+    for (int i = 1; i < h_res->GetNbinsX() + 1; ++i) {
         ResolOutput results = GetIterativeRMS(hist2D, i, save);
 
         h_res->SetBinContent(i, units * results.RMS);
@@ -142,7 +142,7 @@ std::pair<Plot<TH1>, Plot<TH1>> GetPulls(const Plot<TH2D> & hist2D, IDPVMDefs::v
     h_pullMean->Reset();
     h_pullMean->GetYaxis()->SetTitle(IDPVMLabels::getPullMeanLabel(var).c_str());
 
-    for (unsigned int i = 1; i <= h_pullWidth->GetNbinsX(); ++i) {
+    for (int i = 1; i < h_pullWidth->GetNbinsX() + 1; ++i) {
         ResolOutput results = GetIterativeRMS(hist2D, i);
 
         h_pullWidth->SetBinContent(i, results.RMS);

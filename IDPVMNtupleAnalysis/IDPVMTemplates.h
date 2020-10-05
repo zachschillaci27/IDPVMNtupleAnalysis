@@ -21,10 +21,16 @@ namespace IDPVMDefs {
         qOverPt=7,
         qOverP=8,
     } variable;
+
+    typedef enum {
+        track=0,
+        truth=1
+    } level;
 }
 
 namespace IDPVMLabels {
     const std::string getVarName(IDPVMDefs::variable);
+    const std::string getVarName(IDPVMDefs::level);
     const std::string getResolutionLabel(IDPVMDefs::variable);
     const std::string getPullWidthLabel(IDPVMDefs::variable);
     const std::string getPullMeanLabel(IDPVMDefs::variable);

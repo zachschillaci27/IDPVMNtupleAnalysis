@@ -13,8 +13,8 @@
 
 void DumpResults(const std::string & fname){
 
-    Sample<IDPVMTree> ntuple("", fname, "IDPerformanceMon/Ntuples/IDPerformanceMon_NtuplesTruthToReco");   
-    
+    Sample<IDPVMTree> ntuple("", fname, "SquirrelPlots/Ntuples/SquirrelPlots_NtuplesTruthToReco");   
+        
     Selection<IDPVMTree> hasTruth = IDPVMSelections::hasTruth();
     Selection<IDPVMTree> hasTrack = IDPVMSelections::hasTrack();
 
@@ -43,7 +43,7 @@ int main (int, char**){
 
     SetAtlasStyle();
 
-    DumpResults("/Users/zschillaci/CERN/Working/Datasets/Tracking/IDPVM/sglmu100/MyPhysVal.root");
+    DumpResults("/Users/zschillaci/CERN/Working/IDPVMAnalysis/run/PHYSVAL.CL18.root");
 
     return 0;
 }

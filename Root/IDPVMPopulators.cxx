@@ -67,7 +67,7 @@ PlotFillInstructionWithRef<TH2D, IDPVMTree> IDPVMPopulators::getResolutionPopula
       }
    }
 
-   return PlotFillInstructionWithRef<TH2D, IDPVMTree>("EmptyResolution",[](TH2D* h, IDPVMTree &t){}, hRes);
+   return PlotFillInstructionWithRef<TH2D, IDPVMTree>("EmptyResolution",[](TH2D*, IDPVMTree &){}, hRes);
 }
 
 PlotFillInstructionWithRef<TH2D, IDPVMTree> IDPVMPopulators::getPullPopulator(IDPVMDefs::variable var, IDPVMDefs::variable versus) {
@@ -137,5 +137,5 @@ PlotFillInstructionWithRef<TH2D, IDPVMTree> IDPVMPopulators::getPullPopulator(ID
       }
    }
 
-   return PlotFillInstructionWithRef<TH2D, IDPVMTree>("EmptyPull",[](TH2D* h, IDPVMTree &t){}, hPull);
+   return PlotFillInstructionWithRef<TH2D, IDPVMTree>("EmptyPull",[](TH2D*, IDPVMTree &){}, hPull);
 }

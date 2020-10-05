@@ -14,6 +14,7 @@ struct ResolOutput {
     double dMean;
     double RMS;
     double dRMS;
+    bool converged;
 };
 
 ResolOutput GetGaussFit(const Plot<TH2D> & hist2D, const unsigned int nbin);

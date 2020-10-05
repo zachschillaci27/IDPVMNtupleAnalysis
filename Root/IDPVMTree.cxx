@@ -34,7 +34,6 @@ IDPVMTree::IDPVMTree( TTree* t): NtupleBranchMgr(t),
     truth_qOverP                    ("truth_qOverP",                    t, this),
     truth_qOverPt                   ("truth_qOverPt",                   t, this),
     truth_theta                     ("truth_theta",                     t, this),
-    truth_selectedByPileupSwitch    ("truth_selectedByPileupSwitch",    t, this),    
     truth_z0                        ("truth_z0",                        t, this),
     truth_z0sin                     ("truth_z0sin",                     t, this) {
         if(t) getMissedBranches(t);

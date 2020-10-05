@@ -25,8 +25,19 @@ const std::string IDPVMLabels::getVarName(IDPVMDefs::variable var) {
    if (var == IDPVMDefs::qOverPt) {
       return "qoverpt";
    }
-  if (var == IDPVMDefs::qOverP) {
+   if (var == IDPVMDefs::qOverP) {
       return "qoverp";
+   }
+
+   return "UNNKNOWN";
+}
+
+const std::string IDPVMLabels::getVarName(IDPVMDefs::level level) {
+   if (level == IDPVMDefs::track) {
+      return "track";
+   }
+   if (level == IDPVMDefs::truth) {
+      return "truth";
    }
 
    return "UNNKNOWN";
@@ -58,7 +69,7 @@ const std::string IDPVMLabels::getResolutionLabel(IDPVMDefs::variable var) {
       return "(q/p) resolution [MeV^{-1}]";
    }
 
-   return "UNNKNOWN";
+   return "UNNKNOWN RESOLUTION";
 }
 
 const std::string IDPVMLabels::getPullWidthLabel(IDPVMDefs::variable var) {
@@ -87,7 +98,7 @@ const std::string IDPVMLabels::getPullWidthLabel(IDPVMDefs::variable var) {
       return "(q/p) pull width";
    }
 
-   return "UNNKNOWN";
+   return "UNNKNOWN PULL WIDTH";
 }
 
 const std::string IDPVMLabels::getPullMeanLabel(IDPVMDefs::variable var) {
@@ -116,7 +127,7 @@ const std::string IDPVMLabels::getPullMeanLabel(IDPVMDefs::variable var) {
       return "(q/p) pull mean";
    }
 
-   return "UNNKNOWN";
+   return "UNNKNOWN PULL MEAN";
 }
 
 const std::vector<double> IDPVMTemplates::populateLinearBinning(int nBins, double xMin, double xMax) {
@@ -179,7 +190,7 @@ const std::vector<double> IDPVMTemplates::getResolutionBinning(IDPVMDefs::variab
       return IDPVMTemplates::populateLogLinearBinning(49, 0.745, 1000.0, false);
    }
 
-    return {};
+   return {};
 }
 
 TH2D IDPVMTemplates::getResolutionHistTemplate(IDPVMDefs::variable var, IDPVMDefs::variable versus) {
@@ -333,22 +344,34 @@ TH2D IDPVMTemplates::getPullHistTemplate(IDPVMDefs::variable var, IDPVMDefs::var
 
 TH1D IDPVMTemplates::getEfficiencyHistTemplate(IDPVMDefs::variable var) {
    if (var == IDPVMDefs::eta) {
-      return TH1D("etaEfficiency", ";truth #eta;Efficiency", 20, -4.0, 4.0);
+      return TH1D("etaEfficiency", ";truth #eta;Efficiency", 20, -2.5, 2.5);
    }
    if (var == IDPVMDefs::pt) {
       return TH1D("ptEfficiency", ";truth p_{T} [GeV];Efficiency", 25, 0, 50);
    }
-   
+   if (var == IDPVMDefs::d0) {
+      return TH1D("d0Efficiency", ";truth d_{0} [mm];Efficiency", 100, -25, 25);
+   }
+   if (var == IDPVMDefs::z0) {
+      return TH1D("z0Efficiency", ";truth z_{0} [mm];Efficiency", 100, -250, 250);
+   }
+
    return TH1D();
 }
 
 TH1D IDPVMTemplates::getFakeRateHistTemplate(IDPVMDefs::variable var) {
    if (var == IDPVMDefs::eta) {
-      return TH1D("etaFakeRate", ";track #eta;Fake Rate", 20, -4.0, 4.0);
+      return TH1D("etaFakeRate", ";track #eta;Fake Rate", 20, -2.5, 2.5);
    }
    if (var == IDPVMDefs::pt) {
-      return TH1D("ptFakeRate", ";track p_{T} [GeV];Fake Rate", 24, 0, 50);
+      return TH1D("ptFakeRate", ";track p_{T} [GeV];Fake Rate", 100, 0, 50);
    }
-   
+   if (var == IDPVMDefs::d0) {
+      return TH1D("d0FakeRate", ";truth d_{0} [mm];Fake Rate", 100, -25, 25);
+   }
+   if (var == IDPVMDefs::z0) {
+      return TH1D("z0FakeRate", ";truth z_{0} [mm];Fake Rate", 100, -250, 250);
+   }
+
    return TH1D();
 }

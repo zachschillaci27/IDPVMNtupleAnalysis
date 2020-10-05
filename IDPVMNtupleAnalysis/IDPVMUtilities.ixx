@@ -4,12 +4,6 @@
 #include <vector>
 #include <map>
 
-const std::string GetPlotTitle(const std::string & plotname) {
-    std::string plottitle = plotname; 
-    plottitle = plottitle.substr(plottitle.find_last_of("/") + 1);
-    return plottitle;
-}
-
 template <class HistoType> HistoType* GetHistogram(TFile* theFile, const std::string & plotname) {
 
     HistoType* h_temp = dynamic_cast<HistoType*>(theFile->Get(plotname.c_str()));    
@@ -42,13 +36,13 @@ template <class HistoType> std::map<std::string, Plot<HistoType>> LoadIDPVMHisto
 
     TFile* theFile = TFile::Open(myphysval.c_str(), "READ");
 
-    std::map<std::string, Plot<HistoType>> theHistograms = {};
+    std::map<std::string, Plot<HistoType>> theHistograms{};
     for (auto & pname : plotnames) {
         std::cout << "Reading histogram " << pname << " from file " << myphysval << std::endl;
         
         HistoType* h_out = GetHistogram<HistoType>(theFile, pname);
 
-        theHistograms[pname] = Plot<HistoType>(GetPlotTitle(pname), h_out);
+        theHistograms.emplace(pname, Plot<HistoType>(GetPlotTitle(pname), h_out));
         delete h_out;
     }
 
@@ -56,21 +50,8 @@ template <class HistoType> std::map<std::string, Plot<HistoType>> LoadIDPVMHisto
 
     return theHistograms;
 }
-template <class HistoIn, class HistoOut> Plot<HistoOut>  CastIDPVMHistogram(const std::string & myphysval, const std::string & plotname) {
+template <class HistoIn, class HistoOut> Plot<HistoOut> CastIDPVMHistogram(const std::string & myphysval, const std::string & plotname) {
     
     Plot<HistoIn> h_temp = LoadIDPVMHistogram<HistoIn>(myphysval, plotname);
     return Plot<HistoOut>(GetPlotTitle(plotname), dynamic_cast<HistoOut*>(h_temp()));
-}
-
-Plot<TH1> LoadIDPVMEfficiency(const std::string & myphysval, const std::string & plotname) {
-
-    Plot<TEfficiency> h_temp = LoadIDPVMHistogram<TEfficiency>(myphysval, plotname);
-
-    // convert to TH1 for easier plotting
-    TH1* h_out = PlotUtils::getRatio(h_temp->GetPassedHistogram()->Clone("passed"), h_temp->GetTotalHistogram()->Clone("total"), PlotUtils::efficiencyErrors);
-
-    Plot<TH1> thePlot(GetPlotTitle(plotname), h_out);
-    delete h_out;
-
-    return thePlot;
 }
