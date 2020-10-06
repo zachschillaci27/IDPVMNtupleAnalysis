@@ -38,26 +38,35 @@ int main (int, char**) {
         {IDPVMDefs::pt,  "SquirrelPlots/Tracks/FakeRate/fakerate_vs_pt"},
         {IDPVMDefs::d0,  "SquirrelPlots/Tracks/FakeRate/fakerate_vs_d0"},
         {IDPVMDefs::z0,  "SquirrelPlots/Tracks/FakeRate/fakerate_vs_z0"},
+        {IDPVMDefs::phi, "SquirrelPlots/Tracks/FakeRate/fakerate_vs_phi"},
     };
 
+    std::map<IDPVMDefs::variable, Plot<TH1>>  IDPVMplots;
+    std::map<IDPVMDefs::variable, Plot<TH1D>> nums;
+    std::map<IDPVMDefs::variable, Plot<TH1D>> dens;
+
     for (auto & var : mapIDPVM) {
-        auto nominal = LoadIDPVMEfficiency(myphysval, var.second); // nominal plot from IDPVM
+        IDPVMplots.emplace(var.first,
+            LoadIDPVMEfficiency(myphysval, var.second)); // nominal plot from IDPVM
 
         auto varReader = NtupleVarReaderProvider::generateVarReader(var.first, IDPVMDefs::track); // track variable reader
-        auto htemplate = IDPVMTemplates::getFakeRateHistTemplate(var.first); // hist template
+        auto htemplate = IDPVMTemplates::getFakeRateHistTemplate(var.first); // template histogram
 
         PlotFillInstructionWithRef<TH1D, IDPVMTree> filler(IDPVMLabels::getVarName(var.first), // plot filler
-            [&varReader](TH1D* h, IDPVMTree &t){ h->Fill(varReader(t)); },
+            [=](TH1D* h, IDPVMTree &t){ h->Fill(varReader(t)); },
             htemplate
         );
 
-        Plot<TH1D> num(ntuple, IDPVMSelections::forFakeRateNum(), filler); // numerator plot
-        Plot<TH1D> den(ntuple, IDPVMSelections::forFakeRateDen(), filler); // denominator plot
+        nums.emplace(var.first,
+            Plot<TH1D>(ntuple, IDPVMSelections::forFakeRateNum(), filler)); // numerator plot
+        dens.emplace(var.first,
+            Plot<TH1D>(ntuple, IDPVMSelections::forFakeRateDen(), filler)); // denominator plot
+    }
 
-        num.populate();
-        den.populate();
-    
-        CompareWithIDPVM(nominal, PlotUtils::getRatio(num, den, PlotUtils::efficiencyErrors), {"IDPVM Ntuple Validation", "t#bar{t}"});
+    for (auto & var : mapIDPVM) {
+        nums.at(var.first).populate();
+        dens.at(var.first).populate();
+        CompareWithIDPVM(IDPVMplots.at(var.first), PlotUtils::getRatio(nums.at(var.first), dens.at(var.first), PlotUtils::efficiencyErrors), {"IDPVM Ntuple Validation", var.second});
     }
 
     return 0;

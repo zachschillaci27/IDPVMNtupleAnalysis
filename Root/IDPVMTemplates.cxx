@@ -184,7 +184,7 @@ const std::vector<double> IDPVMTemplates::populateLogLinearBinning(int nBins, do
 
 const std::vector<double> IDPVMTemplates::getResolutionBinning(IDPVMDefs::variable var) {
    if (var == IDPVMDefs::eta) {
-      return IDPVMTemplates::populateLinearBinning(64, -4.0, 4.0);
+      return IDPVMTemplates::populateLinearBinning(64, -2.5, 2.5);
    }
    if (var == IDPVMDefs::pt) {
       return IDPVMTemplates::populateLogLinearBinning(49, 0.745, 1000.0, false);
@@ -196,7 +196,7 @@ const std::vector<double> IDPVMTemplates::getResolutionBinning(IDPVMDefs::variab
 TH2D IDPVMTemplates::getResolutionHistTemplate(IDPVMDefs::variable var, IDPVMDefs::variable versus) {
    std::vector<double> vsBins = IDPVMTemplates::getResolutionBinning(versus);
    if (var == IDPVMDefs::pt) {
-      std::vector<double> ptBins = IDPVMTemplates::populateLogLinearBinning(2000, 1e-3, 1000.0, true);
+      std::vector<double> ptBins = IDPVMTemplates::populateLinearBinning(1000, -100, 100);
       if (versus == IDPVMDefs::eta) {
          return TH2D("ptResolution_vs_eta", ";truth #eta;p_{T}^{track} - p_{T}^{truth} [GeV]", vsBins.size() - 1, &(vsBins[0]), ptBins.size() - 1, &(ptBins[0]));
       }
@@ -205,16 +205,17 @@ TH2D IDPVMTemplates::getResolutionHistTemplate(IDPVMDefs::variable var, IDPVMDef
       }
    }
    if (var == IDPVMDefs::d0) {
-      std::vector<double> d0Bins = IDPVMTemplates::populateLogLinearBinning(1000, 3e-4, 30.0, true);
       if (versus == IDPVMDefs::eta) {
+         std::vector<double> d0Bins = IDPVMTemplates::populateLinearBinning(3000, -25, 25);
          return TH2D("d0Resolution_vs_eta", ";truth #eta;d_{0}^{track} - d_{0}^{truth} [mm]", vsBins.size() - 1, &(vsBins[0]), d0Bins.size() - 1, &(d0Bins[0]));
       }
       if (versus == IDPVMDefs::pt) {
+         std::vector<double> d0Bins = IDPVMTemplates::populateLinearBinning(1000, -25, 25);
          return TH2D("d0Resolution_vs_pt", ";truth p_{T} [GeV];d_{0}^{track} - d_{0}^{truth} [mm]", vsBins.size() - 1, &(vsBins[0]), d0Bins.size() - 1, &(d0Bins[0]));
       }
    }
    if (var == IDPVMDefs::z0) {
-      std::vector<double> z0Bins = IDPVMTemplates::populateLogLinearBinning(1000, 1e-3, 200.0, true);
+      std::vector<double> z0Bins = IDPVMTemplates::populateLinearBinning(2000, -250, 250);
       if (versus == IDPVMDefs::eta) {
          return TH2D("z0Resolution_vs_eta", ";truth #eta;z_{0}^{track} - z_{0}^{truth} [mm]", vsBins.size() - 1, &(vsBins[0]), z0Bins.size() - 1, &(z0Bins[0]));
       }
@@ -273,7 +274,7 @@ TH2D IDPVMTemplates::getResolutionHistTemplate(IDPVMDefs::variable var, IDPVMDef
 
 TH2D IDPVMTemplates::getPullHistTemplate(IDPVMDefs::variable var, IDPVMDefs::variable versus) {
    std::vector<double> vsBins = IDPVMTemplates::getResolutionBinning(versus);
-   std::vector<double> pullBins = IDPVMTemplates::populateLogLinearBinning(1000, 2e-2, 100.0, true);
+   std::vector<double> pullBins = IDPVMTemplates::populateLinearBinning(100, -10, 10);
    if (var == IDPVMDefs::pt) {
       if (versus == IDPVMDefs::eta) {
          return TH2D("ptPull_vs_eta", ";truth #eta;(p_{T}^{track} - p_{T}^{truth})/#sigma(p_{T})", vsBins.size() - 1, &(vsBins[0]), pullBins.size() - 1, &(pullBins[0]));
@@ -355,6 +356,9 @@ TH1D IDPVMTemplates::getEfficiencyHistTemplate(IDPVMDefs::variable var) {
    if (var == IDPVMDefs::z0) {
       return TH1D("z0Efficiency", ";truth z_{0} [mm];Efficiency", 100, -250, 250);
    }
+   if (var == IDPVMDefs::phi) {
+      return TH1D("phiEfficiency", ";truth #phi;Efficiency", 25, -3.1415, 3.1415);
+   }
 
    return TH1D();
 }
@@ -371,6 +375,9 @@ TH1D IDPVMTemplates::getFakeRateHistTemplate(IDPVMDefs::variable var) {
    }
    if (var == IDPVMDefs::z0) {
       return TH1D("z0FakeRate", ";truth z_{0} [mm];Fake Rate", 100, -250, 250);
+   }
+   if (var == IDPVMDefs::phi) {
+      return TH1D("phiFakeRate", ";truth #phi;Fake Rate", 25, -3.1415, 3.1415);
    }
 
    return TH1D();

@@ -46,19 +46,26 @@ int main (int argc, char** argv) {
     std::map<IDPVMDefs::variable, std::string> mapIDPVM{
         {IDPVMDefs::d0,    "SquirrelPlots/Tracks/Matched/Resolutions/Primary/resolution_vs_" + IDPVMLabels::getVarName(versus) + "_d0"},
         {IDPVMDefs::z0,    "SquirrelPlots/Tracks/Matched/Resolutions/Primary/resolution_vs_" + IDPVMLabels::getVarName(versus) + "_z0"},
-        {IDPVMDefs::phi,   "SquirrelPlots/Tracks/Matched/Resolutions/Primary/resolution_vs_" + IDPVMLabels::getVarName(versus) + "_phi"},
-        {IDPVMDefs::theta, "SquirrelPlots/Tracks/Matched/Resolutions/Primary/resolution_vs_" + IDPVMLabels::getVarName(versus) + "_theta"},
+        // {IDPVMDefs::phi,   "SquirrelPlots/Tracks/Matched/Resolutions/Primary/resolution_vs_" + IDPVMLabels::getVarName(versus) + "_phi"},
+        // {IDPVMDefs::theta, "SquirrelPlots/Tracks/Matched/Resolutions/Primary/resolution_vs_" + IDPVMLabels::getVarName(versus) + "_theta"},
     };
 
+    std::map<IDPVMDefs::variable, Plot<TH1>>  IDPVMplots;
+    std::map<IDPVMDefs::variable, Plot<TH2D>> resHists2D;
+
     for (auto & var : mapIDPVM) {
-        auto nominal = LoadIDPVMHistogram<TH1F, TH1>(myphysval, var.second); // nominal plot from IDPVM
+        IDPVMplots.emplace(var.first, 
+            LoadIDPVMHistogram<TH1F, TH1>(myphysval, var.second)); // nominal plot from IDPVM
 
-        Plot<TH2D> resHist2D(ntuple, IDPVMSelections::forResolution(), IDPVMPopulators::getResolutionPopulator(var.first, versus)); // 2D resolution plot
-        resHist2D.populate();
- 
-        auto resHist = GetResolution(resHist2D, var.first); // extract 1D resolution plot
+        resHists2D.emplace(var.first,
+            Plot<TH2D>(ntuple, IDPVMSelections::forResolution(), IDPVMPopulators::getResolutionPopulator(var.first, versus))); // 2D resolution plot
+    }
 
-        CompareWithIDPVM(nominal, resHist, {"IDPVM Ntuple Validation", "t#bar{t}"});
+    for (auto & var : mapIDPVM) {
+        resHists2D.at(var.first).populate();
+        auto resHist = GetResolution(resHists2D.at(var.first), var.first); // extract 1D resolution plot
+        
+        CompareWithIDPVM(IDPVMplots.at(var.first), resHist, {"IDPVM Ntuple Validation", var.second});
     }
     
     return 0;
