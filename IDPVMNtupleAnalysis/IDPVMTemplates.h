@@ -26,6 +26,9 @@ namespace IDPVMDefs {
         track=0,
         truth=1
     } level;
+
+
+    std::vector<IDPVMDefs::variable> getKnownVars();
 }
 
 namespace IDPVMLabels {
@@ -36,16 +39,32 @@ namespace IDPVMLabels {
     const std::string getPullMeanLabel(IDPVMDefs::variable);
 }
 
+namespace Run2 {
+    constexpr double PI        = 3.1415926;
+    constexpr double ETA       = 2.5;
+    constexpr int    NETA      = 64;
+    constexpr double D0RES     = 2.0;
+    constexpr double Z0RES     = 10.0;
+    constexpr double PHIRES    = 0.010;
+    constexpr double THETARES  = 0.10;
+    constexpr double Z0SINRES  = 1.00;
+    constexpr double D0PARA    = 20.0;
+    constexpr double Z0PARA    = 250.0;
+    constexpr double Z0SINPARA = 40.0;
+}
+
 namespace IDPVMTemplates {
     const std::vector<double> populateLinearBinning(int nBins, double xMin, double xMax);
     const std::vector<double> populateLogLinearBinning(int nBins, double absXmin, double absXmax, bool symmetriseAroundZero = true);
     const std::vector<double> getResolutionBinning(IDPVMDefs::variable var); 
 
-    TH2D getResolutionHistTemplate(IDPVMDefs::variable var, IDPVMDefs::variable versus); 
-    TH2D getPullHistTemplate(IDPVMDefs::variable var, IDPVMDefs::variable versus);
+    TH1D getDistributionHistTemplate(IDPVMDefs::variable var, IDPVMDefs::level level);
 
     TH1D getEfficiencyHistTemplate(IDPVMDefs::variable var); 
     TH1D getFakeRateHistTemplate(IDPVMDefs::variable var); 
+
+    TH2D getResolutionHistTemplate(IDPVMDefs::variable var, IDPVMDefs::variable versus); 
+    TH2D getPullHistTemplate(IDPVMDefs::variable var, IDPVMDefs::variable versus);
 }
 
 #endif

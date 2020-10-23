@@ -58,5 +58,5 @@ Selection<IDPVMTree> IDPVMSelections::forEfficiencyDen() {
 }
 
 Selection<IDPVMTree> IDPVMSelections::forEfficiencyNum() {
-   return (IDPVMSelections::forEfficiencyDen() && IDPVMSelections::passedTrack() && IDPVMSelections::isMatched() && IDPVMSelections::isAssociated());
+   return (IDPVMSelections::forEfficiencyDen() && IDPVMSelections::hasTrack() && IDPVMSelections::passedTrack() && IDPVMSelections::isMatched());
 }

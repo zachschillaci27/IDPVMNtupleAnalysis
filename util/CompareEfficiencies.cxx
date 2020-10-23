@@ -11,34 +11,22 @@
 #include "IDPVMNtupleAnalysis/IDPVMUtilities.h"
 #include "IDPVMNtupleAnalysis/IDPVMSelections.h"
 #include "IDPVMNtupleAnalysis/NtupleVarReader.h"
-
-void CompareWithIDPVM(Plot<TH1> nominal, Plot<TH1> alternative, const std::vector<std::string> & labels) { 
-    nominal.setLegendTitle("IDPVM");
-    nominal.setLegendOption("PL");
-    nominal.setPlotFormat(PlotFormat().MarkerStyle(kFullDotLarge).MarkerColor(kRed + 1).LineColor(kRed + 1));
-    
-    alternative.setLegendTitle("Ntuple");
-    alternative.setLegendOption("PL");
-    alternative.setPlotFormat(PlotFormat().MarkerStyle(kOpenCircle).MarkerColor(kBlue + 1).LineColor(kBlue + 1));
-
-    PlotContent<TH1> theContent({nominal, alternative}, labels, nominal.getName(), "",
-                                    CanvasOptions().yAxisTitle(alternative->GetYaxis()->GetTitle()).ratioAxisTitle("Ntuple/IDPVM"));
-    DefaultPlotting::draw1DWithRatio(theContent);
-}
+#include "IDPVMNtupleAnalysis/IDPVMPlotUtils.h"
 
 int main (int, char**) {
 
     SetAtlasStyle();
 
-    const std::string myphysval = "/Users/zschillaci/CERN/Working/IDPVMAnalysis/run/PHYSVAL.CL18.root";
+    const std::string myphysval = "/Users/zschillaci/CERN/Working/IDPVMAnalysis/run/M_output.root";
     Sample<IDPVMTree> ntuple("Ntuple", myphysval, "SquirrelPlots/Ntuples/SquirrelPlots_NtuplesTruthToReco");   
     
     std::map<IDPVMDefs::variable, std::string> mapIDPVM{
-        {IDPVMDefs::eta, "SquirrelPlots/Tracks/Efficiency/efficiency_vs_eta"},
-        {IDPVMDefs::pt,  "SquirrelPlots/Tracks/Efficiency/efficiency_vs_pt"},
-        {IDPVMDefs::d0,  "SquirrelPlots/Tracks/Efficiency/efficiency_vs_d0"},
-        {IDPVMDefs::z0,  "SquirrelPlots/Tracks/Efficiency/efficiency_vs_z0"},
-        {IDPVMDefs::phi, "SquirrelPlots/Tracks/Efficiency/efficiency_vs_phi"},
+        {IDPVMDefs::eta,   "SquirrelPlots/Tracks/Efficiency/efficiency_vs_eta"},
+        {IDPVMDefs::pt,    "SquirrelPlots/Tracks/Efficiency/efficiency_vs_pt"},
+        {IDPVMDefs::d0,    "SquirrelPlots/Tracks/Efficiency/efficiency_vs_d0"},
+        {IDPVMDefs::z0,    "SquirrelPlots/Tracks/Efficiency/efficiency_vs_z0"},
+        {IDPVMDefs::phi,   "SquirrelPlots/Tracks/Efficiency/efficiency_vs_phi"},
+        // {IDPVMDefs::theta, "SquirrelPlots/Tracks/Efficiency/efficiency_vs_theta"},
     };
     
     std::map<IDPVMDefs::variable, Plot<TH1>>  IDPVMplots;
@@ -66,7 +54,7 @@ int main (int, char**) {
     for (auto & var : mapIDPVM) {
         nums.at(var.first).populate();
         dens.at(var.first).populate();
-        CompareWithIDPVM(IDPVMplots.at(var.first), PlotUtils::getRatio(nums.at(var.first), dens.at(var.first), PlotUtils::efficiencyErrors), {"IDPVM Ntuple Validation", var.second});
+        IDPVMPlotUtils::CompareWithIDPVM(IDPVMplots.at(var.first), PlotUtils::getRatio(nums.at(var.first), dens.at(var.first), PlotUtils::efficiencyErrors), {"IDPVM Ntuple Validation", var.second});
     }
 
     return 0;

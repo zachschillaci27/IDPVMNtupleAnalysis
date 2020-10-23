@@ -11,7 +11,7 @@ namespace NtupleVarReaderProvider{
              {std::make_pair(IDPVMDefs::z0,      IDPVMDefs::track), [](IDPVMTree &t){ return t.track_z0(); }},
              {std::make_pair(IDPVMDefs::z0sin,   IDPVMDefs::track), [](IDPVMTree &t){ return t.track_z0sin(); }},
              {std::make_pair(IDPVMDefs::phi,     IDPVMDefs::track), [](IDPVMTree &t){ return t.track_phi(); }},
-             {std::make_pair(IDPVMDefs::z0sin,   IDPVMDefs::track), [](IDPVMTree &t){ return t.track_theta(); }},
+             {std::make_pair(IDPVMDefs::theta,   IDPVMDefs::track), [](IDPVMTree &t){ return t.track_theta(); }},
              {std::make_pair(IDPVMDefs::qOverPt, IDPVMDefs::track), [](IDPVMTree &t){ return t.track_qOverPt(); }},
              {std::make_pair(IDPVMDefs::qOverP,  IDPVMDefs::track), [](IDPVMTree &t){ return t.track_qOverP(); }},
              // Truth-level
@@ -21,7 +21,7 @@ namespace NtupleVarReaderProvider{
              {std::make_pair(IDPVMDefs::z0,      IDPVMDefs::truth), [](IDPVMTree &t){ return t.truth_z0(); }},
              {std::make_pair(IDPVMDefs::z0sin,   IDPVMDefs::truth), [](IDPVMTree &t){ return t.truth_z0sin(); }},
              {std::make_pair(IDPVMDefs::phi,     IDPVMDefs::truth), [](IDPVMTree &t){ return t.truth_phi(); }},
-             {std::make_pair(IDPVMDefs::z0sin,   IDPVMDefs::truth), [](IDPVMTree &t){ return t.truth_theta(); }},
+             {std::make_pair(IDPVMDefs::theta,   IDPVMDefs::truth), [](IDPVMTree &t){ return t.truth_theta(); }},
              {std::make_pair(IDPVMDefs::qOverPt, IDPVMDefs::truth), [](IDPVMTree &t){ return t.truth_qOverPt(); }},
              {std::make_pair(IDPVMDefs::qOverP,  IDPVMDefs::truth), [](IDPVMTree &t){ return t.truth_qOverP(); }},
         };
