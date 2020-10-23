@@ -79,8 +79,8 @@ int main (int, char**) {
     for (auto & var : mapIDPVMReco) {
         distributionsReco.at(var.first).populate();
         distributionsTruth.at(var.first).populate();
-        IDPVMPlotUtils::CompareWithIDPVM(IDPVMplotsReco.at(var.first), distributionsReco.at(var.first), {"IDPVM Ntuple Validation", var.second});
-        IDPVMPlotUtils::CompareWithIDPVM(IDPVMplotsTruth.at(var.first), distributionsTruth.at(var.first), {"IDPVM Ntuple Validation", var.second});
+        IDPVMPlotUtils::CompareWithIDPVM(IDPVMplotsReco.at(var.first), distributionsReco.at(var.first), {"IDPVM Ntuple Validation", mapIDPVMReco.at(var.first)});
+        IDPVMPlotUtils::CompareWithIDPVM(IDPVMplotsTruth.at(var.first), distributionsTruth.at(var.first), {"IDPVM Ntuple Validation", mapIDPVMTruth.at(var.first)});
     }
 
     return 0;
