@@ -13,6 +13,7 @@ class IDPVMTree: public NtupleBranchMgr{
         NtupleBranch <Int_t>                        hasTruth;
         NtupleBranch <Int_t>                        passedTrackSelection;
         NtupleBranch <Int_t>                        passedTruthSelection;
+        NtupleBranch <Int_t>                        selectedByPileupSwitch; 
         NtupleBranch <Double_t>                     trackErr_d0;
         NtupleBranch <Double_t>                     trackErr_phi;
         NtupleBranch <Double_t>                     trackErr_qOverP;

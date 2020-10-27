@@ -26,7 +26,6 @@ int main (int, char**) {
         {IDPVMDefs::d0,    "SquirrelPlots/Tracks/Efficiency/efficiency_vs_d0"},
         {IDPVMDefs::z0,    "SquirrelPlots/Tracks/Efficiency/efficiency_vs_z0"},
         {IDPVMDefs::phi,   "SquirrelPlots/Tracks/Efficiency/efficiency_vs_phi"},
-        // {IDPVMDefs::theta, "SquirrelPlots/Tracks/Efficiency/efficiency_vs_theta"},
     };
     
     std::map<IDPVMDefs::variable, Plot<TH1>>  IDPVMplots;

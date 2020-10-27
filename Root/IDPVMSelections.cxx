@@ -45,6 +45,14 @@ Selection<IDPVMTree> IDPVMSelections::forResolution() {
            IDPVMSelections::isMatched() && IDPVMSelections::isPrimary());
 }
 
+Selection<IDPVMTree> IDPVMSelections::forUnlinkedRateDen() {
+   return (IDPVMSelections::hasTrack() && IDPVMSelections::passedTrack());
+}
+
+Selection<IDPVMTree> IDPVMSelections::forUnlinkedRateNum() {
+   return (IDPVMSelections::forUnlinkedRateDen() && !(IDPVMSelections::hasTruth()));
+}
+
 Selection<IDPVMTree> IDPVMSelections::forFakeRateDen() {  
    return (IDPVMSelections::isAssociated() && IDPVMSelections::passedTrack());
 }

@@ -6,11 +6,11 @@
 #include "NtupleAnalysisUtils/DefaultPlotting.h"
 
 namespace IDPVMPlotUtils {
-    void CompareWithIDPVM(Plot<TH1> nominal, Plot<TH1> alternative, const std::vector<std::string> & labels);
-    template <typename AltHist> void CompareWithIDPVM(Plot<TH1> nominal, Plot<AltHist> alternative, const std::vector<std::string> & labels);
+    void CompareWithIDPVM(Plot<TH1> nominal, Plot<TH1> alternative, const std::vector<std::string> & labels, const std::string & fileNamePrefix = "");
+    template <typename AltHist> void CompareWithIDPVM(Plot<TH1> nominal, Plot<AltHist> alternative, const std::vector<std::string> & labels, const std::string & fileNamePrefix = "");
 }
 
-template <typename AltHist> void IDPVMPlotUtils::CompareWithIDPVM(Plot<TH1> nominal, Plot<AltHist> alternative, const std::vector<std::string> & labels) {
+template <typename AltHist> void IDPVMPlotUtils::CompareWithIDPVM(Plot<TH1> nominal, Plot<AltHist> alternative, const std::vector<std::string> & labels, const std::string & fileNamePrefix) {
     CompareWithIDPVM(nominal, Plot<TH1>("", dynamic_cast<TH1*>(alternative())), labels);
 }
 

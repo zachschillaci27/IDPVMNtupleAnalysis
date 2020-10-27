@@ -21,8 +21,13 @@ namespace IDPVMSelections {
     Selection<IDPVMTree> isSecondary();
 
     Selection<IDPVMTree> forResolution();
+    
+    Selection<IDPVMTree> forUnlinkedRateDen();
+    Selection<IDPVMTree> forUnlinkedRateNum();
+
     Selection<IDPVMTree> forFakeRateDen();
     Selection<IDPVMTree> forFakeRateNum();
+    
     Selection<IDPVMTree> forEfficiencyDen();
     Selection<IDPVMTree> forEfficiencyNum();
 }
