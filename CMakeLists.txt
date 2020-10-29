@@ -25,6 +25,12 @@ atlas_add_library( IDPVMNtupleAnalysis
   # ${extra_libs}
   )
 
+  atlas_add_executable( ITkPerformancePlots
+    util/Public/ITkPerformancePlots.cxx
+    INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} 
+    LINK_LIBRARIES ${ROOT_LIBRARIES} IDPVMNtupleAnalysis )
+
+
   atlas_add_executable( BinningMigrations
     util/BinningMigrations.cxx
     INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} 

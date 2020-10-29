@@ -19,6 +19,7 @@ template <class HistoIn, class HistoOut> Plot<HistoOut> LoadIDPVMHistogram(const
 
 // Histogram manipulation/rebinning/symmetrization
 Plot<TH1> LoadIDPVMEfficiency(const std::string & myphysval, const std::string & plotname);
+Plot<TH1> ConvertEfficiencyToTH1(Plot<TEfficiency> & efficiencyIn);
 Plot<TEfficiency> RebinEfficiency(Plot<TEfficiency> & efficiencyIn, int rebin);
 Plot<TEfficiency> SymmetrizeEfficiency(Plot<TEfficiency> & efficiencyIn);
 Plot<TProfile> SymmetrizeProfile(Plot<TProfile> & profileIn);

@@ -16,6 +16,19 @@ Plot<TH1> LoadIDPVMEfficiency(const std::string & myphysval, const std::string &
     return thePlot;
 }
 
+Plot<TH1> ConvertEfficiencyToTH1(Plot<TEfficiency> & efficiencyIn) {
+    
+    std::shared_ptr<TH1> h_out(PlotUtils::getRatio(efficiencyIn->GetCopyPassedHisto(), efficiencyIn->GetCopyTotalHisto(), PlotUtils::efficiencyErrors));
+    Plot<TH1> efficiencyOut(efficiencyIn.getName() + "-AsTH1", h_out.get());
+    
+    efficiencyOut.setPlotFormat(efficiencyIn.plotFormat());
+    efficiencyOut.setLegendTitle(efficiencyIn.getLegendTitle());
+    efficiencyOut.setLegendOption(efficiencyIn.getLegendOption());
+    efficiencyOut.applyFormat();
+
+    return efficiencyOut;
+}
+
 Plot<TEfficiency> RebinEfficiency(Plot<TEfficiency> & efficiencyIn, int rebin) {
 
     Plot<TH1D> passed("passed", dynamic_cast<TH1D*>(efficiencyIn->GetCopyPassedHisto()));
@@ -25,7 +38,7 @@ Plot<TEfficiency> RebinEfficiency(Plot<TEfficiency> & efficiencyIn, int rebin) {
     total->Rebin(rebin);
 
     std::shared_ptr<TEfficiency> teffOut = std::make_shared<TEfficiency>(*passed(), *total());
-    Plot<TEfficiency> efficiencyOut("efficiencyOut", teffOut.get());
+    Plot<TEfficiency> efficiencyOut(efficiencyIn.getName() + "-Rebinned", teffOut.get());
     
     efficiencyOut.setPlotFormat(efficiencyIn.plotFormat());
     efficiencyOut.setLegendTitle(efficiencyIn.getLegendTitle());
@@ -47,7 +60,7 @@ Plot<TEfficiency> SymmetrizeEfficiency(Plot<TEfficiency> & efficiencyIn) {
     int nbins_sym = nbins / 2;
     
     // std::cout << "Symmetrizing efficiency ..." << std::endl; 
-    for (int i = 1; i <= nbins_sym; ++i) {
+    for (int i = 1; i < nbins_sym + 1; ++i) {
         int neg_bin = i;
         int pos_bin = nbins + 1 - i;
 
@@ -63,7 +76,7 @@ Plot<TEfficiency> SymmetrizeEfficiency(Plot<TEfficiency> & efficiencyIn) {
     }
 
     std::shared_ptr<TEfficiency> teffOut = std::make_shared<TEfficiency>(*passed_sym(), *total_sym());
-    Plot<TEfficiency> efficiencyOut("efficiencyOut", teffOut.get());
+    Plot<TEfficiency> efficiencyOut(efficiencyIn.getName() + "-Symmetrized", teffOut.get());
     
     efficiencyOut.setPlotFormat(efficiencyIn.plotFormat());
     efficiencyOut.setLegendTitle(efficiencyIn.getLegendTitle());
@@ -75,7 +88,7 @@ Plot<TEfficiency> SymmetrizeEfficiency(Plot<TEfficiency> & efficiencyIn) {
 
 Plot<TProfile> SymmetrizeProfile(Plot<TProfile> & profileIn) {
     
-    Plot<TProfile> profileOut("profileOut", profileIn);
+    Plot<TProfile> profileOut(profileIn.getName() + "-Symmetrized", profileIn);
     profileOut.setPlotFormat(profileIn.plotFormat());
     profileOut.setLegendTitle(profileIn.getLegendTitle());
     profileOut.setLegendOption(profileIn.getLegendOption());
@@ -84,8 +97,8 @@ Plot<TProfile> SymmetrizeProfile(Plot<TProfile> & profileIn) {
     int nbins = profileIn->GetXaxis()->GetNbins();
     int nbins_sym = nbins / 2;
     
-    std::cout << "Symmetrizing profile ..." << std::endl; 
-    for (int i = 1; i <= nbins_sym; ++i) {
+    // std::cout << "Symmetrizing profile ..." << std::endl; 
+    for (int i = 1; i < nbins_sym + 1; ++i) {
         int neg_bin = i;
         int pos_bin = nbins + 1 - i;
 
@@ -102,7 +115,7 @@ Plot<TProfile> SymmetrizeProfile(Plot<TProfile> & profileIn) {
 
 Plot<TH1F> SymmetrizeResolution(Plot<TH1F> & resolutionIn) {
     
-    Plot<TH1F> resolutionOut("resolutionOut", resolutionIn);
+    Plot<TH1F> resolutionOut(resolutionIn.getName() + "-Symmetrized", resolutionIn);
     resolutionOut.setPlotFormat(resolutionIn.plotFormat());
     resolutionOut.setLegendTitle(resolutionIn.getLegendTitle());
     resolutionOut.setLegendOption(resolutionIn.getLegendOption());
@@ -111,8 +124,8 @@ Plot<TH1F> SymmetrizeResolution(Plot<TH1F> & resolutionIn) {
     int nbins = resolutionIn->GetXaxis()->GetNbins();
     int nbins_sym = nbins / 2;
     
-    std::cout << "Symmetrizing resolution ..." << std::endl; 
-    for (int i = 1; i <= nbins_sym; ++i) {
+    // std::cout << "Symmetrizing resolution ..." << std::endl; 
+    for (int i = 1; i < nbins_sym + 1; ++i) {
         int neg_bin = i;
         int pos_bin = nbins + 1 - i;
 
