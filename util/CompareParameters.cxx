@@ -21,25 +21,25 @@ int main (int, char**) {
     Sample<IDPVMTree> ntuple("Ntuple", myphysval, "SquirrelPlots/Ntuples/SquirrelPlots_NtuplesTruthToReco");   
     
     std::map<IDPVMDefs::variable, std::string> mapIDPVMReco{
-        {IDPVMDefs::eta,   "SquirrelPlots/Tracks/Selected/Parameters/reco_eta"},
-        {IDPVMDefs::pt,    "SquirrelPlots/Tracks/Selected/Parameters/reco_pt"},
-        {IDPVMDefs::d0,    "SquirrelPlots/Tracks/Selected/Parameters/reco_d0"},
-        {IDPVMDefs::z0,    "SquirrelPlots/Tracks/Selected/Parameters/reco_z0"},
-        {IDPVMDefs::phi,   "SquirrelPlots/Tracks/Selected/Parameters/reco_phi"},
-        // {IDPVMDefs::theta, "SquirrelPlots/Tracks/Selected/Parameters/reco_theta"},
-        // {IDPVMDefs::z0sin, "SquirrelPlots/Tracks/Selected/Parameters/reco_z0sin"},
-        // {IDPVMDefs::qOverP, "SquirrelPlots/Tracks/Selected/Parameters/reco_qoverp"},
+        {IDPVMDefs::eta,    "SquirrelPlots/Tracks/Selected/Parameters/reco_eta"},
+        {IDPVMDefs::pt,     "SquirrelPlots/Tracks/Selected/Parameters/reco_pt"},
+        {IDPVMDefs::d0,     "SquirrelPlots/Tracks/Selected/Parameters/reco_d0"},
+        {IDPVMDefs::z0,     "SquirrelPlots/Tracks/Selected/Parameters/reco_z0"},
+        {IDPVMDefs::phi,    "SquirrelPlots/Tracks/Selected/Parameters/reco_phi"},
+        {IDPVMDefs::theta,  "SquirrelPlots/Tracks/Selected/Parameters/reco_theta"},
+        {IDPVMDefs::z0sin,  "SquirrelPlots/Tracks/Selected/Parameters/reco_z0sin"},
+        {IDPVMDefs::qOverP, "SquirrelPlots/Tracks/Selected/Parameters/reco_qoverp"},
     };
     
     std::map<IDPVMDefs::variable, std::string> mapIDPVMTruth{
-        {IDPVMDefs::eta,   "SquirrelPlots/Tracks/Selected/Parameters/truth_eta"},
-        {IDPVMDefs::pt,    "SquirrelPlots/Tracks/Selected/Parameters/truth_pt"},
-        {IDPVMDefs::d0,    "SquirrelPlots/Tracks/Selected/Parameters/truth_d0"},
-        {IDPVMDefs::z0,    "SquirrelPlots/Tracks/Selected/Parameters/truth_z0"},
-        {IDPVMDefs::phi,   "SquirrelPlots/Tracks/Selected/Parameters/truth_phi"},
-        // {IDPVMDefs::theta, "SquirrelPlots/Tracks/Selected/Parameters/truth_theta"},
-        // {IDPVMDefs::z0sin, "SquirrelPlots/Tracks/Selected/Parameters/truth_z0sin"},
-        // {IDPVMDefs::qOverP, "SquirrelPlots/Tracks/Selected/Parameters/truth_qoverp"},
+        {IDPVMDefs::eta,    "SquirrelPlots/Tracks/Selected/Parameters/truth_eta"},
+        {IDPVMDefs::pt,     "SquirrelPlots/Tracks/Selected/Parameters/truth_pt"},
+        {IDPVMDefs::d0,     "SquirrelPlots/Tracks/Selected/Parameters/truth_d0"},
+        {IDPVMDefs::z0,     "SquirrelPlots/Tracks/Selected/Parameters/truth_z0"},
+        {IDPVMDefs::phi,    "SquirrelPlots/Tracks/Selected/Parameters/truth_phi"},
+        {IDPVMDefs::theta,  "SquirrelPlots/Tracks/Selected/Parameters/truth_theta"},
+        {IDPVMDefs::z0sin,  "SquirrelPlots/Tracks/Selected/Parameters/truth_z0sin"},
+        {IDPVMDefs::qOverP, "SquirrelPlots/Tracks/Selected/Parameters/truth_qoverp"},
     };
 
     std::map<IDPVMDefs::variable, Plot<TH1>>  IDPVMplotsReco;

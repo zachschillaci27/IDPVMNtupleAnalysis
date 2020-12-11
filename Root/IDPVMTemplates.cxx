@@ -232,6 +232,14 @@ TH1D IDPVMTemplates::getDistributionHistTemplate(IDPVMDefs::variable var, IDPVMD
       if (level == IDPVMDefs::track) return TH1D("theta", ";track #theta;Yield", 100, 0, Run2::PI);
       if (level == IDPVMDefs::truth) return TH1D("theta", ";truth #theta;Yield", 100, 0, Run2::PI);
    }
+   if (var == IDPVMDefs::z0sin) {
+      if (level == IDPVMDefs::track) return TH1D("z0sin", ";track z_{0} #times sin(#theta) [mm];Yield", 100, -1 * Run2::Z0SINPARA, Run2::Z0SINPARA);
+      if (level == IDPVMDefs::truth) return TH1D("z0sin", ";truth z_{0} #times sin(#theta) [mm];Yield", 100, -1 * Run2::Z0SINPARA, Run2::Z0SINPARA);
+   }
+   if (var == IDPVMDefs::qOverP) {
+      if (level == IDPVMDefs::track) return TH1D("qOverP", ";(q/p)^{track} [MeV^{-1}];Yield", 100, -1 * Run2::QOPPARA, Run2::QOPPARA);
+      if (level == IDPVMDefs::truth) return TH1D("qOverP", ";(q/p)^{truth} [MeV^{-1}];Yield", 100, -1 * Run2::QOPPARA, Run2::QOPPARA);
+   }
    return TH1D();
 }
 

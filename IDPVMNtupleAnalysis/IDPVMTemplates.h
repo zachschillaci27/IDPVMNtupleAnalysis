@@ -50,6 +50,7 @@ namespace Run2 {
     constexpr double Z0SINRES  = 1.00;
     constexpr double D0PARA    = 20.0;
     constexpr double Z0PARA    = 250.0;
+    constexpr double QOPPARA   = 5.e-3;
     constexpr double Z0SINPARA = 40.0;
 }
 
