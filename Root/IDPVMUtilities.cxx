@@ -4,6 +4,18 @@ const std::string GetPlotTitle(const std::string & plotname) {
     return plotname.substr(plotname.find_last_of("/") + 1);
 }
 
+std::pair<Plot<TH1>, Plot<TH1>> LoadIDPVMEffPassedAndTotal(const std::string & myphysval, const std::string & plotname) {
+
+    // Load as TEfficiency
+    Plot<TEfficiency> h_temp = LoadIDPVMHistogram<TEfficiency>(myphysval, plotname);
+
+    // Return pair of passed and total histograms
+    return std::make_pair(
+        Plot<TH1>("effPassed-" + GetPlotTitle(plotname), h_temp->GetCopyPassedHisto()),
+        Plot<TH1>("effTotal-"  + GetPlotTitle(plotname), h_temp->GetCopyTotalHisto())
+    );
+}
+
 Plot<TH1> LoadIDPVMEfficiency(const std::string & myphysval, const std::string & plotname) {
 
     // Load as TEfficiency

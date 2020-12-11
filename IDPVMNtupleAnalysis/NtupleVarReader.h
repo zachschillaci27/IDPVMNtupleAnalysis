@@ -7,5 +7,5 @@
 /// In case of an unsupported input, will print an error and return a dummy function returning 0. 
 
 namespace NtupleVarReaderProvider{
-    std::function<double(IDPVMTree &t)> generateVarReader(IDPVMDefs::variable var, IDPVMDefs::level level);
+    std::function<float(IDPVMTree &t)> generateVarReader(IDPVMDefs::variable var, IDPVMDefs::level level);
 }

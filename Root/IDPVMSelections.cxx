@@ -16,12 +16,24 @@ Selection<IDPVMTree> IDPVMSelections::isAssociated() {
    return (IDPVMSelections::hasTrack() && IDPVMSelections::hasTruth());
 }
 
+Selection<IDPVMTree> IDPVMSelections::isBestMatched() {  
+   return Selection<IDPVMTree>("isBestMatched",[](IDPVMTree &t){return t.track_truthMatchRanking() == 0;});
+}
+
+Selection<IDPVMTree> IDPVMSelections::isTruthDuplicate() {  
+   return (IDPVMSelections::isAssociated() && !IDPVMSelections::isBestMatched());
+}
+
 Selection<IDPVMTree> IDPVMSelections::passedTrack() {  
-   return Selection<IDPVMTree>("passedTrack",[](IDPVMTree &t){return t.passedTrackSelection();});
+   return (IDPVMSelections::hasTrack() && Selection<IDPVMTree>("passedTrack",[](IDPVMTree &t){return t.passedTrackSelection();}));
 }
 
 Selection<IDPVMTree> IDPVMSelections::passedTruth() {  
-   return Selection<IDPVMTree>("passedTruth",[](IDPVMTree &t){return t.passedTruthSelection();});
+   return (IDPVMSelections::hasTruth() && Selection<IDPVMTree>("passedTruth",[](IDPVMTree &t){return t.passedTruthSelection();}));
+}
+
+Selection<IDPVMTree> IDPVMSelections::isSelectedByPileupSwitch() {  
+   return Selection<IDPVMTree>("isSelectedByPileupSwitch",[](IDPVMTree &t){return t.truth_selectedByPileupSwitch();});
 }
 
 Selection<IDPVMTree> IDPVMSelections::isMatched() {  
@@ -41,20 +53,19 @@ Selection<IDPVMTree> IDPVMSelections::isSecondary() {
 }
 
 Selection<IDPVMTree> IDPVMSelections::forResolution() {  
-   return (IDPVMSelections::isAssociated() && IDPVMSelections::passedTrack() && IDPVMSelections::passedTruth() && 
-           IDPVMSelections::isMatched() && IDPVMSelections::isPrimary());
+   return (IDPVMSelections::passedTruth() && IDPVMSelections::passedTrack() && IDPVMSelections::isMatched() && IDPVMSelections::isPrimary());
 }
 
 Selection<IDPVMTree> IDPVMSelections::forUnlinkedRateDen() {
-   return (IDPVMSelections::hasTrack() && IDPVMSelections::passedTrack());
+   return IDPVMSelections::passedTrack();
 }
 
 Selection<IDPVMTree> IDPVMSelections::forUnlinkedRateNum() {
-   return (IDPVMSelections::forUnlinkedRateDen() && !(IDPVMSelections::hasTruth()));
+   return (IDPVMSelections::forUnlinkedRateDen() && !IDPVMSelections::hasTruth());
 }
 
 Selection<IDPVMTree> IDPVMSelections::forFakeRateDen() {  
-   return (IDPVMSelections::isAssociated() && IDPVMSelections::passedTrack());
+   return (IDPVMSelections::passedTrack() && IDPVMSelections::isAssociated());
 }
 
 Selection<IDPVMTree> IDPVMSelections::forFakeRateNum() {  
@@ -62,9 +73,9 @@ Selection<IDPVMTree> IDPVMSelections::forFakeRateNum() {
 }
 
 Selection<IDPVMTree> IDPVMSelections::forEfficiencyDen() {  
-   return (IDPVMSelections::hasTruth() && IDPVMSelections::passedTruth());
+   return (IDPVMSelections::passedTruth() && IDPVMSelections::isSelectedByPileupSwitch() && !IDPVMSelections::isTruthDuplicate());
 }
 
 Selection<IDPVMTree> IDPVMSelections::forEfficiencyNum() {
-   return (IDPVMSelections::forEfficiencyDen() && IDPVMSelections::hasTrack() && IDPVMSelections::passedTrack() && IDPVMSelections::isMatched());
+   return (IDPVMSelections::forEfficiencyDen() && IDPVMSelections::isMatched());
 }

@@ -29,12 +29,16 @@ int main (int, char**) {
     };
     
     std::map<IDPVMDefs::variable, Plot<TH1>>  IDPVMplots;
+    std::map<IDPVMDefs::variable, std::pair<Plot<TH1>, Plot<TH1>>>  IDPVMplotsPassedAndTotal;
     std::map<IDPVMDefs::variable, Plot<TH1D>> nums;
     std::map<IDPVMDefs::variable, Plot<TH1D>> dens;
 
     for (auto & var : mapIDPVM) {
         IDPVMplots.emplace(var.first,
             LoadIDPVMEfficiency(myphysval, var.second)); // nominal plot from IDPVM
+
+        IDPVMplotsPassedAndTotal.emplace(var.first,
+            LoadIDPVMEffPassedAndTotal(myphysval, var.second)); // nominal passed and total histograms from IDPVM
 
         auto varReader = NtupleVarReaderProvider::generateVarReader(var.first, IDPVMDefs::truth); // truth variable reader
         auto htemplate = IDPVMTemplates::getEfficiencyHistTemplate(var.first); // template histogram
@@ -53,7 +57,16 @@ int main (int, char**) {
     for (auto & var : mapIDPVM) {
         nums.at(var.first).populate();
         dens.at(var.first).populate();
-        IDPVMPlotUtils::CompareWithIDPVM(IDPVMplots.at(var.first), PlotUtils::getRatio(nums.at(var.first), dens.at(var.first), PlotUtils::efficiencyErrors), {"IDPVM Ntuple Validation", var.second});
+        // Compare numerator only
+        nums.at(var.first)->GetYaxis()->SetTitle("Passed");
+        IDPVMPlotUtils::CompareWithIDPVM(IDPVMplotsPassedAndTotal.at(var.first).first, nums.at(var.first), {"IDPVM Ntuple Validation", var.second});
+        // Compare denominator only
+        dens.at(var.first)->GetYaxis()->SetTitle("Total");
+        IDPVMPlotUtils::CompareWithIDPVM(IDPVMplotsPassedAndTotal.at(var.first).second, dens.at(var.first), {"IDPVM Ntuple Validation", var.second});
+        // Compare efficiency
+        auto eff = PlotUtils::getRatio(nums.at(var.first), dens.at(var.first), PlotUtils::efficiencyErrors);
+        eff->GetYaxis()->SetTitle("Efficiency");
+        IDPVMPlotUtils::CompareWithIDPVM(IDPVMplots.at(var.first), eff, {"IDPVM Ntuple Validation", var.second});
     }
 
     return 0;

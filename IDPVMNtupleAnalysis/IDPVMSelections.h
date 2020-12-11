@@ -11,8 +11,13 @@ namespace IDPVMSelections {
     Selection<IDPVMTree> hasTruth();
     Selection<IDPVMTree> isAssociated();
 
+    Selection<IDPVMTree> isBestMatched();
+    Selection<IDPVMTree> isTruthDuplicate();
+
     Selection<IDPVMTree> passedTrack();
     Selection<IDPVMTree> passedTruth();
+
+    Selection<IDPVMTree> isSelectedByPileupSwitch();
 
     Selection<IDPVMTree> isMatched();
     Selection<IDPVMTree> isFake();

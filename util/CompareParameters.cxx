@@ -73,7 +73,7 @@ int main (int, char**) {
             Plot<TH1D>(ntuple, IDPVMSelections::passedTrack(), fillerReco)); // reco plot
 
         distributionsTruth.emplace(var.first,
-            Plot<TH1D>(ntuple, IDPVMSelections::passedTruth(), fillerTruth)); // truth plot
+            Plot<TH1D>(ntuple, IDPVMSelections::forEfficiencyDen(), fillerTruth)); // truth plot
     }
 
     for (auto & var : mapIDPVMReco) {

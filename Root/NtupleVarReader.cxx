@@ -1,9 +1,9 @@
 #include "IDPVMNtupleAnalysis/NtupleVarReader.h"
 
 namespace NtupleVarReaderProvider{
-    std::function<double(IDPVMTree &t)> generateVarReader(IDPVMDefs::variable var, IDPVMDefs::level level) {
+    std::function<float(IDPVMTree &t)> generateVarReader(IDPVMDefs::variable var, IDPVMDefs::level level) {
 
-        static std::map<std::pair<IDPVMDefs::variable, IDPVMDefs::level>, std::function<double(IDPVMTree&)>> readerMap{
+        static std::map<std::pair<IDPVMDefs::variable, IDPVMDefs::level>, std::function<float(IDPVMTree&)>> readerMap{
              // Track-level
              {std::make_pair(IDPVMDefs::eta,     IDPVMDefs::track), [](IDPVMTree &t){ return t.track_eta(); }},
              {std::make_pair(IDPVMDefs::pt,      IDPVMDefs::track), [](IDPVMTree &t){ return t.track_pt() / 1000.; }},

@@ -18,6 +18,7 @@ template <class HistoType> std::map<std::string, Plot<HistoType>> LoadIDPVMHisto
 template <class HistoIn, class HistoOut> Plot<HistoOut> LoadIDPVMHistogram(const std::string & myphysval, const std::string & plotname);
 
 // Histogram manipulation/rebinning/symmetrization
+std::pair<Plot<TH1>, Plot<TH1>> LoadIDPVMEffPassedAndTotal(const std::string & myphysval, const std::string & plotname);
 Plot<TH1> LoadIDPVMEfficiency(const std::string & myphysval, const std::string & plotname);
 Plot<TH1> ConvertEfficiencyToTH1(Plot<TEfficiency> & efficiencyIn);
 Plot<TEfficiency> RebinEfficiency(Plot<TEfficiency> & efficiencyIn, int rebin);
