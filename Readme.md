@@ -1,6 +1,6 @@
 # Overview
 
-IDPVMNtupleAnalysis is a work-in-progress package to read flat Ntuples produced within an experimental branch of IDPVM available [here](https://gitlab.cern.ch/zschilla//athena/tree/NtupleForIDPVM). The package has functionality to reproduce various IDPVM tracking performance plots (e.g. track efficiencies, fake rates, resolutions, and pull means/widths). Standard implementations of binnings, histograms, and selections are defined in headers for ease of use. The package relies on the submodule [NtupleAnalysisUtils](https://gitlab.cern.ch/goblirsc/NtupleAnalysisUtils) to handle the filling of histograms. Please refer to the example [here](https://gitlab.cern.ch/goblirsc/NtupleAnalysisUtils/blob/master/util/NtupleAnalysisUtils_Example.cxx) to get an idea of the functionality provided by NtupleAnalysisUtils.
+IDPVMNtupleAnalysis is a work-in-progress package to read flat Ntuples produced within an experimental branch of IDPVM available [here](https://gitlab.cern.ch/zschilla/athena/-/tree/NtupleForIDPVMr22). The package has functionality to reproduce various IDPVM tracking performance plots (e.g. track-/truth-level distributions, efficiencies, linked/unlinked fake rates, resolutions, and pull means/widths). Standard implementations of binnings, histograms, and selections are defined in headers for ease of use. The package relies on the submodule [NtupleAnalysisUtils](https://gitlab.cern.ch/goblirsc/NtupleAnalysisUtils) to handle the managing of histograms with some additional plotting support. Please refer to the example [here](https://gitlab.cern.ch/goblirsc/NtupleAnalysisUtils/blob/master/util/NtupleAnalysisUtils_Example.cxx) to get an idea of the functionality provided by NtupleAnalysisUtils.
 
 # How to set up
 
@@ -22,13 +22,21 @@ git submodule update --init --recursive
 
 This class outlines the structure of the IDPVM Ntuple and allows for fast accessing of the various branches throughout the code.
 
-## IDPVMUtilities
-
-Various helper methods for loading histograms from MyPhysVal.root. Useful for doing validations against standard IDPVM plots.
-
 ## IDPVMTemplates
 
-Location of standard IDPVM templates - including 1D binnings, 1D and 2D histograms, variable names, and axis labels.
+Definition of `IDPVMDefs` enums for easier variable manipulation. Location of standard IDPVM templates (as copied from r22 master) - including 1D binnings, 1D and 2D histograms, variable names, and axis labels.
+
+## NtupleVarReader
+
+This handles the linking of `IDPVMDefs` variables to their actual branches in the tree.
+
+## IDPVMUtilities
+
+Various helper methods for loading the classic histograms from the IDPVM output file. Useful for doing validations against standard IDPVM plots. Also somer helper methods for modifications of these histograms.
+
+## IDPVMPlotUtils
+
+Basic plotting methods for comparison of ntuple-based and classic IDPVM plots.
 
 ## IDPVMPopulators
 
@@ -36,8 +44,12 @@ Plot filler definitions (as defined in NtupleAnalysisUtils) used for populating 
 
 ## IDPVMSelections
 
-Common selection definitions (as defined in NtupleAnalysisUtils) for various IDPVM plots.
+Common selection definitions (as defined in NtupleAnalysisUtils) for replicating various IDPVM plots.
 
 ## ResolutionHelper
 
-Helper methods to compute the iterative RMS for resolution and pull plots.
+Helper methods to compute the iterative RMS for resolutions and pulls.
+
+# Executables
+
+See the `util/` folder for examples of plotting various IDPVM plots using the ntuple-based approach. Used for validating against IDPVM results.
