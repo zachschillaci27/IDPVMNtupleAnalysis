@@ -9,6 +9,10 @@
 #include <vector>
 #include <map>
 
+// References for IDPVM binning: 
+// https://acode-browser1.usatlas.bnl.gov/lxr/source/athena/InnerDetector/InDetValidation/InDetPhysValMonitoring/share/InDetPVMPlotDefRun2.xml
+// https://acode-browser1.usatlas.bnl.gov/lxr/source/athena/InnerDetector/InDetValidation/InDetPhysValMonitoring/share/InDetPVMPlotDefCommon.xml
+
 namespace IDPVMDefs {
     typedef enum {
         eta=0,
