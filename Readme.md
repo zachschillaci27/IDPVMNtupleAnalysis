@@ -4,7 +4,7 @@ IDPVMNtupleAnalysis is a work-in-progress package to read flat Ntuples produced 
 
 # How to set up
 
-The package should be built within CMake via a suitable analysis release (e.g. AthAnalysis, 21.2.61). The package can be cloned from GitLab via
+The package should be built within CMake via a suitable analysis release (e.g. AthAnalysis, 21.2.156). The package can be cloned from GitLab via
 
 ```shell
 git clone https://:@gitlab.cern.ch:8443/zschilla/IDPVMNtupleAnalysis.git
