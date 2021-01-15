@@ -251,7 +251,7 @@ TH1D IDPVMTemplates::getEfficiencyHistTemplate(IDPVMDefs::variable var) {
       return TH1D("ptEfficiency", ";truth p_{T} [GeV];Efficiency", 25, 0, 50);
    }
    if (var == IDPVMDefs::d0) {
-      return TH1D("d0Efficiency", ";truth d_{0} [mm];Efficiency", 100, -25, 25);
+      return TH1D("d0Efficiency", ";truth d_{0} [mm];Efficiency", 80, -10, 10);
    }
    if (var == IDPVMDefs::z0) {
       return TH1D("z0Efficiency", ";truth z_{0} [mm];Efficiency", 100, -250, 250);
