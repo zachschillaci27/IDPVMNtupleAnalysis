@@ -30,6 +30,10 @@ atlas_add_library( IDPVMNtupleAnalysis
     INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} 
     LINK_LIBRARIES ${ROOT_LIBRARIES} IDPVMNtupleAnalysis )
 
+  atlas_add_executable( ITkPubNotePlots
+    util/Public/ITkPubNotePlots.cxx
+    INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} 
+    LINK_LIBRARIES ${ROOT_LIBRARIES} IDPVMNtupleAnalysis )
 
   atlas_add_executable( BinningMigrations
     util/BinningMigrations.cxx
