@@ -33,7 +33,7 @@ template <class H> void DrawLHCCResolutionPlots(PlotContent<H> & pc, const std::
     for (auto & plot : plots) {
         plot->Draw(std::string ("SAME" + (plot.plotFormat().ExtraDrawOpts().isSet ? plot.plotFormat().ExtraDrawOpts().val : std::string(""))).c_str());
         if (plot.getLegendTitle().find("Run-2") != std::string::npos) {
-            plot->GetXaxis()->SetRangeUser(-2.5, 2.5);
+            plot->GetXaxis()->SetRangeUser(-2.4, 2.4);
         }
     }
     gPad->RedrawAxis();
