@@ -119,13 +119,13 @@ void DrawPubNoteFakeRatePlot(const Plot<TProfile> & h_ITk, const Plot<TProfile> 
     canvasOpts.SaveCanvas(can, filename, multiPagePdf);
 }
 
-void DrawPubNotePrimaryFakeRatePlot(const Plot<TProfile> & h_ITk, const Plot<TProfile> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & xlabel, const std::string & filename, const std::string & multiPagePdf="") {
+void DrawPubNotePrimaryFakeRatePlot(const Plot<TH1> & h_ITk, const Plot<TH1> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & xlabel, const std::string & filename, const std::string & multiPagePdf="") {
     SetAtlasStyle();
 
-    Plot<TProfile> itk("h_ITk", h_ITk);
+    Plot<TH1> itk("h_ITk", h_ITk);
     itk.applyFormat();
     
-    Plot<TProfile> run2("h_Run2", h_Run2);
+    Plot<TH1> run2("h_Run2", h_Run2);
     run2.applyFormat();
     run2->GetXaxis()->SetTitle(xlabel.c_str());
 
@@ -136,14 +136,14 @@ void DrawPubNotePrimaryFakeRatePlot(const Plot<TProfile> & h_ITk, const Plot<TPr
     if (canvasOpts.logX()) gPad->SetLogx();
     if (canvasOpts.logY()) gPad->SetLogy();
 
-    run2->SetMinimum(1.e-7);
-    run2->SetMaximum(5.e-2);
+    run2->SetMinimum(1.e-6);
+    run2->SetMaximum(5.e-1);
 
     run2->Draw("SAMEHIST][");
     itk->Draw("SAMEPE");
     FormatAxisLabelSize(run2);
 
-    DrawDynamicLabels(labels, 0.15, 0.90);
+    DrawDynamicLabels(labels, 0.20, 0.90);
     PlotUtils::drawLegend(std::vector<PlotUtils::LegendEntry>{
         PlotUtils::LegendEntry(run2(), run2.getLegendTitle(), run2.getLegendOption()),
         PlotUtils::LegendEntry(itk(),  itk.getLegendTitle(),  itk.getLegendOption())}, 
@@ -284,8 +284,10 @@ int main (int, char**) {
     // Efficiency - TEfficiency
     const std::string eff_vs_eta = "IDPerformanceMon/Tracks/SelectedGoodTracks/trackeff_vs_eta";
     const std::string eff_vs_pt  = "IDPerformanceMon/Tracks/SelectedGoodTracks/trackeff_vs_pt";
-    // Fakes - TProfile
+    // Primary Fakes - TEfficiency
     const std::string fake_primary_vs_eta = "IDPerformanceMon/Tracks/SelectedFakeTracks/fakeetaPrimary";
+    const std::string fake_primary_vs_pt  = "IDPerformanceMon/Tracks/SelectedFakeTracks/fakeptPrimary";
+    // Fakes - TProfile
     const std::string fake_vs_eta         = "IDPerformanceMon/Tracks/SelectedFakeTracks/track_fakerate_vs_eta";
     const std::string fake_vs_pt          = "IDPerformanceMon/Tracks/SelectedFakeTracks/track_fakerate_vs_pt";
 
@@ -363,7 +365,17 @@ int main (int, char**) {
     DrawPubNoteFakeRatePlot( 
         Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(ttbarmu200,     fake_vs_eta), "ITk, <#mu> = 200", "PL", formatITk),
         Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(run2_ttbarmu20, fake_vs_eta), "Run-2, <#mu> = 20", "L", formatRun2),
-        labels_ttbar_eta, opts_ttbar_log, "|#eta|", "ttbar-fakerate_vs_eta", multiPagePdf);
+        labels_ttbar_eta, opts_ttbar_log, "track |#eta|", "ttbar-fakerate_vs_eta", multiPagePdf);
+
+    DrawPubNoteFakeRatePlot( 
+        Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(ttbarmu200,     fake_vs_pt), "ITk, <#mu> = 200", "PL", formatITk),
+        Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(run2_ttbarmu20, fake_vs_pt), "Run-2, <#mu> = 20", "L", formatRun2),
+        labels_ttbar_pt, opts_ttbar_log, "track p_{T}", "ttbar-fakerate_vs_pt", multiPagePdf);
+
+    DrawPubNotePrimaryFakeRatePlot( 
+        Plot<TH1>("", LoadIDPVMEfficiency(ttbarmu200,     fake_primary_vs_eta), "ITk, <#mu> = 200", "PL", formatITk),
+        Plot<TH1>("", LoadIDPVMEfficiency(run2_ttbarmu20, fake_primary_vs_eta), "Run-2, <#mu> = 20", "L", formatRun2),
+        labels_ttbar_eta, opts_ttbar_log, "track |#eta|", "ttbar-fakerateprimary_vs_eta", multiPagePdf);
 
     PlotUtils::endMultiPagePdfFile(multiPagePdf);
 
