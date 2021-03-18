@@ -31,7 +31,7 @@ template <class H> void FormatAxisLabelSize(H & plot, bool isRatio = false) {
     plot->GetYaxis()->SetTitleOffset(1.25);
 }
 
-template <class H> void DrawLHCCResolutionPlots(PlotContent<H> & pc, const std::string & xlabel, std::pair<double, double> minmax = {999, 999}) {
+template <class H> void DrawPubNoteResolutionPlots(PlotContent<H> & pc, const std::string & xlabel, std::pair<double, double> minmax = {999, 999}) {
     SetAtlasStyle();
     
     pc.populateAll();
@@ -84,7 +84,7 @@ template <class H> void DrawLHCCResolutionPlots(PlotContent<H> & pc, const std::
     canvasOpts.SaveCanvas(mpc.getCanvas(), pc.getFileName(), pc.getMultiPageFileName());
 }
 
-void DrawLHCCFakeRatePlot(const Plot<TProfile> & h_ITk, const Plot<TProfile> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & xlabel, const std::string & filename, const std::string & multiPagePdf="") {
+void DrawPubNoteFakeRatePlot(const Plot<TProfile> & h_ITk, const Plot<TProfile> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & xlabel, const std::string & filename, const std::string & multiPagePdf="") {
     SetAtlasStyle();
 
     Plot<TProfile> itk("h_ITk", h_ITk);
@@ -119,7 +119,7 @@ void DrawLHCCFakeRatePlot(const Plot<TProfile> & h_ITk, const Plot<TProfile> & h
     canvasOpts.SaveCanvas(can, filename, multiPagePdf);
 }
 
-void DrawLHCCPrimaryFakeRatePlot(const Plot<TProfile> & h_ITk, const Plot<TProfile> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & xlabel, const std::string & filename, const std::string & multiPagePdf="") {
+void DrawPubNotePrimaryFakeRatePlot(const Plot<TProfile> & h_ITk, const Plot<TProfile> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & xlabel, const std::string & filename, const std::string & multiPagePdf="") {
     SetAtlasStyle();
 
     Plot<TProfile> itk("h_ITk", h_ITk);
@@ -152,7 +152,7 @@ void DrawLHCCPrimaryFakeRatePlot(const Plot<TProfile> & h_ITk, const Plot<TProfi
     canvasOpts.SaveCanvas(can, filename, multiPagePdf);
 }
 
-void DrawLHCCEfficiencyEtaPlot(const Plot<TH1> & h_ITk, const Plot<TH1> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & xlabel, const std::string & filename, const std::string & multiPagePdf="") {
+void DrawPubNoteEfficiencyEtaPlot(const Plot<TH1> & h_ITk, const Plot<TH1> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & xlabel, const std::string & filename, const std::string & multiPagePdf="") {
     SetAtlasStyle();
 
     Plot<TH1> itk("h_ITk", h_ITk);
@@ -209,7 +209,7 @@ void DrawLHCCEfficiencyEtaPlot(const Plot<TH1> & h_ITk, const Plot<TH1> & h_Run2
     PlotUtils::saveCanvasToMultiPagePdfFile(mpc.getCanvas(), multiPagePdf);
 }
 
-void DrawLHCCEfficiencyPtPlot(const Plot<TH1> & h_ITk, const Plot<TH1> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & xlabel, const std::string & filename, const std::string & multiPagePdf="") {
+void DrawPubNoteEfficiencyPtPlot(const Plot<TH1> & h_ITk, const Plot<TH1> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & xlabel, const std::string & filename, const std::string & multiPagePdf="") {
 
     Plot<TH1> itk("h_ITk", h_ITk);
     itk.applyFormat();
@@ -319,7 +319,7 @@ int main (int, char**) {
             Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu1,      d0_vs_eta), "ITk",  "PL", formatITk),
         }, labels_muons_pt1, "SingleMu1-d0Resolution_vs_eta", multiPagePdf, opts_muons);
 
-    DrawLHCCResolutionPlots(d0ResPlotSingleMu1, "true track |#eta|", {7.e0, 5.e3});
+    DrawPubNoteResolutionPlots(d0ResPlotSingleMu1, "true track |#eta|", {7.e0, 5.e3});
 
     PlotContent<TH1F> d0ResPlotSingleMu100(
         std::vector<Plot<TH1F>> {
@@ -327,7 +327,7 @@ int main (int, char**) {
             Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu100,      d0_vs_eta), "ITk",  "PL", formatITk),
         }, labels_muons_pt100, "SingleMu100-d0Resolution_vs_eta", multiPagePdf, opts_muons);
 
-    DrawLHCCResolutionPlots(d0ResPlotSingleMu100, "true track |#eta|", {7.e-1, 1.e3});
+    DrawPubNoteResolutionPlots(d0ResPlotSingleMu100, "true track |#eta|", {7.e-1, 1.e3});
 
     // z0
     PlotContent<TH1F> z0ResPlotSingleMu1(
@@ -336,7 +336,7 @@ int main (int, char**) {
             Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu1,      z0_vs_eta), "ITk",  "PL", formatITk),
         }, labels_muons_pt1, "SingleMu1-z0Resolution_vs_eta", multiPagePdf, opts_muons);
 
-    DrawLHCCResolutionPlots(z0ResPlotSingleMu1, "true track |#eta|", {7.e0, 5.e5});
+    DrawPubNoteResolutionPlots(z0ResPlotSingleMu1, "true track |#eta|", {7.e0, 5.e5});
 
     PlotContent<TH1F> z0ResPlotSingleMu100(
         std::vector<Plot<TH1F>> {
@@ -344,23 +344,23 @@ int main (int, char**) {
             Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu100,      z0_vs_eta), "ITk",  "PL", formatITk),
         }, labels_muons_pt100, "SingleMu100-d0Resolution_vs_eta", multiPagePdf, opts_muons);
 
-    DrawLHCCResolutionPlots(z0ResPlotSingleMu100, "true track |#eta|", {7.e-1, 1.e4});
+    DrawPubNoteResolutionPlots(z0ResPlotSingleMu100, "true track |#eta|", {7.e-1, 1.e4});
 
     ////////////////////// EFFICIENCY //////////////////////
 
-    DrawLHCCEfficiencyEtaPlot( 
+    DrawPubNoteEfficiencyEtaPlot( 
         Plot<TH1>("", LoadIDPVMEfficiency(ttbarmu200,     eff_vs_eta), "ITk, <#mu> = 200", "PL", formatITk),
         Plot<TH1>("", LoadIDPVMEfficiency(run2_ttbarmu20, eff_vs_eta), "Run-2, <#mu> = 20", "L", formatRun2),
         labels_ttbar_eta, opts_ttbar, "true track |#eta|", "ttbar-efficiency_vs_eta", multiPagePdf);
 
-    DrawLHCCEfficiencyPtPlot( 
+    DrawPubNoteEfficiencyPtPlot( 
         Plot<TH1>("", LoadIDPVMEfficiency(ttbarmu200,     eff_vs_pt), "ITk |#eta| < 4.0, <#mu> = 200", "PL", formatITk),
         Plot<TH1>("", LoadIDPVMEfficiency(run2_ttbarmu20, eff_vs_pt), "Run-2 |#eta| < 2.4, <#mu> = 20", "L", formatRun2),
         labels_ttbar_pt, opts_ttbar, "true track p_{T} [GeV]", "ttbar-efficiency_vs_pt", multiPagePdf);
 
     ////////////////////// FAKE-RATES //////////////////////
 
-    DrawLHCCFakeRatePlot( 
+    DrawPubNoteFakeRatePlot( 
         Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(ttbarmu200,     fake_vs_eta), "ITk, <#mu> = 200", "PL", formatITk),
         Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(run2_ttbarmu20, fake_vs_eta), "Run-2, <#mu> = 20", "L", formatRun2),
         labels_ttbar_eta, opts_ttbar_log, "|#eta|", "ttbar-fakerate_vs_eta", multiPagePdf);

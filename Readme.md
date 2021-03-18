@@ -1,6 +1,6 @@
 # Overview
 
-IDPVMNtupleAnalysis is a work-in-progress package to read flat Ntuples produced within an experimental branch of IDPVM available [here](https://gitlab.cern.ch/zschilla/athena/-/tree/NtupleForIDPVMr22). The package has functionality to reproduce various IDPVM tracking performance plots (e.g. track-/truth-level distributions, efficiencies, linked/unlinked fake rates, resolutions, and pull means/widths). Standard implementations of binnings, histograms, and selections are defined in headers for ease of use. The package relies on the submodule [NtupleAnalysisUtils](https://gitlab.cern.ch/goblirsc/NtupleAnalysisUtils) to handle the managing of histograms with some additional plotting support. Please refer to the example [here](https://gitlab.cern.ch/goblirsc/NtupleAnalysisUtils/blob/master/util/NtupleAnalysisUtils_Example.cxx) to get an idea of the functionality provided by NtupleAnalysisUtils.
+IDPVMNtupleAnalysis is a (hopefully) user-friendly package to read flat Ntuples produced within r22 IDPVM via the command-line flag '--doTruthToRecoNtuple' ([see here](https://gitlab.cern.ch/atlas/athena/-/blob/master/InnerDetector/InDetValidation/InDetPhysValMonitoring/share/InDetPhysValMonitoring_topOptions.py#L13)). The package has functionality to reproduce various IDPVM tracking performance plots (e.g. track-/truth-level distributions, efficiencies, linked/unlinked fake rates, resolutions, and pull means/widths). Standard implementations of binnings, histograms, and selections are defined in headers for ease of use. The package relies on the submodule [NtupleAnalysisUtils](https://gitlab.cern.ch/goblirsc/NtupleAnalysisUtils) to handle the managing of histograms with some additional plotting support. Please refer to the example [here](https://gitlab.cern.ch/goblirsc/NtupleAnalysisUtils/blob/master/util/NtupleAnalysisUtils_Example.cxx) to get an idea of the functionality provided by NtupleAnalysisUtils.
 
 # How to set up
 
@@ -53,3 +53,8 @@ Helper methods to compute the iterative RMS for resolutions and pulls.
 # Executables
 
 See the `util/` folder for examples of plotting various IDPVM plots using the ntuple-based approach. Used for validating against IDPVM results.
+
+There are additional plotting macros used to produce some ATLAS public results within `util/Public`.
+* `util/Public/ITkPerformancePlots.cxx`: ITk performance plots for February 2020 LHCC conference
+* `util/Public/ITkPubNotePlots.cxx`: ITk performance plots for Spring 2021 PubNote
+* `util/Public/IDSoftwarePubPlots.cxx`: ID software disk-usage plots for Spring 2021 vCHEP conference
