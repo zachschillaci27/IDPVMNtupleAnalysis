@@ -127,12 +127,12 @@ void plotDiskVersusMu(Plot<TGraph> & graphR21, Plot<TGraph> & graphR22, Plot<TGr
     canvasOpts.drawLabels({});
 
     canvasOpts = canvasOpts.doAtlasLabel(false).doLumiLabel(false).fontSize(22).otherLabelX(0.04).otherLabelStartY(-0.16);
-    canvasOpts.drawLabels({"#it{AOD} Disk Space (ID-only)", "Run-2 Data Reconstruction"});
+    canvasOpts.drawLabels({"Run 2 Data Reconstruction", "ATLAS ID Only"});
 
     PlotUtils::drawLegend(std::vector<PlotUtils::LegendEntry>{
-        PlotUtils::LegendEntry(graphR21(),      "Run-2 Reconstruction",         "PL"),
-        PlotUtils::LegendEntry(graphR22(),      "Run-3 Reconstruction",         "PL"),
-        PlotUtils::LegendEntry(graphR22NoLRT(), "Run-3 Reconstruction w/o LRT", "PL"),
+        PlotUtils::LegendEntry(graphR21(),      "Run 2 Reconstruction",         "PL"),
+        PlotUtils::LegendEntry(graphR22(),      "Run 3 Reconstruction",         "PL"),
+        PlotUtils::LegendEntry(graphR22NoLRT(), "Run 3 Reconstruction w/o LRT", "PL"),
     },
         0.20, 0.45, 0.55, 0.65
     );
@@ -165,13 +165,13 @@ void plotDiskVersusMu(Plot<TGraph> & graphR21, Plot<TGraph> & graphR22, Plot<TGr
     box2.Draw();
     
     graphRatio->GetXaxis()->SetTitle("< #mu >");
-    graphRatio->GetYaxis()->SetTitle("Run-3 / Run-2");
+    graphRatio->GetYaxis()->SetTitle("Ratio w.r.t. Run 2");
     graphRatio->GetXaxis()->SetTitleFont(43);
     graphRatio->GetYaxis()->SetTitleFont(43);
     graphRatio->GetXaxis()->SetLabelFont(43);
     graphRatio->GetYaxis()->SetLabelFont(43);
     graphRatio->GetXaxis()->SetTitleSize(24); 
-    graphRatio->GetYaxis()->SetTitleSize(24); 
+    graphRatio->GetYaxis()->SetTitleSize(22); 
     graphRatio->GetXaxis()->SetLabelSize(22); 
     graphRatio->GetYaxis()->SetLabelSize(22); 
 
@@ -179,13 +179,17 @@ void plotDiskVersusMu(Plot<TGraph> & graphR21, Plot<TGraph> & graphR22, Plot<TGr
     graphRatio->GetYaxis()->SetTitleOffset(1.05);
 
     canvasOpts.SaveCanvas(mpc.getCanvas(), "Size_vs_mu_run2_vs_run3");
+
+    delete c1;
+    delete c2;
+    delete c3;
 }
 
 int main (int, char**) {
 
     const std::string tree  = "Squirrels";
-    const std::string inR21 = "/home/zschilla/Working/IDPVMAnalysis/run/SPOT/v02/SPOTResults.r21-2021-02-16.root";        
-    const std::string inR22 = "/home/zschilla/Working/IDPVMAnalysis/run/SPOT/v02/SPOTResults.r22-2021-02-16.root";
+    const std::string inR21 = "/home/zschilla/Working/IDPVMAnalysis/run/SPOT/SPOTResults.r21-Serhan-22-02-19.root";        
+    const std::string inR22 = "/home/zschilla/Working/IDPVMAnalysis/run/SPOT/SPOTResults.r22-Serhan-22-02-19.root";
 
     SetAtlasStyle();
     // Configure branch names
