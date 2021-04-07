@@ -52,7 +52,7 @@ Helper methods to compute the iterative RMS for resolutions and pulls.
 
 # Executables
 
-See the `util/` folder for examples of plotting various IDPVM plots using the ntuple-based approach. Used for validating against IDPVM results.
+See the `util/ValidateIDPVMTree/` folder for examples of plotting various IDPVM plots using the ntuple-based approach. Used for validating against IDPVM results.
 
 There are additional plotting macros used to produce some ATLAS public results within `util/Public`.
 * `util/Public/ITkPerformancePlots.cxx`: ITk performance plots for February 2020 LHCC conference

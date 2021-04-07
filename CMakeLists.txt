@@ -16,7 +16,7 @@ atlas_depends_on_subdirs(
 find_package( ROOT COMPONENTS Core MathCore Hist Graf Gpad File Tree Graf2d RIO )
 
 
-atlas_add_library( IDPVMNtupleAnalysis
+atlas_add_library( IDPVMNtupleAnalysisLib
   IDPVMNtupleAnalysis/*.h Root/*.cxx
   PUBLIC_HEADERS IDPVMNtupleAnalysis
   INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} 
@@ -25,62 +25,15 @@ atlas_add_library( IDPVMNtupleAnalysis
   # ${extra_libs}
   )
 
-  atlas_add_executable( ITkPerformancePlots
-    util/Public/ITkPerformancePlots.cxx
-    INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} 
-    LINK_LIBRARIES ${ROOT_LIBRARIES} IDPVMNtupleAnalysis )
-
-  atlas_add_executable( ITkPubNotePlots
-    util/Public/ITkPubNotePlots.cxx
-    INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} 
-    LINK_LIBRARIES ${ROOT_LIBRARIES} IDPVMNtupleAnalysis )
-
-  atlas_add_executable( IDSoftwarePubPlots
-    util/Public/IDSoftwarePubPlots.cxx
-    INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} 
-    LINK_LIBRARIES ${ROOT_LIBRARIES} IDPVMNtupleAnalysis )
-
-  atlas_add_executable( BinningMigrations
-    util/BinningMigrations.cxx
-    INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} 
-    LINK_LIBRARIES ${ROOT_LIBRARIES} IDPVMNtupleAnalysis )
-
-  atlas_add_executable( CompareParameters
-    util/CompareParameters.cxx
-    INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} 
-    LINK_LIBRARIES ${ROOT_LIBRARIES} IDPVMNtupleAnalysis )
-  
-  atlas_add_executable( CompareEfficiencies
-    util/CompareEfficiencies.cxx
-    INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} 
-    LINK_LIBRARIES ${ROOT_LIBRARIES} IDPVMNtupleAnalysis )
-
-  atlas_add_executable( CompareFakeRates
-    util/CompareFakeRates.cxx
-    INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} 
-    LINK_LIBRARIES ${ROOT_LIBRARIES} IDPVMNtupleAnalysis )
-
-  atlas_add_executable( CompareResolutions
-    util/CompareResolutions.cxx
-    INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} 
-    LINK_LIBRARIES ${ROOT_LIBRARIES} IDPVMNtupleAnalysis )
-
-  atlas_add_executable( ComparePulls
-    util/ComparePulls.cxx
-    INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} 
-    LINK_LIBRARIES ${ROOT_LIBRARIES} IDPVMNtupleAnalysis )
-
-  atlas_add_executable( IDPVMBinExtractor
-    util/IDPVMBinExtractor.cxx
-    INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} 
-    LINK_LIBRARIES ${ROOT_LIBRARIES} IDPVMNtupleAnalysis )
-
-  atlas_add_executable( ReadIDPVMTree
-    util/ReadIDPVMTree.cxx
-    INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} 
-    LINK_LIBRARIES ${ROOT_LIBRARIES} IDPVMNtupleAnalysis )
-
-  atlas_add_executable( CheckEventRate
-    util/CheckEventRate.cxx
-    INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} 
-    LINK_LIBRARIES ${ROOT_LIBRARIES} IDPVMNtupleAnalysis )
+file(GLOB_RECURSE files "util/*.cxx")
+foreach(_exeFile ${files})
+    get_filename_component(_theExec ${_exeFile} NAME_WE)
+    get_filename_component(_theLoc ${_exeFile} DIRECTORY)
+    if(${_theLoc} MATCHES "DoNotBuild")
+    else()
+      atlas_add_executable( ${_theExec}
+      ${_exeFile}
+      INCLUDE_DIRS ${ROOT_INCLUDE_DIRS} 
+      LINK_LIBRARIES ${ROOT_LIBRARIES} IDPVMNtupleAnalysisLib )
+    endif()
+endforeach()
