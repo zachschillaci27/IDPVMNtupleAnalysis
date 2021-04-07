@@ -164,8 +164,8 @@ void plotDiskVersusMu(Plot<TGraph> & graphR21, Plot<TGraph> & graphR22, Plot<TGr
     box2.SetFillStyle(3004);
     box2.Draw();
     
-    graphRatio->GetXaxis()->SetTitle("< #mu >");
-    graphRatio->GetYaxis()->SetTitle("Ratio w.r.t. Run 2");
+    graphRatio->GetXaxis()->SetTitle("#LT#mu#GT");
+    graphRatio->GetYaxis()->SetTitle("Run 3 / Run 2");
     graphRatio->GetXaxis()->SetTitleFont(43);
     graphRatio->GetYaxis()->SetTitleFont(43);
     graphRatio->GetXaxis()->SetLabelFont(43);
