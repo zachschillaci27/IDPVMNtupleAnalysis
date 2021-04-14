@@ -11,6 +11,8 @@
 
 void DrawDynamicLabels(const std::vector<std::string> & labels, double xstart = 0.10, double ystart = 0.90) {
     PlotUtils::drawAtlas(xstart, ystart, "Simulation Preliminary");
+    ystart -= 0.06;
+    PlotUtils::drawLumiSqrtS(xstart, ystart, "HL-LHC", "14 TeV");
     for (auto & label : labels) {
         int fontsize = (label.find("ATLAS-P2") == std::string::npos) ? 18   : 16;
         ystart      -= (label.find("ATLAS-P2") == std::string::npos) ? 0.07 : 0.05;
@@ -31,90 +33,116 @@ template <class H> void FormatAxisLabelSize(H & plot, bool isRatio = false) {
     plot->GetYaxis()->SetTitleOffset(1.25);
 }
 
-template <class H> void DrawPubNoteResolutionPlots(PlotContent<H> & pc, const std::string & xlabel, std::pair<double, double> minmax = {999, 999}) {
+template <class H> void FormatITk(H & plot, const std::string & filename) {
+    PlotFormat formatITk  = PlotFormat().Color(kBlue).MarkerStyle(kOpenCircle).MarkerSize(1.25).ExtraDrawOpts("HISTE1");
+    plot.setPlotFormat(formatITk);
+    plot.applyFormat();
+
+    // Restrict eta within {-4., 4.}
+    if (filename.find("_eta") != std::string::npos) {
+        std::cout << "Restricting plot " << plot.getName() << " between -4.0 and 4.0 in eta!" << std::endl;
+        for (int i = 1; i < plot->GetNbinsX()+1; ++i) {
+            if (plot->GetBinLowEdge(i) < -4.0 || plot->GetBinLowEdge(i+1) > 4.0) {
+                plot->SetBinContent(i, 0.);
+                plot->SetBinError(i, 0.);
+            }
+        }
+    }
+}
+
+
+template <class H> void FormatRun2(H & plot, const std::string & filename) {
+    PlotFormat formatRun2 = PlotFormat().Color(kBlack).LineStyle(kDashed).LineWidth(3.5).ExtraDrawOpts("HIST][");
+    plot.setPlotFormat(formatRun2);
+    plot.applyFormat();
+
+    // Restrict eta within {-2.4, 2.4}
+    if (filename.find("_eta") != std::string::npos) {
+        std::cout << "Restricting plot " << plot.getName() << " between -2.4 and 2.4 in eta!" << std::endl;
+        for (int i = 1; i < plot->GetNbinsX()+1; ++i) {
+            if (plot->GetBinLowEdge(i) < -2.4 || plot->GetBinLowEdge(i+1) > 2.4) {
+                plot->SetBinContent(i, 0.);
+                plot->SetBinError(i, 0.);
+            }
+        }
+    }
+}
+
+void DrawPubNoteResolutionPlots(const Plot<TH1F> & h_ITk, const Plot<TH1F> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & xlabel, const std::string & filename, const std::string & multiPagePdf="", std::pair<double, double> minmax={0,0}) {
     SetAtlasStyle();
     
-    pc.populateAll();
-    auto plots  = pc.getPlots();
-    auto ratios = pc.getRatios();
-
-    CanvasOptions canvasOpts = pc.getCanvasOptions();
+    Plot<TH1F> itk("h_ITk", h_ITk);
+    FormatITk(itk, filename);
     
+    Plot<TH1F> run2("h_Run2", h_Run2);
+    FormatRun2(run2, filename);
+    FormatAxisLabelSize(run2);
+
+    Plot<TH1> ratio("ratio", PlotUtils::getRatio(itk(), run2(), PlotUtils::EfficiencyMode::defaultErrors));
+    FormatITk(ratio, filename);
+    FormatAxisLabelSize(ratio, true);
+    ratio->GetXaxis()->SetTitle(xlabel.c_str());
+    ratio->GetYaxis()->SetTitle("ITk / Run-2");
+
     auto mpc = PlotUtils::prepareTwoPadCanvas("", 0.4, canvasOpts.canSizeX(), canvasOpts.canSizeY());
-
+    
     mpc.getPad(0)->cd();
-    auto frame = canvasOpts.drawTopFrame(plots);
-    FormatAxisLabelSize(frame);
-
     if (canvasOpts.logX()) gPad->SetLogx();
     if (canvasOpts.logY()) gPad->SetLogy();
     
     if (minmax.first != minmax.second) {
-        frame->SetMinimum(minmax.first);
-        frame->SetMaximum(minmax.second);
+        run2->SetMinimum(minmax.first);
+        run2->SetMaximum(minmax.second);
     }
 
-    for (auto & plot : plots) {
-        plot->Draw(std::string ("SAME" + (plot.plotFormat().ExtraDrawOpts().isSet ? plot.plotFormat().ExtraDrawOpts().val : std::string(""))).c_str());
-        if (plot.getLegendTitle().find("Run-2") != std::string::npos) {
-            plot->GetXaxis()->SetRangeUser(-2.4, 2.4);
-        }
-    }
+    run2->Draw(std::string("" + (run2.plotFormat().ExtraDrawOpts().isSet ? run2.plotFormat().ExtraDrawOpts().val : std::string(""))).c_str());
+    itk->Draw(std::string("SAME" + (itk.plotFormat().ExtraDrawOpts().isSet ? itk.plotFormat().ExtraDrawOpts().val : std::string(""))).c_str());
     gPad->RedrawAxis();
 
-    DrawDynamicLabels(pc.getLabels(), 0.15, 0.88);
-    canvasOpts.drawLegend(plots);
+    DrawDynamicLabels(labels, 0.15, 0.88);
+    PlotUtils::drawLegend(std::vector<PlotUtils::LegendEntry>{PlotUtils::LegendEntry(run2), PlotUtils::LegendEntry(itk)}, 0.60,0.76,0.88,0.92);
 
     mpc.getPad(1)->cd();
-    auto rframe = canvasOpts.drawRatioFrame(ratios);
-    FormatAxisLabelSize(rframe, true);
-    rframe->GetXaxis()->SetTitle(xlabel.c_str());
-
     if (canvasOpts.logX())     gPad->SetLogx();
     if (canvasOpts.logRatio()) gPad->SetLogy();
     
-    rframe->SetMinimum(0.0);
-    rframe->SetMaximum(1.49);
+    ratio->SetMinimum(0.0);
+    ratio->SetMaximum(1.49);
 
-    for (auto & ratio : ratios) {
-        ratio->Draw(std::string ("SAME" + (ratio.plotFormat().ExtraDrawOpts().isSet ? ratio.plotFormat().ExtraDrawOpts().val : std::string(""))).c_str());
-    }
+    ratio->Draw("HIST][");
+    ratio->Draw("SAMEE1");
     gPad->RedrawAxis();
 
-    canvasOpts.SaveCanvas(mpc.getCanvas(), pc.getFileName(), pc.getMultiPageFileName());
+    canvasOpts.SaveCanvas(mpc.getCanvas(), filename, multiPagePdf);
 }
 
 void DrawPubNoteFakeRatePlot(const Plot<TProfile> & h_ITk, const Plot<TProfile> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & xlabel, const std::string & filename, const std::string & multiPagePdf="") {
     SetAtlasStyle();
 
     Plot<TProfile> itk("h_ITk", h_ITk);
-    itk.applyFormat();
+    FormatITk(itk, filename);
     
     Plot<TProfile> run2("h_Run2", h_Run2);
-    run2.applyFormat();
+    FormatRun2(run2, filename);
+    FormatAxisLabelSize(run2);
+    run2->GetXaxis()->SetTitle(xlabel.c_str());
+    run2->GetYaxis()->SetTitle("Fake Rate");
 
     std::shared_ptr<TCanvas> can = std::make_shared<TCanvas>("can","can",canvasOpts.canSizeX(),canvasOpts.canSizeY());
     
     can->cd();
-    std::vector<Plot<TProfile>> plots{itk};
-    auto frame = canvasOpts.drawTopFrame(plots);
-    FormatAxisLabelSize(frame);
-    frame->GetXaxis()->SetTitle(xlabel.c_str());
-
     if (canvasOpts.logX()) gPad->SetLogx();
     if (canvasOpts.logY()) gPad->SetLogy();
     
-    frame->SetMinimum(1.e-7);
-    frame->SetMaximum(1.5e0);
-
-    run2->Draw("SAMEHIST][");
-    itk->Draw("SAMEPE");
+    run2->SetMinimum(1.e-7);
+    run2->SetMaximum(1.5e0);
+    
+    run2->Draw(std::string("" + (run2.plotFormat().ExtraDrawOpts().isSet ? run2.plotFormat().ExtraDrawOpts().val : std::string(""))).c_str());
+    itk->Draw(std::string("SAME" + (itk.plotFormat().ExtraDrawOpts().isSet ? itk.plotFormat().ExtraDrawOpts().val : std::string(""))).c_str());
+    gPad->RedrawAxis();
 
     DrawDynamicLabels(labels, 0.20, 0.90);
-    PlotUtils::drawLegend(std::vector<PlotUtils::LegendEntry>{
-        PlotUtils::LegendEntry(run2(), run2.getLegendTitle(), run2.getLegendOption()),
-        PlotUtils::LegendEntry(itk(),  itk.getLegendTitle(),  itk.getLegendOption())}, 
-        0.60,0.76,0.88,0.92);
+    PlotUtils::drawLegend(std::vector<PlotUtils::LegendEntry>{PlotUtils::LegendEntry(run2), PlotUtils::LegendEntry(itk)}, 0.60,0.76,0.88,0.92);
     
     canvasOpts.SaveCanvas(can, filename, multiPagePdf);
 }
@@ -123,31 +151,29 @@ void DrawPubNotePrimaryFakeRatePlot(const Plot<TH1> & h_ITk, const Plot<TH1> & h
     SetAtlasStyle();
 
     Plot<TH1> itk("h_ITk", h_ITk);
-    itk.applyFormat();
+    FormatITk(itk, filename);
     
     Plot<TH1> run2("h_Run2", h_Run2);
-    run2.applyFormat();
+    FormatRun2(run2, filename);
+    FormatAxisLabelSize(run2);
     run2->GetXaxis()->SetTitle(xlabel.c_str());
+    run2->GetYaxis()->SetTitle("Primary Fake Rate");
 
     std::shared_ptr<TCanvas> can = std::make_shared<TCanvas>("can","can",canvasOpts.canSizeX(),canvasOpts.canSizeY());
     
     can->cd();
-
     if (canvasOpts.logX()) gPad->SetLogx();
     if (canvasOpts.logY()) gPad->SetLogy();
 
     run2->SetMinimum(1.e-6);
     run2->SetMaximum(5.e-1);
 
-    run2->Draw("SAMEHIST][");
-    itk->Draw("SAMEPE");
-    FormatAxisLabelSize(run2);
+    run2->Draw(std::string("" + (run2.plotFormat().ExtraDrawOpts().isSet ? run2.plotFormat().ExtraDrawOpts().val : std::string(""))).c_str());
+    itk->Draw(std::string("SAME" + (itk.plotFormat().ExtraDrawOpts().isSet ? itk.plotFormat().ExtraDrawOpts().val : std::string(""))).c_str());
+    gPad->RedrawAxis();
 
     DrawDynamicLabels(labels, 0.20, 0.90);
-    PlotUtils::drawLegend(std::vector<PlotUtils::LegendEntry>{
-        PlotUtils::LegendEntry(run2(), run2.getLegendTitle(), run2.getLegendOption()),
-        PlotUtils::LegendEntry(itk(),  itk.getLegendTitle(),  itk.getLegendOption())}, 
-        0.60,0.76,0.88,0.92);
+    PlotUtils::drawLegend(std::vector<PlotUtils::LegendEntry>{PlotUtils::LegendEntry(run2), PlotUtils::LegendEntry(itk)}, 0.60,0.76,0.88,0.92);
     
     canvasOpts.SaveCanvas(can, filename, multiPagePdf);
 }
@@ -156,31 +182,21 @@ void DrawPubNoteEfficiencyEtaPlot(const Plot<TH1> & h_ITk, const Plot<TH1> & h_R
     SetAtlasStyle();
 
     Plot<TH1> itk("h_ITk", h_ITk);
-    itk.applyFormat();
+    FormatITk(itk, filename);
     
     Plot<TH1> run2("h_Run2", h_Run2);
-    run2.applyFormat();
+    FormatRun2(run2, filename);
+    FormatAxisLabelSize(run2);
 
-    Plot<TH1> ratio("ratio", itk);
-    ratio.setPlotFormat(itk.plotFormat());
-    ratio.applyFormat();
+    Plot<TH1> ratio("ratio", PlotUtils::getRatio(itk(), run2(), PlotUtils::EfficiencyMode::defaultErrors));
+    FormatITk(ratio, filename);
+    FormatAxisLabelSize(ratio, true);
     ratio->GetXaxis()->SetTitle(xlabel.c_str());
-    ratio->GetYaxis()->SetTitle("Ratio w.r.t. Run-2");
+    ratio->GetYaxis()->SetTitle("ITk / Run-2");
 
-    for (int k = 1; k < ratio->GetNbinsX() + 1; ++k) {
-        if (run2->GetBinContent(k) != 0.) {
-            ratio->SetBinContent(k, itk->GetBinContent(k) / run2->GetBinContent(k));
-            ratio->SetBinError(k, sqrt(pow(itk->GetBinError(k) / run2->GetBinContent(k), 2) + pow(run2->GetBinError(k) * itk->GetBinContent(k) / pow(run2->GetBinContent(k), 2), 2)));
-        }
-        else {
-            ratio->SetBinContent(k, 0.);
-            ratio->SetBinError(k, 0.);
-        }
-    }
+    auto mpc = PlotUtils::prepareTwoPadCanvas("", 0.4, canvasOpts.canSizeX(), canvasOpts.canSizeY());
 
-    auto mpc = PlotUtils::prepareTwoPadCanvas();
     mpc.getPad(0)->cd();
-
     if (canvasOpts.logX()) gPad->SetLogx();
     if (canvasOpts.logY()) gPad->SetLogy();
 
@@ -191,19 +207,20 @@ void DrawPubNoteEfficiencyEtaPlot(const Plot<TH1> & h_ITk, const Plot<TH1> & h_R
     ratio->SetMaximum(1.065);
     ratio->GetYaxis()->SetNdivisions(3,5,0);
 
-    run2->Draw("HIST][");
-    itk->Draw("SAME");
-    FormatAxisLabelSize(run2);
-    
+    run2->Draw(std::string("" + (run2.plotFormat().ExtraDrawOpts().isSet ? run2.plotFormat().ExtraDrawOpts().val : std::string(""))).c_str());
+    itk->Draw(std::string("SAME" + (itk.plotFormat().ExtraDrawOpts().isSet ? itk.plotFormat().ExtraDrawOpts().val : std::string(""))).c_str());
+    gPad->RedrawAxis();
+
     DrawDynamicLabels(labels, 0.15, 0.88);
-    PlotUtils::drawLegend(std::vector<PlotUtils::LegendEntry>{
-        PlotUtils::LegendEntry(run2(), run2.getLegendTitle(), run2.getLegendOption()),
-        PlotUtils::LegendEntry(itk(),  itk.getLegendTitle(),  itk.getLegendOption())}, 
-        0.60,0.79,0.88,0.95);
+    PlotUtils::drawLegend(std::vector<PlotUtils::LegendEntry>{PlotUtils::LegendEntry(run2), PlotUtils::LegendEntry(itk)}, 0.60,0.79,0.88,0.95);
 
     mpc.getPad(1)->cd();
-    ratio->Draw("");
-    FormatAxisLabelSize(ratio, true);
+    if (canvasOpts.logX())     gPad->SetLogx();
+    if (canvasOpts.logRatio()) gPad->SetLogy();
+    
+    ratio->Draw("HIST][");
+    ratio->Draw("SAMEE1");
+    gPad->RedrawAxis();
 
     PlotUtils::saveCanvas(mpc.getCanvas(), filename);
     PlotUtils::saveCanvasToMultiPagePdfFile(mpc.getCanvas(), multiPagePdf);
@@ -212,31 +229,21 @@ void DrawPubNoteEfficiencyEtaPlot(const Plot<TH1> & h_ITk, const Plot<TH1> & h_R
 void DrawPubNoteEfficiencyPtPlot(const Plot<TH1> & h_ITk, const Plot<TH1> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & xlabel, const std::string & filename, const std::string & multiPagePdf="") {
 
     Plot<TH1> itk("h_ITk", h_ITk);
-    itk.applyFormat();
+    FormatITk(itk, filename);
     
     Plot<TH1> run2("h_Run2", h_Run2);
-    run2.applyFormat();
-
-    Plot<TH1> ratio("ratio", itk);
-    ratio.setPlotFormat(itk.plotFormat());
-    ratio.applyFormat();
+    FormatRun2(run2, filename);
+    FormatAxisLabelSize(run2);
+    
+    Plot<TH1> ratio("ratio", PlotUtils::getRatio(itk(), run2(), PlotUtils::EfficiencyMode::defaultErrors));
+    FormatITk(ratio, filename);
+    FormatAxisLabelSize(ratio, true);
     ratio->GetXaxis()->SetTitle(xlabel.c_str());
-    ratio->GetYaxis()->SetTitle("Ratio w.r.t. Run-2");
+    ratio->GetYaxis()->SetTitle("ITk / Run-2");
 
-    for (int k = 1; k < ratio->GetNbinsX() + 1; ++k) {
-        if (run2->GetBinContent(k) != 0.) {
-            ratio->SetBinContent(k, itk->GetBinContent(k) / run2->GetBinContent(k));
-            ratio->SetBinError(k, sqrt(pow(itk->GetBinError(k) / run2->GetBinContent(k), 2) + pow(run2->GetBinError(k) * itk->GetBinContent(k) / pow(run2->GetBinContent(k), 2), 2)));
-        }
-        else {
-            ratio->SetBinContent(k, 0.);
-            ratio->SetBinError(k, 0.);
-        }
-    }
-
-    auto mpc = PlotUtils::prepareTwoPadCanvas();
+    auto mpc = PlotUtils::prepareTwoPadCanvas("", 0.4, canvasOpts.canSizeX(), canvasOpts.canSizeY());
+    
     mpc.getPad(0)->cd();
-
     if (canvasOpts.logX()) gPad->SetLogx();
     if (canvasOpts.logY()) gPad->SetLogy();
 
@@ -247,19 +254,20 @@ void DrawPubNoteEfficiencyPtPlot(const Plot<TH1> & h_ITk, const Plot<TH1> & h_Ru
     ratio->SetMaximum(1.065);
     ratio->GetYaxis()->SetNdivisions(3,5,0);
 
-    run2->Draw("HIST][");
-    itk->Draw("SAME");
-    FormatAxisLabelSize(run2);
+    run2->Draw(std::string("SAME" + (run2.plotFormat().ExtraDrawOpts().isSet ? run2.plotFormat().ExtraDrawOpts().val : std::string(""))).c_str());
+    itk->Draw(std::string("SAME" + (itk.plotFormat().ExtraDrawOpts().isSet ? itk.plotFormat().ExtraDrawOpts().val : std::string(""))).c_str());
+    gPad->RedrawAxis();
 
     DrawDynamicLabels(labels, 0.15, 0.88);
-    PlotUtils::drawLegend(std::vector<PlotUtils::LegendEntry>{
-        PlotUtils::LegendEntry(run2(), run2.getLegendTitle(), run2.getLegendOption()),
-        PlotUtils::LegendEntry(itk(), itk.getLegendTitle(), itk.getLegendOption())}, 
-        0.60,0.79,0.88,0.95);
+    PlotUtils::drawLegend(std::vector<PlotUtils::LegendEntry>{PlotUtils::LegendEntry(run2), PlotUtils::LegendEntry(itk)}, 0.60,0.79,0.88,0.95);
 
     mpc.getPad(1)->cd();
-    ratio->Draw("");
-    FormatAxisLabelSize(ratio, true);
+    if (canvasOpts.logX())     gPad->SetLogx();
+    if (canvasOpts.logRatio()) gPad->SetLogy();
+    
+    ratio->Draw("HIST][");
+    ratio->Draw("SAMEE1");
+    gPad->RedrawAxis();
 
     PlotUtils::saveCanvas(mpc.getCanvas(), filename);
     PlotUtils::saveCanvasToMultiPagePdfFile(mpc.getCanvas(), multiPagePdf);
@@ -268,9 +276,13 @@ void DrawPubNoteEfficiencyPtPlot(const Plot<TH1> & h_ITk, const Plot<TH1> & h_Ru
 int main (int, char**) {
 
     // ATLAS-P2-ITK-23-00-01
-    const std::string sglmu1     = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-01/sglmu1_PU0_IDPVM_r12350.root";
-    const std::string sglmu100   = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-01/sglmu100_PU0_IDPVM_r12350.root";
-    const std::string ttbarmu200 = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-01/ttbar_PU200_IDPVM_r12351.root";
+    const std::string sglmu1_01   = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-01/sglmu1_PU0_IDPVM_r12350.root";
+    const std::string sglmu100_01 = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-01/sglmu100_PU0_IDPVM_r12350.root";
+    const std::string ttbarmu200  = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-01/ttbar_PU200_IDPVM_r12351.root";
+
+    // ATLAS-P2-ITK-23-00-03
+    const std::string sglmu1     = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-03/sglmu1_PU0_IDPVM_r12440.root";
+    const std::string sglmu100   = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-03/sglmu100_PU0_IDPVM_r12440.root";
 
     // Run-2
     const std::string run2_sglmu1     = "/scratch/Datasets/ANA-IDTR-2020-01/Run2/MyPhysVal.sglmu1.mu0.run2.root";
@@ -292,20 +304,14 @@ int main (int, char**) {
     const std::string fake_vs_pt          = "IDPerformanceMon/Tracks/SelectedFakeTracks/track_fakerate_vs_pt";
 
     // Labels
-    const std::vector<std::string> labels_muons_pt1   = {"ITk Layout: ATLAS-P2-ITK-23-00-01", "Single #mu, p_{T} = 1 GeV"}; 
-    const std::vector<std::string> labels_muons_pt100 = {"ITk Layout: ATLAS-P2-ITK-23-00-01", "Single #mu, p_{T} = 100 GeV"}; 
-    const std::vector<std::string> labels_ttbar_eta   = {"ITk Layout: ATLAS-P2-ITK-23-00-01", "t#bar{t}, p_{T} > 1 GeV"}; 
-    const std::vector<std::string> labels_ttbar_pt    = {"ITk Layout: ATLAS-P2-ITK-23-00-01", "t#bar{t}"}; 
+    const std::vector<std::string> labels_muons_pt1   = {"ITk Layout: ATLAS-P2-ITK-23-00-03", "Single #mu, p_{T} = 1 GeV"}; 
+    const std::vector<std::string> labels_muons_pt100 = {"ITk Layout: ATLAS-P2-ITK-23-00-03", "Single #mu, p_{T} = 100 GeV"}; 
+    const std::vector<std::string> labels_ttbar_pt    = {"ITk Layout: ATLAS-P2-ITK-23-00-01", "t#bar{t}, p_{T} > 1 GeV"}; 
+    const std::vector<std::string> labels_ttbar       = {"ITk Layout: ATLAS-P2-ITK-23-00-01", "t#bar{t}"}; 
     
-    // PlotFormats
-    PlotFormat formatRun2 = PlotFormat().Color(kBlack).LineStyle(kDashed).LineWidth(3).ExtraDrawOpts("HIST][");
-    PlotFormat formatITk  = PlotFormat().Color(kBlue).MarkerStyle(kOpenCircle).MarkerSize(1.25);
-
     // CanvasOptions
-    CanvasOptions opts = CanvasOptions().doAtlasLabel(true).otherLabelStartY(-0.11).otherLabelStepY(0.05).legendStartX(-0.3).legendStartY(-0.2).fontSize(20).labelStatusTag("Simulation Preliminary").ratioAxisTitle("Ratio w.r.t. Run-2");
-    CanvasOptions opts_muons = CanvasOptions(opts).doLumiLabel(false).logY(true);
-    CanvasOptions opts_ttbar = CanvasOptions(opts).labelSqrtsTag("14 TeV").labelLumiTag("HL-LHC");
-    CanvasOptions opts_ttbar_log = CanvasOptions(opts_ttbar).logY(true);
+    CanvasOptions opts      = CanvasOptions();
+    CanvasOptions opts_logY = CanvasOptions(opts).logY(true);
 
     SetAtlasStyle();
     
@@ -315,67 +321,55 @@ int main (int, char**) {
     ////////////////////// RESOLUTION //////////////////////
     
     // d0
-    PlotContent<TH1F> d0ResPlotSingleMu1(
-        std::vector<Plot<TH1F>> {
-            Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu1, d0_vs_eta), "Run-2", "L", formatRun2),
-            Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu1,      d0_vs_eta), "ITk",  "PL", formatITk),
-        }, labels_muons_pt1, "SingleMu1-d0Resolution_vs_eta", multiPagePdf, opts_muons);
-
-    DrawPubNoteResolutionPlots(d0ResPlotSingleMu1, "true track |#eta|", {7.e0, 5.e3});
-
-    PlotContent<TH1F> d0ResPlotSingleMu100(
-        std::vector<Plot<TH1F>> {
-            Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu100, d0_vs_eta), "Run-2", "L", formatRun2),
-            Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu100,      d0_vs_eta), "ITk",  "PL", formatITk),
-        }, labels_muons_pt100, "SingleMu100-d0Resolution_vs_eta", multiPagePdf, opts_muons);
-
-    DrawPubNoteResolutionPlots(d0ResPlotSingleMu100, "true track |#eta|", {7.e-1, 1.e3});
+    DrawPubNoteResolutionPlots( 
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu1,      d0_vs_eta), "ITk",  "PL"),
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu1, d0_vs_eta), "Run-2", "L"),
+        labels_muons_pt1, opts_logY, "true track |#eta|", "SingleMu1-d0Resolution_vs_eta", multiPagePdf, {7.e0, 5.e3});
+    
+    DrawPubNoteResolutionPlots( 
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu100,      d0_vs_eta), "ITk",  "PL"),
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu100, d0_vs_eta), "Run-2", "L"),
+        labels_muons_pt100, opts_logY, "true track |#eta|", "SingleMu100-d0Resolution_vs_eta", multiPagePdf, {7.e-1, 1.e3});
 
     // z0
-    PlotContent<TH1F> z0ResPlotSingleMu1(
-        std::vector<Plot<TH1F>> {
-            Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu1, z0_vs_eta), "Run-2", "L", formatRun2),
-            Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu1,      z0_vs_eta), "ITk",  "PL", formatITk),
-        }, labels_muons_pt1, "SingleMu1-z0Resolution_vs_eta", multiPagePdf, opts_muons);
+    DrawPubNoteResolutionPlots( 
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu1,      z0_vs_eta), "ITk",  "PL"),
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu1, z0_vs_eta), "Run-2", "L"),
+        labels_muons_pt1, opts_logY, "true track |#eta|", "SingleMu1-z0Resolution_vs_eta", multiPagePdf, {7.e0, 5.e5});
 
-    DrawPubNoteResolutionPlots(z0ResPlotSingleMu1, "true track |#eta|", {7.e0, 5.e5});
-
-    PlotContent<TH1F> z0ResPlotSingleMu100(
-        std::vector<Plot<TH1F>> {
-            Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu100, z0_vs_eta), "Run-2", "L", formatRun2),
-            Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu100,      z0_vs_eta), "ITk",  "PL", formatITk),
-        }, labels_muons_pt100, "SingleMu100-d0Resolution_vs_eta", multiPagePdf, opts_muons);
-
-    DrawPubNoteResolutionPlots(z0ResPlotSingleMu100, "true track |#eta|", {7.e-1, 1.e4});
+    DrawPubNoteResolutionPlots( 
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu100,      z0_vs_eta), "ITk",  "PL"),
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu100, z0_vs_eta), "Run-2", "L"),
+        labels_muons_pt1, opts_logY, "true track |#eta|", "SingleMu100-z0Resolution_vs_eta", multiPagePdf, {7.e-1, 1.e4});
 
     ////////////////////// EFFICIENCY //////////////////////
 
     DrawPubNoteEfficiencyEtaPlot( 
-        Plot<TH1>("", LoadIDPVMEfficiency(ttbarmu200,     eff_vs_eta), "ITk, <#mu> = 200", "PL", formatITk),
-        Plot<TH1>("", LoadIDPVMEfficiency(run2_ttbarmu20, eff_vs_eta), "Run-2, <#mu> = 20", "L", formatRun2),
-        labels_ttbar_eta, opts_ttbar, "true track |#eta|", "ttbar-efficiency_vs_eta", multiPagePdf);
+        Plot<TH1>("", LoadIDPVMEfficiency(ttbarmu200,     eff_vs_eta), "ITk, #LT#mu#GT = 200", "PL"),
+        Plot<TH1>("", LoadIDPVMEfficiency(run2_ttbarmu20, eff_vs_eta), "Run-2, #LT#mu#GT = 20", "L"),
+        labels_ttbar_pt, opts, "true track |#eta|", "ttbar-efficiency_vs_eta", multiPagePdf);
 
     DrawPubNoteEfficiencyPtPlot( 
-        Plot<TH1>("", LoadIDPVMEfficiency(ttbarmu200,     eff_vs_pt), "ITk |#eta| < 4.0, <#mu> = 200", "PL", formatITk),
-        Plot<TH1>("", LoadIDPVMEfficiency(run2_ttbarmu20, eff_vs_pt), "Run-2 |#eta| < 2.4, <#mu> = 20", "L", formatRun2),
-        labels_ttbar_pt, opts_ttbar, "true track p_{T} [GeV]", "ttbar-efficiency_vs_pt", multiPagePdf);
+        Plot<TH1>("", LoadIDPVMEfficiency(ttbarmu200,     eff_vs_pt), "ITk |#eta| < 4.0, #LT#mu#GT = 200", "PL"),
+        Plot<TH1>("", LoadIDPVMEfficiency(run2_ttbarmu20, eff_vs_pt), "Run-2 |#eta| < 2.4, #LT#mu#GT = 20", "L"),
+        labels_ttbar, opts, "true track p_{T} [GeV]", "ttbar-efficiency_vs_pt", multiPagePdf);
 
     ////////////////////// FAKE-RATES //////////////////////
 
     DrawPubNoteFakeRatePlot( 
-        Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(ttbarmu200,     fake_vs_eta), "ITk, <#mu> = 200", "PL", formatITk),
-        Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(run2_ttbarmu20, fake_vs_eta), "Run-2, <#mu> = 20", "L", formatRun2),
-        labels_ttbar_eta, opts_ttbar_log, "track |#eta|", "ttbar-fakerate_vs_eta", multiPagePdf);
+        Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(ttbarmu200,     fake_vs_eta), "ITk, #LT#mu#GT = 200", "PL"),
+        Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(run2_ttbarmu20, fake_vs_eta), "Run-2, #LT#mu#GT = 20", "L"),
+        labels_ttbar, opts_logY, "track |#eta|", "ttbar-fakerate_vs_eta", multiPagePdf);
 
     DrawPubNoteFakeRatePlot( 
-        Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(ttbarmu200,     fake_vs_pt), "ITk, <#mu> = 200", "PL", formatITk),
-        Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(run2_ttbarmu20, fake_vs_pt), "Run-2, <#mu> = 20", "L", formatRun2),
-        labels_ttbar_pt, opts_ttbar_log, "track p_{T}", "ttbar-fakerate_vs_pt", multiPagePdf);
+        Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(ttbarmu200,     fake_vs_pt), "ITk, #LT#mu#GT = 200", "PL"),
+        Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(run2_ttbarmu20, fake_vs_pt), "Run-2, #LT#mu#GT = 20", "L"),
+        labels_ttbar, opts_logY, "track p_{T}", "ttbar-fakerate_vs_pt", multiPagePdf);
 
     DrawPubNotePrimaryFakeRatePlot( 
-        Plot<TH1>("", LoadIDPVMEfficiency(ttbarmu200,     fake_primary_vs_eta), "ITk, <#mu> = 200", "PL", formatITk),
-        Plot<TH1>("", LoadIDPVMEfficiency(run2_ttbarmu20, fake_primary_vs_eta), "Run-2, <#mu> = 20", "L", formatRun2),
-        labels_ttbar_eta, opts_ttbar_log, "track |#eta|", "ttbar-fakerateprimary_vs_eta", multiPagePdf);
+        Plot<TH1>("", LoadIDPVMEfficiency(ttbarmu200,     fake_primary_vs_eta), "ITk, #LT#mu#GT = 200", "PL"),
+        Plot<TH1>("", LoadIDPVMEfficiency(run2_ttbarmu20, fake_primary_vs_eta), "Run-2, #LT#mu#GT = 20", "L"),
+        labels_ttbar, opts_logY, "track |#eta|", "ttbar-fakerateprimary_vs_eta", multiPagePdf);
 
     PlotUtils::endMultiPagePdfFile(multiPagePdf);
 
