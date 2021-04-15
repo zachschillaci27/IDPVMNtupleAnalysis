@@ -327,23 +327,23 @@ int main (int, char**) {
     DrawPubNoteResolutionPlots( 
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu1,      d0_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu1, d0_vs_eta), "Run-2", "L"),
-        labels_muons_pt1, opts_logY, "true track |#eta|", "SingleMu1-d0Resolution_vs_eta", multiPagePdf, {7.e0, 5.e3});
+        labels_muons_pt1, opts_logY, "Truth #eta", "SingleMu1-d0Resolution_vs_eta", multiPagePdf, {7.e0, 5.e3});
     
     DrawPubNoteResolutionPlots( 
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu100,      d0_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu100, d0_vs_eta), "Run-2", "L"),
-        labels_muons_pt100, opts_logY, "true track |#eta|", "SingleMu100-d0Resolution_vs_eta", multiPagePdf, {7.e-1, 1.e3});
+        labels_muons_pt100, opts_logY, "Truth #eta", "SingleMu100-d0Resolution_vs_eta", multiPagePdf, {7.e-1, 1.e3});
 
     // z0
     DrawPubNoteResolutionPlots( 
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu1,      z0_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu1, z0_vs_eta), "Run-2", "L"),
-        labels_muons_pt1, opts_logY, "true track |#eta|", "SingleMu1-z0Resolution_vs_eta", multiPagePdf, {7.e0, 5.e5});
+        labels_muons_pt1, opts_logY, "Truth #eta", "SingleMu1-z0Resolution_vs_eta", multiPagePdf, {7.e0, 5.e5});
 
     DrawPubNoteResolutionPlots( 
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu100,      z0_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu100, z0_vs_eta), "Run-2", "L"),
-        labels_muons_pt1, opts_logY, "true track |#eta|", "SingleMu100-z0Resolution_vs_eta", multiPagePdf, {7.e-1, 1.e4});
+        labels_muons_pt100, opts_logY, "Truth #eta", "SingleMu100-z0Resolution_vs_eta", multiPagePdf, {7.e-1, 1.e4});
 
     ////////////////////// EFFICIENCY //////////////////////
 
@@ -351,47 +351,47 @@ int main (int, char**) {
     DrawPubNoteEfficiencyPlot( 
         Plot<TH1>("", LoadIDPVMEfficiency(sglmu1,      eff_vs_eta), "ITk", "PL"),
         Plot<TH1>("", LoadIDPVMEfficiency(run2_sglmu1, eff_vs_eta), "Run-2", "L"),
-        labels_muons_pt1, opts, "true track |#eta|", "SingleMu1-efficiency_vs_eta", multiPagePdf, {0.967, 1.025});
+        labels_muons_pt1, opts, "Truth #eta", "SingleMu1-efficiency_vs_eta", multiPagePdf, {0.967, 1.025});
     
     DrawPubNoteEfficiencyPlot( 
         Plot<TH1>("", LoadIDPVMEfficiency(sglmu100,      eff_vs_eta), "ITk", "PL"),
         Plot<TH1>("", LoadIDPVMEfficiency(run2_sglmu100, eff_vs_eta), "Run-2", "L"),
-        labels_muons_pt100, opts, "true track |#eta|", "SingleMu100-efficiency_vs_eta", multiPagePdf, {0.989, 1.009});
+        labels_muons_pt100, opts, "Truth #eta", "SingleMu100-efficiency_vs_eta", multiPagePdf, {0.989, 1.009});
 
     // single particles (ITk only)
     DrawPubNoteSingleParticleEfficiencyPlot( 
         Plot<TH1>("", LoadIDPVMEfficiency(sglpi10, eff_vs_eta), "Single #pi", "PL"),
         Plot<TH1>("", LoadIDPVMEfficiency(sglel10, eff_vs_eta), "Single e",   "PL"),
         Plot<TH1>("", LoadIDPVMEfficiency(sglmu10, eff_vs_eta), "Single #mu", "PL"),
-        labels_single_pt10, opts, "true track |#eta|", "SingleParticle10-efficiency_vs_eta", multiPagePdf, {0.825, 1.095});
+        labels_single_pt10, opts, "Truth #eta", "SingleParticle10-efficiency_vs_eta", multiPagePdf, {0.825, 1.095});
 
     // ttbar
     DrawPubNoteEfficiencyPlot( 
         Plot<TH1>("", LoadIDPVMEfficiency(ttbarmu200,     eff_vs_eta), "ITk, #LT#mu#GT = 200", "PL"),
         Plot<TH1>("", LoadIDPVMEfficiency(run2_ttbarmu20, eff_vs_eta), "Run-2, #LT#mu#GT = 20", "L"),
-        labels_ttbar_pt, opts, "true track |#eta|", "ttbar-efficiency_vs_eta", multiPagePdf, {0.64, 1.014});
+        labels_ttbar_pt, opts, "Truth #eta", "ttbar-efficiency_vs_eta", multiPagePdf, {0.64, 1.014});
 
     DrawPubNoteEfficiencyPlot( 
         Plot<TH1>("", LoadIDPVMEfficiency(ttbarmu200,     eff_vs_pt), "ITk |#eta| < 4.0, #LT#mu#GT = 200", "PL"),
         Plot<TH1>("", LoadIDPVMEfficiency(run2_ttbarmu20, eff_vs_pt), "Run-2 |#eta| < 2.4, #LT#mu#GT = 20", "L"),
-        labels_ttbar, opts, "true track p_{T} [GeV]", "ttbar-efficiency_vs_pt", multiPagePdf, {0.78, 1.015});
+        labels_ttbar, opts, "Truth p_{T} [GeV]", "ttbar-efficiency_vs_pt", multiPagePdf, {0.78, 1.015});
 
     ////////////////////// FAKE-RATES //////////////////////
 
     DrawPubNoteFakeRatePlot( 
         Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(ttbarmu200,     fake_vs_eta), "ITk, #LT#mu#GT = 200", "PL"),
         Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(run2_ttbarmu20, fake_vs_eta), "Run-2, #LT#mu#GT = 20", "L"),
-        labels_ttbar, opts_logY, "track |#eta|", "ttbar-fakerate_vs_eta", multiPagePdf, {1.e-7, 1.5e0});
+        labels_ttbar, opts_logY, "Track #eta", "ttbar-fakerate_vs_eta", multiPagePdf, {1.e-7, 1.5e0});
 
     DrawPubNoteFakeRatePlot( 
         Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(ttbarmu200,     fake_vs_pt), "ITk, #LT#mu#GT = 200", "PL"),
         Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(run2_ttbarmu20, fake_vs_pt), "Run-2, #LT#mu#GT = 20", "L"),
-        labels_ttbar, opts_logY, "track p_{T}", "ttbar-fakerate_vs_pt", multiPagePdf, {1.e-7, 1.5e0});
+        labels_ttbar, opts_logY, "Track p_{T} [GeV]", "ttbar-fakerate_vs_pt", multiPagePdf, {1.e-7, 1.5e0});
 
     DrawPubNotePrimaryFakeRatePlot( 
         Plot<TH1>("", LoadIDPVMEfficiency(ttbarmu200,     fake_primary_vs_eta), "ITk, #LT#mu#GT = 200", "PL"),
         Plot<TH1>("", LoadIDPVMEfficiency(run2_ttbarmu20, fake_primary_vs_eta), "Run-2, #LT#mu#GT = 20", "L"),
-        labels_ttbar, opts_logY, "track |#eta|", "ttbar-fakerateprimary_vs_eta", multiPagePdf, {1.e-6, 5.e-1});
+        labels_ttbar, opts_logY, "Track #eta", "ttbar-fakerateprimary_vs_eta", multiPagePdf, {1.e-6, 5.e-1});
 
     PlotUtils::endMultiPagePdfFile(multiPagePdf);
 
