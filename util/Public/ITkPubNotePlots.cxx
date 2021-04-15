@@ -9,13 +9,14 @@
 #include "NtupleAnalysisUtils/DefaultPlotting.h"
 #include "IDPVMNtupleAnalysis/IDPVMUtilities.h"
 
-void DrawDynamicLabels(const std::vector<std::string> & labels, double xstart = 0.10, double ystart = 0.90) {
+void DrawDynamicLabels(const std::vector<std::string> & labels, double xstart = 0.10, double ystart = 0.90, double ystep = 0.06) {
     PlotUtils::drawAtlas(xstart, ystart, "Simulation Preliminary");
-    ystart -= 0.06;
+    ystart -= ystep;
     PlotUtils::drawLumiSqrtS(xstart, ystart, "HL-LHC", "14 TeV");
     for (auto & label : labels) {
         int fontsize = (label.find("ATLAS-P2") == std::string::npos) ? 18   : 16;
-        ystart      -= (label.find("ATLAS-P2") == std::string::npos) ? 0.07 : 0.05;
+        // ystart      -= (label.find("ATLAS-P2") == std::string::npos) ? 0.07 : 0.05;
+        ystart -= ystep;
         PlotUtils::drawTLatex(xstart, ystart, label, fontsize);
     }       
 }
@@ -32,8 +33,8 @@ template <class H> void FormatAxisLabelSize(H & plot, bool isRatio = false) {
     plot->GetXaxis()->SetTitleOffset(isRatio ? 2.25 : 1.25);
     plot->GetYaxis()->SetTitleOffset(1.25);
 }
-template <class H> void FormatITk(H & plot, const std::string & filename) {
-    PlotFormat formatITk  = PlotFormat().Color(kBlue).MarkerStyle(kOpenCircle).MarkerSize(1.25).ExtraDrawOpts("HISTE1");
+template <class H> void FormatITk(H & plot, const std::string & filename, int color=kBlue, int markerstyle=kOpenCircle) {
+    PlotFormat formatITk  = PlotFormat().Color(color).MarkerStyle(markerstyle).MarkerSize(1.25).ExtraDrawOpts("HISTE1");
     plot.setPlotFormat(formatITk);
     plot.applyFormat();
 
@@ -57,7 +58,8 @@ template <class H> void FormatRun2(H & plot, const std::string & filename) {
     if (filename.find("_eta") != std::string::npos) {
         std::cout << "Restricting plot " << plot.getName() << " between -2.4 and 2.4 in eta!" << std::endl;
         for (int i = 1; i < plot->GetNbinsX()+1; ++i) {
-            if (plot->GetBinLowEdge(i) < -2.4 || plot->GetBinLowEdge(i+1) > 2.4) {
+            if (plot->GetBinCenter(i) < -2.4 || plot->GetBinCenter(i) > 2.4) {
+            // if (plot->GetBinLowEdge(i) < -2.4 || plot->GetBinLowEdge(i+1) > 2.4) {
                 plot->SetBinContent(i, 0.);
                 plot->SetBinError(i, 0.);
             }
@@ -140,7 +142,7 @@ void DrawPubNoteFakeRatePlot(const Plot<TProfile> & h_ITk, const Plot<TProfile> 
     itk->Draw(std::string("SAME" + (itk.plotFormat().ExtraDrawOpts().isSet ? itk.plotFormat().ExtraDrawOpts().val : std::string(""))).c_str());
     gPad->RedrawAxis();
 
-    DrawDynamicLabels(labels, 0.20, 0.90);
+    DrawDynamicLabels(labels, 0.20, 0.90, 0.04 );
     PlotUtils::drawLegend(std::vector<PlotUtils::LegendEntry>{PlotUtils::LegendEntry(run2), PlotUtils::LegendEntry(itk)}, 0.60,0.76,0.88,0.92);
     
     canvasOpts.SaveCanvas(can, filename, multiPagePdf);
@@ -173,7 +175,7 @@ void DrawPubNotePrimaryFakeRatePlot(const Plot<TH1> & h_ITk, const Plot<TH1> & h
     itk->Draw(std::string("SAME" + (itk.plotFormat().ExtraDrawOpts().isSet ? itk.plotFormat().ExtraDrawOpts().val : std::string(""))).c_str());
     gPad->RedrawAxis();
 
-    DrawDynamicLabels(labels, 0.20, 0.90);
+    DrawDynamicLabels(labels, 0.20, 0.90, 0.04 );
     PlotUtils::drawLegend(std::vector<PlotUtils::LegendEntry>{PlotUtils::LegendEntry(run2), PlotUtils::LegendEntry(itk)}, 0.60,0.76,0.88,0.92);
     
     canvasOpts.SaveCanvas(can, filename, multiPagePdf);
@@ -230,6 +232,43 @@ void DrawPubNoteEfficiencyPlot(const Plot<TH1> & h_ITk, const Plot<TH1> & h_Run2
     PlotUtils::saveCanvasToMultiPagePdfFile(mpc.getCanvas(), multiPagePdf);
 }
 
+void DrawPubNoteSingleParticleEfficiencyPlot(const Plot<TH1> & h_EffPi, const Plot<TH1> & h_EffEl, const Plot<TH1> & h_EffMu, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & xlabel, const std::string & filename, const std::string & multiPagePdf="", std::pair<double, double> minmax={0,0}) {
+    SetAtlasStyle();
+
+    Plot<TH1> effPi("h_EffPi", h_EffPi);
+    FormatITk(effPi, filename, kGreen+3, kFullCross);
+    
+    Plot<TH1> effEl("h_EffEl", h_EffEl);
+    FormatITk(effEl, filename, kRed, kFullSquare);
+    
+    Plot<TH1> effMu("h_EffMu", h_EffMu);
+    FormatITk(effMu, filename, kBlue, kFullCircle);
+    FormatAxisLabelSize(effMu);
+    effMu->GetXaxis()->SetTitle(xlabel.c_str());
+
+    std::shared_ptr<TCanvas> can = std::make_shared<TCanvas>("can","can",canvasOpts.canSizeX(),canvasOpts.canSizeY());
+    
+    can->cd();
+    if (canvasOpts.logX()) gPad->SetLogx();
+    if (canvasOpts.logY()) gPad->SetLogy();
+
+    if (minmax.first != minmax.second) {
+        effMu->SetMinimum(minmax.first);
+        effMu->SetMaximum(minmax.second);
+    }
+
+    effMu->Draw(std::string("" + (effMu.plotFormat().ExtraDrawOpts().isSet ? effMu.plotFormat().ExtraDrawOpts().val : std::string(""))).c_str());
+    effEl->Draw(std::string("SAME" + (effEl.plotFormat().ExtraDrawOpts().isSet ? effEl.plotFormat().ExtraDrawOpts().val : std::string(""))).c_str());
+    effPi->Draw(std::string("SAME" + (effPi.plotFormat().ExtraDrawOpts().isSet ? effPi.plotFormat().ExtraDrawOpts().val : std::string(""))).c_str());
+    gPad->RedrawAxis();
+
+    DrawDynamicLabels(labels, 0.20, 0.90, 0.04 );
+    PlotUtils::drawLegend(std::vector<PlotUtils::LegendEntry>{PlotUtils::LegendEntry(effMu), PlotUtils::LegendEntry(effEl), PlotUtils::LegendEntry(effPi)}, 0.60,0.75,0.88,0.92);
+
+    PlotUtils::saveCanvas(can, filename);
+    PlotUtils::saveCanvasToMultiPagePdfFile(can, multiPagePdf);
+}
+
 int main (int, char**) {
 
     // ATLAS-P2-ITK-23-00-01
@@ -239,7 +278,11 @@ int main (int, char**) {
 
     // ATLAS-P2-ITK-23-00-03
     const std::string sglmu1     = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-03/sglmu1_PU0_IDPVM_r12440.root";
+    const std::string sglmu10    = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-03/sglmu10_PU0_IDPVM_r12440.root";
     const std::string sglmu100   = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-03/sglmu100_PU0_IDPVM_r12440.root";
+
+    const std::string sglel10    = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-03/sglel10_PU0_IDPVM_r12440.root";
+    const std::string sglpi10    = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-03/sglpi10_PU0_IDPVM_r12440.root";
 
     // Run-2
     const std::string run2_sglmu1     = "/scratch/Datasets/ANA-IDTR-2020-01/Run2/MyPhysVal.sglmu1.mu0.run2.root";
@@ -262,7 +305,9 @@ int main (int, char**) {
 
     // Labels
     const std::vector<std::string> labels_muons_pt1   = {"ITk Layout: ATLAS-P2-ITK-23-00-03", "Single #mu, p_{T} = 1 GeV"}; 
+    const std::vector<std::string> labels_muons_pt10  = {"ITk Layout: ATLAS-P2-ITK-23-00-03", "Single #mu, p_{T} = 10 GeV"}; 
     const std::vector<std::string> labels_muons_pt100 = {"ITk Layout: ATLAS-P2-ITK-23-00-03", "Single #mu, p_{T} = 100 GeV"}; 
+    const std::vector<std::string> labels_single_pt10 = {"ITk Layout: ATLAS-P2-ITK-23-00-03", "Single Particle, p_{T} = 10 GeV"}; 
     const std::vector<std::string> labels_ttbar_pt    = {"ITk Layout: ATLAS-P2-ITK-23-00-01", "t#bar{t}, p_{T} > 1 GeV"}; 
     const std::vector<std::string> labels_ttbar       = {"ITk Layout: ATLAS-P2-ITK-23-00-01", "t#bar{t}"}; 
     
@@ -301,6 +346,25 @@ int main (int, char**) {
 
     ////////////////////// EFFICIENCY //////////////////////
 
+    // muons
+    DrawPubNoteEfficiencyPlot( 
+        Plot<TH1>("", LoadIDPVMEfficiency(sglmu1,      eff_vs_eta), "ITk", "PL"),
+        Plot<TH1>("", LoadIDPVMEfficiency(run2_sglmu1, eff_vs_eta), "Run-2", "L"),
+        labels_muons_pt1, opts, "true track |#eta|", "SingleMu1-efficiency_vs_eta", multiPagePdf, {0.967, 1.025});
+    
+    DrawPubNoteEfficiencyPlot( 
+        Plot<TH1>("", LoadIDPVMEfficiency(sglmu100,      eff_vs_eta), "ITk", "PL"),
+        Plot<TH1>("", LoadIDPVMEfficiency(run2_sglmu100, eff_vs_eta), "Run-2", "L"),
+        labels_muons_pt100, opts, "true track |#eta|", "SingleMu100-efficiency_vs_eta", multiPagePdf, {0.989, 1.009});
+
+    // single particles (ITk only)
+    DrawPubNoteSingleParticleEfficiencyPlot( 
+        Plot<TH1>("", LoadIDPVMEfficiency(sglpi10, eff_vs_eta), "Single #pi", "PL"),
+        Plot<TH1>("", LoadIDPVMEfficiency(sglel10, eff_vs_eta), "Single e",   "PL"),
+        Plot<TH1>("", LoadIDPVMEfficiency(sglmu10, eff_vs_eta), "Single #mu", "PL"),
+        labels_single_pt10, opts, "true track |#eta|", "SingleParticle10-efficiency_vs_eta", multiPagePdf, {0.825, 1.095});
+
+    // ttbar
     DrawPubNoteEfficiencyPlot( 
         Plot<TH1>("", LoadIDPVMEfficiency(ttbarmu200,     eff_vs_eta), "ITk, #LT#mu#GT = 200", "PL"),
         Plot<TH1>("", LoadIDPVMEfficiency(run2_ttbarmu20, eff_vs_eta), "Run-2, #LT#mu#GT = 20", "L"),
@@ -310,7 +374,7 @@ int main (int, char**) {
         Plot<TH1>("", LoadIDPVMEfficiency(ttbarmu200,     eff_vs_pt), "ITk |#eta| < 4.0, #LT#mu#GT = 200", "PL"),
         Plot<TH1>("", LoadIDPVMEfficiency(run2_ttbarmu20, eff_vs_pt), "Run-2 |#eta| < 2.4, #LT#mu#GT = 20", "L"),
         labels_ttbar, opts, "true track p_{T} [GeV]", "ttbar-efficiency_vs_pt", multiPagePdf, {0.78, 1.015});
-    
+
     ////////////////////// FAKE-RATES //////////////////////
 
     DrawPubNoteFakeRatePlot( 
