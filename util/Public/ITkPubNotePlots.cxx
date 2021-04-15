@@ -42,7 +42,8 @@ template <class H> void FormatITk(H & plot, const std::string & filename, int co
     if (filename.find("_eta") != std::string::npos) {
         std::cout << "Restricting plot " << plot.getName() << " between -4.0 and 4.0 in eta!" << std::endl;
         for (int i = 1; i < plot->GetNbinsX()+1; ++i) {
-            if (plot->GetBinLowEdge(i) < -4.0 || plot->GetBinLowEdge(i+1) > 4.0) {
+            if (fabs(plot->GetBinCenter(i)) > 4.0) {
+                std::cout << "Forcing bin " << plot->GetBinLowEdge(i) << "-" << plot->GetBinLowEdge(i+1) << " to zero" << std::endl;
                 plot->SetBinContent(i, 0.);
                 plot->SetBinError(i, 0.);
             }
@@ -58,8 +59,8 @@ template <class H> void FormatRun2(H & plot, const std::string & filename) {
     if (filename.find("_eta") != std::string::npos) {
         std::cout << "Restricting plot " << plot.getName() << " between -2.4 and 2.4 in eta!" << std::endl;
         for (int i = 1; i < plot->GetNbinsX()+1; ++i) {
-            if (plot->GetBinCenter(i) < -2.4 || plot->GetBinCenter(i) > 2.4) {
-            // if (plot->GetBinLowEdge(i) < -2.4 || plot->GetBinLowEdge(i+1) > 2.4) {
+            if (fabs(plot->GetBinCenter(i)) > 2.4) {
+                std::cout << "Forcing bin " << plot->GetBinLowEdge(i) << "-" << plot->GetBinLowEdge(i+1) << " to zero" << std::endl;
                 plot->SetBinContent(i, 0.);
                 plot->SetBinError(i, 0.);
             }
