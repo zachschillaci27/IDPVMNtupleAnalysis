@@ -17,22 +17,14 @@ std::pair<Plot<TH1>, Plot<TH1>> LoadIDPVMEffPassedAndTotal(const std::string & m
 }
 
 Plot<TH1> LoadIDPVMEfficiency(const std::string & myphysval, const std::string & plotname) {
-
-    // Load as TEfficiency
-    Plot<TEfficiency> h_temp = LoadIDPVMHistogram<TEfficiency>(myphysval, plotname);
-
-    // Convert to TH1
-    std::shared_ptr<TH1> h_out(PlotUtils::getRatio(h_temp->GetCopyPassedHisto(), h_temp->GetCopyTotalHisto(), PlotUtils::efficiencyErrors));
-    Plot<TH1> thePlot(GetPlotTitle(plotname), h_out.get());
-
-    return thePlot;
+    return ConvertEfficiencyToTH1(LoadIDPVMHistogram<TEfficiency>(myphysval, plotname));
 }
 
 Plot<TH1> ConvertEfficiencyToTH1(Plot<TEfficiency> & efficiencyIn) {
     
-    std::shared_ptr<TH1> h_out(PlotUtils::getRatio(efficiencyIn->GetCopyPassedHisto(), efficiencyIn->GetCopyTotalHisto(), PlotUtils::efficiencyErrors));
-    Plot<TH1> efficiencyOut(efficiencyIn.getName() + "-AsTH1", h_out.get());
-    
+    PlotPostProcessor<TH1D, TEfficiency> effExtractor = CommonPostProcessors::effExtractor();
+
+    Plot<TH1> efficiencyOut(efficiencyIn.getName(), dynamic_cast<TH1*>(effExtractor.postProcess(efficiencyIn.getSharedHisto()).get()));
     efficiencyOut.setPlotFormat(efficiencyIn.plotFormat());
     efficiencyOut.setLegendTitle(efficiencyIn.getLegendTitle());
     efficiencyOut.setLegendOption(efficiencyIn.getLegendOption());
@@ -49,8 +41,8 @@ Plot<TEfficiency> RebinEfficiency(Plot<TEfficiency> & efficiencyIn, int rebin) {
     passed->Rebin(rebin);
     total->Rebin(rebin);
 
-    std::shared_ptr<TEfficiency> teffOut = std::make_shared<TEfficiency>(*passed(), *total());
-    Plot<TEfficiency> efficiencyOut(efficiencyIn.getName() + "-Rebinned", teffOut.get());
+    std::shared_ptr<TEfficiency> h_temp = std::make_shared<TEfficiency>(*passed(), *total());
+    Plot<TEfficiency> efficiencyOut(efficiencyIn.getName() + "-Rebinned", h_temp.get());
     
     efficiencyOut.setPlotFormat(efficiencyIn.plotFormat());
     efficiencyOut.setLegendTitle(efficiencyIn.getLegendTitle());
@@ -87,8 +79,8 @@ Plot<TEfficiency> SymmetrizeEfficiency(Plot<TEfficiency> & efficiencyIn) {
         total_sym->SetBinContent(neg_bin, 0.);
     }
 
-    std::shared_ptr<TEfficiency> teffOut = std::make_shared<TEfficiency>(*passed_sym(), *total_sym());
-    Plot<TEfficiency> efficiencyOut(efficiencyIn.getName() + "-Symmetrized", teffOut.get());
+    std::shared_ptr<TEfficiency> h_temp = std::make_shared<TEfficiency>(*passed_sym(), *total_sym());
+    Plot<TEfficiency> efficiencyOut(efficiencyIn.getName() + "-Symmetrized", h_temp.get());
     
     efficiencyOut.setPlotFormat(efficiencyIn.plotFormat());
     efficiencyOut.setLegendTitle(efficiencyIn.getLegendTitle());
