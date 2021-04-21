@@ -68,6 +68,39 @@ template <class H> void FormatRun2(H & plot, const std::string & filename) {
     }
 }
 
+template<class H> void DrawPubNoteFakeRatePlot(const Plot<H> & h_ITk, const Plot<H> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & xlabel, const std::string & filename, const std::string & multiPagePdf="", std::pair<double, double> minmax={0,0}) {
+    SetAtlasStyle();
+
+    Plot<H> itk("h_ITk", h_ITk);
+    FormatITk(itk, filename);
+    
+    Plot<H> run2("h_Run2", h_Run2);
+    FormatRun2(run2, filename);
+    FormatAxisLabelSize(run2);
+    run2->GetXaxis()->SetTitle(xlabel.c_str());
+    run2->GetYaxis()->SetTitle("Fake Rate");
+
+    std::shared_ptr<TCanvas> can = std::make_shared<TCanvas>("can","can",canvasOpts.canSizeX(),canvasOpts.canSizeY());
+    
+    can->cd();
+    if (canvasOpts.logX()) gPad->SetLogx();
+    if (canvasOpts.logY()) gPad->SetLogy();
+
+    if (minmax.first != minmax.second) {
+        run2->SetMinimum(minmax.first);
+        run2->SetMaximum(minmax.second);
+    }
+    
+    run2->Draw(std::string("" + (run2.plotFormat().ExtraDrawOpts().isSet ? run2.plotFormat().ExtraDrawOpts().val : std::string(""))).c_str());
+    itk->Draw(std::string("SAME" + (itk.plotFormat().ExtraDrawOpts().isSet ? itk.plotFormat().ExtraDrawOpts().val : std::string(""))).c_str());
+    gPad->RedrawAxis();
+
+    DrawDynamicLabels(labels, 0.20, 0.90, 0.04);
+    PlotUtils::drawLegend(std::vector<PlotUtils::LegendEntry>{PlotUtils::LegendEntry(run2), PlotUtils::LegendEntry(itk)}, 0.60,0.76,0.88,0.92);
+    
+    canvasOpts.SaveCanvas(can, filename, multiPagePdf);
+}
+
 void DrawPubNoteResolutionPlots(const Plot<TH1F> & h_ITk, const Plot<TH1F> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & xlabel, const std::string & filename, const std::string & multiPagePdf="", std::pair<double, double> minmax={0,0}) {
     SetAtlasStyle();
     
@@ -114,72 +147,6 @@ void DrawPubNoteResolutionPlots(const Plot<TH1F> & h_ITk, const Plot<TH1F> & h_R
     gPad->RedrawAxis();
 
     canvasOpts.SaveCanvas(mpc.getCanvas(), filename, multiPagePdf);
-}
-
-void DrawPubNoteFakeRatePlot(const Plot<TProfile> & h_ITk, const Plot<TProfile> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & xlabel, const std::string & filename, const std::string & multiPagePdf="", std::pair<double, double> minmax={0,0}) {
-    SetAtlasStyle();
-
-    Plot<TProfile> itk("h_ITk", h_ITk);
-    FormatITk(itk, filename);
-    
-    Plot<TProfile> run2("h_Run2", h_Run2);
-    FormatRun2(run2, filename);
-    FormatAxisLabelSize(run2);
-    run2->GetXaxis()->SetTitle(xlabel.c_str());
-    run2->GetYaxis()->SetTitle("Fake Rate");
-
-    std::shared_ptr<TCanvas> can = std::make_shared<TCanvas>("can","can",canvasOpts.canSizeX(),canvasOpts.canSizeY());
-    
-    can->cd();
-    if (canvasOpts.logX()) gPad->SetLogx();
-    if (canvasOpts.logY()) gPad->SetLogy();
-
-    if (minmax.first != minmax.second) {
-        run2->SetMinimum(minmax.first);
-        run2->SetMaximum(minmax.second);
-    }
-    
-    run2->Draw(std::string("" + (run2.plotFormat().ExtraDrawOpts().isSet ? run2.plotFormat().ExtraDrawOpts().val : std::string(""))).c_str());
-    itk->Draw(std::string("SAME" + (itk.plotFormat().ExtraDrawOpts().isSet ? itk.plotFormat().ExtraDrawOpts().val : std::string(""))).c_str());
-    gPad->RedrawAxis();
-
-    DrawDynamicLabels(labels, 0.20, 0.90, 0.04 );
-    PlotUtils::drawLegend(std::vector<PlotUtils::LegendEntry>{PlotUtils::LegendEntry(run2), PlotUtils::LegendEntry(itk)}, 0.60,0.76,0.88,0.92);
-    
-    canvasOpts.SaveCanvas(can, filename, multiPagePdf);
-}
-
-void DrawPubNotePrimaryFakeRatePlot(const Plot<TH1> & h_ITk, const Plot<TH1> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & xlabel, const std::string & filename, const std::string & multiPagePdf="", std::pair<double, double> minmax={0,0}) {
-    SetAtlasStyle();
-
-    Plot<TH1> itk("h_ITk", h_ITk);
-    FormatITk(itk, filename);
-    
-    Plot<TH1> run2("h_Run2", h_Run2);
-    FormatRun2(run2, filename);
-    FormatAxisLabelSize(run2);
-    run2->GetXaxis()->SetTitle(xlabel.c_str());
-    run2->GetYaxis()->SetTitle("Primary Fake Rate");
-
-    std::shared_ptr<TCanvas> can = std::make_shared<TCanvas>("can","can",canvasOpts.canSizeX(),canvasOpts.canSizeY());
-    
-    can->cd();
-    if (canvasOpts.logX()) gPad->SetLogx();
-    if (canvasOpts.logY()) gPad->SetLogy();
-
-    if (minmax.first != minmax.second) {
-        run2->SetMinimum(minmax.first);
-        run2->SetMaximum(minmax.second);
-    }
-
-    run2->Draw(std::string("" + (run2.plotFormat().ExtraDrawOpts().isSet ? run2.plotFormat().ExtraDrawOpts().val : std::string(""))).c_str());
-    itk->Draw(std::string("SAME" + (itk.plotFormat().ExtraDrawOpts().isSet ? itk.plotFormat().ExtraDrawOpts().val : std::string(""))).c_str());
-    gPad->RedrawAxis();
-
-    DrawDynamicLabels(labels, 0.20, 0.90, 0.04 );
-    PlotUtils::drawLegend(std::vector<PlotUtils::LegendEntry>{PlotUtils::LegendEntry(run2), PlotUtils::LegendEntry(itk)}, 0.60,0.76,0.88,0.92);
-    
-    canvasOpts.SaveCanvas(can, filename, multiPagePdf);
 }
 
 void DrawPubNoteEfficiencyPlot(const Plot<TH1> & h_ITk, const Plot<TH1> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & xlabel, const std::string & filename, const std::string & multiPagePdf="", std::pair<double, double> minmax={0,0}) {
@@ -263,7 +230,7 @@ void DrawPubNoteSingleParticleEfficiencyPlot(const Plot<TH1> & h_EffPi, const Pl
     effPi->Draw(std::string("SAME" + (effPi.plotFormat().ExtraDrawOpts().isSet ? effPi.plotFormat().ExtraDrawOpts().val : std::string(""))).c_str());
     gPad->RedrawAxis();
 
-    DrawDynamicLabels(labels, 0.20, 0.90, 0.04 );
+    DrawDynamicLabels(labels, 0.20, 0.90, 0.04);
     PlotUtils::drawLegend(std::vector<PlotUtils::LegendEntry>{PlotUtils::LegendEntry(effMu), PlotUtils::LegendEntry(effEl), PlotUtils::LegendEntry(effPi)}, 0.60,0.75,0.88,0.92);
 
     PlotUtils::saveCanvas(can, filename);
@@ -273,9 +240,9 @@ void DrawPubNoteSingleParticleEfficiencyPlot(const Plot<TH1> & h_EffPi, const Pl
 int main (int, char**) {
 
     // ATLAS-P2-ITK-23-00-01
-    const std::string sglmu1_01   = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-01/sglmu1_PU0_IDPVM_r12350.root";
-    const std::string sglmu100_01 = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-01/sglmu100_PU0_IDPVM_r12350.root";
-    const std::string ttbarmu200  = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-01/ttbar_PU200_IDPVM_r12351.root";
+    // const std::string sglmu1     = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-01/sglmu1_PU0_IDPVM_r12350.root";
+    // const std::string sglmu100   = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-01/sglmu100_PU0_IDPVM_r12350.root";
+    const std::string ttbarmu200 = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-01/ttbar_PU200_IDPVM_r12351.root";
 
     // ATLAS-P2-ITK-23-00-03
     const std::string sglmu1     = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-03/sglmu1_PU0_IDPVM_r12440.root";
@@ -286,9 +253,10 @@ int main (int, char**) {
     const std::string sglpi10    = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-03/sglpi10_PU0_IDPVM_r12440.root";
 
     // Run-2
-    const std::string run2_sglmu1     = "/scratch/Datasets/ANA-IDTR-2020-01/Run2/MyPhysVal.sglmu1.mu0.run2.root";
-    const std::string run2_sglmu100   = "/scratch/Datasets/ANA-IDTR-2020-01/Run2/MyPhysVal.sglmu100.mu0.run2.root";
-    const std::string run2_ttbarmu20  = "/scratch/Datasets/ANA-IDTR-2020-01/Run2/MyPhysVal.tbbar.mu20.eta0to2p4.run2.root";
+    const std::string run2_sglmu1        = "/scratch/Datasets/ANA-IDTR-2020-01/Run2/MyPhysVal.sglmu1.mu0.run2.root";
+    const std::string run2_sglmu10       = "/scratch/Datasets/ANA-IDTR-2020-01/Run2/MyPhysVal.sglmu10.mu0.run2.root";
+    const std::string run2_sglmu100      = "/scratch/Datasets/ANA-IDTR-2020-01/Run2/MyPhysVal.sglmu100.mu0.run2.root";
+    const std::string run2_ttbarmu20     = "/scratch/Datasets/ANA-IDTR-2020-01/Run2/MyPhysVal.ttbar.mu20.eta0to2p4.run2.root";
 
     // Resolutions - TH1F
     const std::string d0_vs_eta = "IDPerformanceMon/Tracks/SelectedMatchedTracks/Primary/d0resolutionRMS_vs_eta";
@@ -330,6 +298,11 @@ int main (int, char**) {
         labels_muons_pt1, opts_logY, "Truth #eta", "SingleMu1-d0Resolution_vs_eta", multiPagePdf, {7.e0, 5.e3});
     
     DrawPubNoteResolutionPlots( 
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu10,      d0_vs_eta), "ITk",  "PL"),
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu10, d0_vs_eta), "Run-2", "L"),
+        labels_muons_pt10, opts_logY, "Truth #eta", "SingleMu10-d0Resolution_vs_eta", multiPagePdf, {7.e-1, 1.e3});
+
+    DrawPubNoteResolutionPlots( 
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu100,      d0_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu100, d0_vs_eta), "Run-2", "L"),
         labels_muons_pt100, opts_logY, "Truth #eta", "SingleMu100-d0Resolution_vs_eta", multiPagePdf, {7.e-1, 1.e3});
@@ -341,9 +314,30 @@ int main (int, char**) {
         labels_muons_pt1, opts_logY, "Truth #eta", "SingleMu1-z0Resolution_vs_eta", multiPagePdf, {7.e0, 5.e5});
 
     DrawPubNoteResolutionPlots( 
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu10,      z0_vs_eta), "ITk",  "PL"),
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu10, z0_vs_eta), "Run-2", "L"),
+        labels_muons_pt10, opts_logY, "Truth #eta", "SingleMu10-z0Resolution_vs_eta", multiPagePdf, {7.e-1, 1.e4});
+
+    DrawPubNoteResolutionPlots( 
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu100,      z0_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu100, z0_vs_eta), "Run-2", "L"),
         labels_muons_pt100, opts_logY, "Truth #eta", "SingleMu100-z0Resolution_vs_eta", multiPagePdf, {7.e-1, 1.e4});
+
+    // q/pt
+    DrawPubNoteResolutionPlots( 
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu1,      pt_vs_eta), "ITk",  "PL"),
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu1, pt_vs_eta), "Run-2", "L"),
+        labels_muons_pt1, opts_logY, "Truth #eta", "SingleMu1-qOverptResolution_vs_eta", multiPagePdf, {5.e-3, 3.e0});
+
+    DrawPubNoteResolutionPlots( 
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu10,      pt_vs_eta), "ITk",  "PL"),
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu10, pt_vs_eta), "Run-2", "L"),
+        labels_muons_pt10, opts_logY, "Truth #eta", "SingleMu10-qOverPtResolution_vs_eta", multiPagePdf, {5.e-3, 5.e0});
+
+    DrawPubNoteResolutionPlots( 
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu100,      pt_vs_eta), "ITk",  "PL"),
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu100, pt_vs_eta), "Run-2", "L"),
+        labels_muons_pt100, opts_logY, "Truth #eta", "SingleMu100-qOverPtResolution_vs_eta", multiPagePdf, {5.e-3, 3.e1});
 
     ////////////////////// EFFICIENCY //////////////////////
 
@@ -352,6 +346,11 @@ int main (int, char**) {
         Plot<TH1>("", LoadIDPVMEfficiency(sglmu1,      eff_vs_eta), "ITk", "PL"),
         Plot<TH1>("", LoadIDPVMEfficiency(run2_sglmu1, eff_vs_eta), "Run-2", "L"),
         labels_muons_pt1, opts, "Truth #eta", "SingleMu1-efficiency_vs_eta", multiPagePdf, {0.967, 1.025});
+
+    DrawPubNoteEfficiencyPlot( 
+        Plot<TH1>("", LoadIDPVMEfficiency(sglmu10,      eff_vs_eta), "ITk", "PL"),
+        Plot<TH1>("", LoadIDPVMEfficiency(run2_sglmu10, eff_vs_eta), "Run-2", "L"),
+        labels_muons_pt10, opts, "Truth #eta", "SingleMu10-efficiency_vs_eta", multiPagePdf, {0.975, 1.015});
     
     DrawPubNoteEfficiencyPlot( 
         Plot<TH1>("", LoadIDPVMEfficiency(sglmu100,      eff_vs_eta), "ITk", "PL"),
@@ -388,11 +387,11 @@ int main (int, char**) {
         Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(run2_ttbarmu20, fake_vs_pt), "Run-2, #LT#mu#GT = 20", "L"),
         labels_ttbar, opts_logY, "Track p_{T} [GeV]", "ttbar-fakerate_vs_pt", multiPagePdf, {1.e-7, 1.5e0});
 
-    DrawPubNotePrimaryFakeRatePlot( 
+    DrawPubNoteFakeRatePlot( 
         Plot<TH1>("", LoadIDPVMEfficiency(ttbarmu200,     fake_primary_vs_eta), "ITk, #LT#mu#GT = 200", "PL"),
         Plot<TH1>("", LoadIDPVMEfficiency(run2_ttbarmu20, fake_primary_vs_eta), "Run-2, #LT#mu#GT = 20", "L"),
         labels_ttbar, opts_logY, "Track #eta", "ttbar-fakerateprimary_vs_eta", multiPagePdf, {1.e-6, 5.e-1});
-
+        
     PlotUtils::endMultiPagePdfFile(multiPagePdf);
 
     return EXIT_SUCCESS;
