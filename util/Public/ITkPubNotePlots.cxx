@@ -9,6 +9,13 @@
 #include "NtupleAnalysisUtils/DefaultPlotting.h"
 #include "IDPVMNtupleAnalysis/IDPVMUtilities.h"
 
+std::pair<std::string, std::string> GetAxisTitles(const std::string & titles) {
+    const std::string delimiter = ";";
+    std::string xTitle = titles.substr(0, titles.find(delimiter));
+    std::string yTitle = titles.substr(titles.find(delimiter) + 1, titles.length());
+    return std::make_pair(xTitle, yTitle);
+}
+
 void DrawDynamicLabels(const std::vector<std::string> & labels, double xstart = 0.10, double ystart = 0.90, double ystep = 0.06) {
     PlotUtils::drawAtlas(xstart, ystart, "Simulation Preliminary");
     ystart -= ystep;
@@ -68,7 +75,7 @@ template <class H> void FormatRun2(H & plot, const std::string & filename) {
     }
 }
 
-template<class H> void DrawPubNoteFakeRatePlot(const Plot<H> & h_ITk, const Plot<H> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & xlabel, const std::string & filename, const std::string & multiPagePdf="", std::pair<double, double> minmax={0,0}) {
+template<class H> void DrawPubNoteFakeRatePlot(const Plot<H> & h_ITk, const Plot<H> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & titles, const std::string & filename, const std::string & multiPagePdf="", std::pair<double, double> minmax={0,0}) {
     SetAtlasStyle();
 
     Plot<H> itk("h_ITk", h_ITk);
@@ -77,8 +84,8 @@ template<class H> void DrawPubNoteFakeRatePlot(const Plot<H> & h_ITk, const Plot
     Plot<H> run2("h_Run2", h_Run2);
     FormatRun2(run2, filename);
     FormatAxisLabelSize(run2);
-    run2->GetXaxis()->SetTitle(xlabel.c_str());
-    run2->GetYaxis()->SetTitle("Fake Rate");
+    run2->GetXaxis()->SetTitle(GetAxisTitles(titles).first.c_str());
+    run2->GetYaxis()->SetTitle(GetAxisTitles(titles).second.c_str());
 
     std::shared_ptr<TCanvas> can = std::make_shared<TCanvas>("can","can",canvasOpts.canSizeX(),canvasOpts.canSizeY());
     
@@ -101,7 +108,7 @@ template<class H> void DrawPubNoteFakeRatePlot(const Plot<H> & h_ITk, const Plot
     canvasOpts.SaveCanvas(can, filename, multiPagePdf);
 }
 
-void DrawPubNoteResolutionPlots(const Plot<TH1F> & h_ITk, const Plot<TH1F> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & xlabel, const std::string & filename, const std::string & multiPagePdf="", std::pair<double, double> minmax={0,0}) {
+void DrawPubNoteResolutionPlots(const Plot<TH1F> & h_ITk, const Plot<TH1F> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & titles, const std::string & filename, const std::string & multiPagePdf="", std::pair<double, double> minmax={0,0}) {
     SetAtlasStyle();
     
     Plot<TH1F> itk("h_ITk", h_ITk);
@@ -110,11 +117,12 @@ void DrawPubNoteResolutionPlots(const Plot<TH1F> & h_ITk, const Plot<TH1F> & h_R
     Plot<TH1F> run2("h_Run2", h_Run2);
     FormatRun2(run2, filename);
     FormatAxisLabelSize(run2);
+    run2->GetYaxis()->SetTitle(GetAxisTitles(titles).second.c_str());
 
     Plot<TH1> ratio("ratio", PlotUtils::getRatio(itk(), run2(), PlotUtils::EfficiencyMode::defaultErrors));
     FormatITk(ratio, filename);
     FormatAxisLabelSize(ratio, true);
-    ratio->GetXaxis()->SetTitle(xlabel.c_str());
+    ratio->GetXaxis()->SetTitle(GetAxisTitles(titles).first.c_str());
     ratio->GetYaxis()->SetTitle("ITk / Run-2");
 
     auto mpc = PlotUtils::prepareTwoPadCanvas("", 0.4, canvasOpts.canSizeX(), canvasOpts.canSizeY());
@@ -149,7 +157,7 @@ void DrawPubNoteResolutionPlots(const Plot<TH1F> & h_ITk, const Plot<TH1F> & h_R
     canvasOpts.SaveCanvas(mpc.getCanvas(), filename, multiPagePdf);
 }
 
-void DrawPubNoteEfficiencyPlot(const Plot<TH1> & h_ITk, const Plot<TH1> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & xlabel, const std::string & filename, const std::string & multiPagePdf="", std::pair<double, double> minmax={0,0}) {
+void DrawPubNoteEfficiencyPlot(const Plot<TH1> & h_ITk, const Plot<TH1> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & titles, const std::string & filename, const std::string & multiPagePdf="", std::pair<double, double> minmax={0,0}) {
     SetAtlasStyle();
 
     Plot<TH1> itk("h_ITk", h_ITk);
@@ -158,11 +166,12 @@ void DrawPubNoteEfficiencyPlot(const Plot<TH1> & h_ITk, const Plot<TH1> & h_Run2
     Plot<TH1> run2("h_Run2", h_Run2);
     FormatRun2(run2, filename);
     FormatAxisLabelSize(run2);
+    run2->GetYaxis()->SetTitle(GetAxisTitles(titles).second.c_str());
 
     Plot<TH1> ratio("ratio", PlotUtils::getRatio(itk(), run2(), PlotUtils::EfficiencyMode::defaultErrors));
     FormatITk(ratio, filename);
     FormatAxisLabelSize(ratio, true);
-    ratio->GetXaxis()->SetTitle(xlabel.c_str());
+    ratio->GetXaxis()->SetTitle(GetAxisTitles(titles).first.c_str());
     ratio->GetYaxis()->SetTitle("ITk / Run-2");
 
     auto mpc = PlotUtils::prepareTwoPadCanvas("", 0.4, canvasOpts.canSizeX(), canvasOpts.canSizeY());
@@ -200,7 +209,7 @@ void DrawPubNoteEfficiencyPlot(const Plot<TH1> & h_ITk, const Plot<TH1> & h_Run2
     PlotUtils::saveCanvasToMultiPagePdfFile(mpc.getCanvas(), multiPagePdf);
 }
 
-void DrawPubNoteSingleParticleEfficiencyPlot(const Plot<TH1> & h_EffPi, const Plot<TH1> & h_EffEl, const Plot<TH1> & h_EffMu, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & xlabel, const std::string & filename, const std::string & multiPagePdf="", std::pair<double, double> minmax={0,0}) {
+void DrawPubNoteSingleParticleEfficiencyPlot(const Plot<TH1> & h_EffPi, const Plot<TH1> & h_EffEl, const Plot<TH1> & h_EffMu, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & titles, const std::string & filename, const std::string & multiPagePdf="", std::pair<double, double> minmax={0,0}) {
     SetAtlasStyle();
 
     Plot<TH1> effPi("h_EffPi", h_EffPi);
@@ -212,7 +221,8 @@ void DrawPubNoteSingleParticleEfficiencyPlot(const Plot<TH1> & h_EffPi, const Pl
     Plot<TH1> effMu("h_EffMu", h_EffMu);
     FormatITk(effMu, filename, kBlue, kFullCircle);
     FormatAxisLabelSize(effMu);
-    effMu->GetXaxis()->SetTitle(xlabel.c_str());
+    effMu->GetXaxis()->SetTitle(GetAxisTitles(titles).first.c_str());
+    effMu->GetYaxis()->SetTitle(GetAxisTitles(titles).second.c_str());
 
     std::shared_ptr<TCanvas> can = std::make_shared<TCanvas>("can","can",canvasOpts.canSizeX(),canvasOpts.canSizeY());
     
@@ -242,7 +252,7 @@ int main (int, char**) {
     // ATLAS-P2-ITK-23-00-01
     // const std::string sglmu1     = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-01/sglmu1_PU0_IDPVM_r12350.root";
     // const std::string sglmu100   = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-01/sglmu100_PU0_IDPVM_r12350.root";
-    const std::string ttbarmu200 = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-01/ttbar_PU200_IDPVM_r12351.root";
+    // const std::string ttbarmu200 = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-01/ttbar_PU200_IDPVM_r12351.root";
 
     // ATLAS-P2-ITK-23-00-03
     const std::string sglmu1     = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-03/sglmu1_PU0_IDPVM_r12440.root";
@@ -251,6 +261,8 @@ int main (int, char**) {
 
     const std::string sglel10    = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-03/sglel10_PU0_IDPVM_r12440.root";
     const std::string sglpi10    = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-03/sglpi10_PU0_IDPVM_r12440.root";
+
+    const std::string ttbarmu200 = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-03/ttbar_PU200_IDPVM_r12441.root";
 
     // Run-2
     const std::string run2_sglmu1        = "/scratch/Datasets/ANA-IDTR-2020-01/Run2/MyPhysVal.sglmu1.mu0.run2.root";
@@ -277,9 +289,18 @@ int main (int, char**) {
     const std::vector<std::string> labels_muons_pt10  = {"ITk Layout: ATLAS-P2-ITK-23-00-03", "Single #mu, p_{T} = 10 GeV"}; 
     const std::vector<std::string> labels_muons_pt100 = {"ITk Layout: ATLAS-P2-ITK-23-00-03", "Single #mu, p_{T} = 100 GeV"}; 
     const std::vector<std::string> labels_single_pt10 = {"ITk Layout: ATLAS-P2-ITK-23-00-03", "Single Particle, p_{T} = 10 GeV"}; 
-    const std::vector<std::string> labels_ttbar_pt    = {"ITk Layout: ATLAS-P2-ITK-23-00-01", "t#bar{t}, p_{T} > 1 GeV"}; 
-    const std::vector<std::string> labels_ttbar       = {"ITk Layout: ATLAS-P2-ITK-23-00-01", "t#bar{t}"}; 
+    const std::vector<std::string> labels_ttbar_pt    = {"ITk Layout: ATLAS-P2-ITK-23-00-03", "t#bar{t}, p_{T} > 1 GeV"}; 
+    const std::vector<std::string> labels_ttbar       = {"ITk Layout: ATLAS-P2-ITK-23-00-03", "t#bar{t}"}; 
     
+    // Axis Titles
+    const std::string titles_d0_vs_eta   = "Truth #eta;d_{0} Resolution [#mu m]";
+    const std::string titles_z0_vs_eta   = "Truth #eta;z_{0} Resolution [#mu m]";
+    const std::string titles_pt_vs_eta   = "Truth #eta;p_{T} #times #sigma (q/p_{T})";
+    const std::string titles_eff_vs_eta  = "Truth #eta;Efficiency";
+    const std::string titles_eff_vs_pt   = "Truth p_{T} [GeV];Efficiency";
+    const std::string titles_fake_vs_eta = "Track #eta;Fake Rate";
+    const std::string titles_fake_vs_pt  = "Track p_{T} [GeV];Fake Rate";
+
     // CanvasOptions
     CanvasOptions opts      = CanvasOptions();
     CanvasOptions opts_logY = CanvasOptions(opts).logY(true);
@@ -295,49 +316,49 @@ int main (int, char**) {
     DrawPubNoteResolutionPlots( 
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu1,      d0_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu1, d0_vs_eta), "Run-2", "L"),
-        labels_muons_pt1, opts_logY, "Truth #eta", "SingleMu1-d0Resolution_vs_eta", multiPagePdf, {7.e0, 5.e3});
+        labels_muons_pt1, opts_logY, titles_d0_vs_eta, "SingleMu1-d0Resolution_vs_eta", multiPagePdf, {7.e0, 5.e3});
     
     DrawPubNoteResolutionPlots( 
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu10,      d0_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu10, d0_vs_eta), "Run-2", "L"),
-        labels_muons_pt10, opts_logY, "Truth #eta", "SingleMu10-d0Resolution_vs_eta", multiPagePdf, {7.e-1, 1.e3});
+        labels_muons_pt10, opts_logY, titles_d0_vs_eta, "SingleMu10-d0Resolution_vs_eta", multiPagePdf, {7.e-1, 1.e3});
 
     DrawPubNoteResolutionPlots( 
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu100,      d0_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu100, d0_vs_eta), "Run-2", "L"),
-        labels_muons_pt100, opts_logY, "Truth #eta", "SingleMu100-d0Resolution_vs_eta", multiPagePdf, {7.e-1, 1.e3});
+        labels_muons_pt100, opts_logY, titles_d0_vs_eta, "SingleMu100-d0Resolution_vs_eta", multiPagePdf, {7.e-1, 1.e3});
 
     // z0
     DrawPubNoteResolutionPlots( 
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu1,      z0_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu1, z0_vs_eta), "Run-2", "L"),
-        labels_muons_pt1, opts_logY, "Truth #eta", "SingleMu1-z0Resolution_vs_eta", multiPagePdf, {7.e0, 5.e5});
+        labels_muons_pt1, opts_logY, titles_z0_vs_eta, "SingleMu1-z0Resolution_vs_eta", multiPagePdf, {7.e0, 5.e5});
 
     DrawPubNoteResolutionPlots( 
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu10,      z0_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu10, z0_vs_eta), "Run-2", "L"),
-        labels_muons_pt10, opts_logY, "Truth #eta", "SingleMu10-z0Resolution_vs_eta", multiPagePdf, {7.e-1, 1.e4});
+        labels_muons_pt10, opts_logY, titles_z0_vs_eta, "SingleMu10-z0Resolution_vs_eta", multiPagePdf, {7.e-1, 1.e4});
 
     DrawPubNoteResolutionPlots( 
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu100,      z0_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu100, z0_vs_eta), "Run-2", "L"),
-        labels_muons_pt100, opts_logY, "Truth #eta", "SingleMu100-z0Resolution_vs_eta", multiPagePdf, {7.e-1, 1.e4});
+        labels_muons_pt100, opts_logY, titles_z0_vs_eta, "SingleMu100-z0Resolution_vs_eta", multiPagePdf, {7.e-1, 1.e4});
 
     // q/pt
     DrawPubNoteResolutionPlots( 
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu1,      pt_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu1, pt_vs_eta), "Run-2", "L"),
-        labels_muons_pt1, opts_logY, "Truth #eta", "SingleMu1-qOverptResolution_vs_eta", multiPagePdf, {5.e-3, 3.e0});
+        labels_muons_pt1, opts_logY, titles_pt_vs_eta, "SingleMu1-qOverptResolution_vs_eta", multiPagePdf, {5.e-3, 3.e0});
 
     DrawPubNoteResolutionPlots( 
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu10,      pt_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu10, pt_vs_eta), "Run-2", "L"),
-        labels_muons_pt10, opts_logY, "Truth #eta", "SingleMu10-qOverPtResolution_vs_eta", multiPagePdf, {5.e-3, 5.e0});
+        labels_muons_pt10, opts_logY, titles_pt_vs_eta, "SingleMu10-qOverPtResolution_vs_eta", multiPagePdf, {5.e-3, 5.e0});
 
     DrawPubNoteResolutionPlots( 
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu100,      pt_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu100, pt_vs_eta), "Run-2", "L"),
-        labels_muons_pt100, opts_logY, "Truth #eta", "SingleMu100-qOverPtResolution_vs_eta", multiPagePdf, {5.e-3, 3.e1});
+        labels_muons_pt100, opts_logY, titles_pt_vs_eta, "SingleMu100-qOverPtResolution_vs_eta", multiPagePdf, {5.e-3, 3.e1});
 
     ////////////////////// EFFICIENCY //////////////////////
 
@@ -345,52 +366,52 @@ int main (int, char**) {
     DrawPubNoteEfficiencyPlot( 
         Plot<TH1>("", LoadIDPVMEfficiency(sglmu1,      eff_vs_eta), "ITk", "PL"),
         Plot<TH1>("", LoadIDPVMEfficiency(run2_sglmu1, eff_vs_eta), "Run-2", "L"),
-        labels_muons_pt1, opts, "Truth #eta", "SingleMu1-efficiency_vs_eta", multiPagePdf, {0.967, 1.025});
+        labels_muons_pt1, opts, titles_eff_vs_eta, "SingleMu1-efficiency_vs_eta", multiPagePdf, {0.967, 1.025});
 
     DrawPubNoteEfficiencyPlot( 
         Plot<TH1>("", LoadIDPVMEfficiency(sglmu10,      eff_vs_eta), "ITk", "PL"),
         Plot<TH1>("", LoadIDPVMEfficiency(run2_sglmu10, eff_vs_eta), "Run-2", "L"),
-        labels_muons_pt10, opts, "Truth #eta", "SingleMu10-efficiency_vs_eta", multiPagePdf, {0.975, 1.015});
+        labels_muons_pt10, opts, titles_eff_vs_eta, "SingleMu10-efficiency_vs_eta", multiPagePdf, {0.975, 1.015});
     
     DrawPubNoteEfficiencyPlot( 
         Plot<TH1>("", LoadIDPVMEfficiency(sglmu100,      eff_vs_eta), "ITk", "PL"),
         Plot<TH1>("", LoadIDPVMEfficiency(run2_sglmu100, eff_vs_eta), "Run-2", "L"),
-        labels_muons_pt100, opts, "Truth #eta", "SingleMu100-efficiency_vs_eta", multiPagePdf, {0.989, 1.009});
+        labels_muons_pt100, opts, titles_eff_vs_eta, "SingleMu100-efficiency_vs_eta", multiPagePdf, {0.989, 1.009});
 
     // single particles (ITk only)
     DrawPubNoteSingleParticleEfficiencyPlot( 
         Plot<TH1>("", LoadIDPVMEfficiency(sglpi10, eff_vs_eta), "Single #pi", "PL"),
         Plot<TH1>("", LoadIDPVMEfficiency(sglel10, eff_vs_eta), "Single e",   "PL"),
         Plot<TH1>("", LoadIDPVMEfficiency(sglmu10, eff_vs_eta), "Single #mu", "PL"),
-        labels_single_pt10, opts, "Truth #eta", "SingleParticle10-efficiency_vs_eta", multiPagePdf, {0.825, 1.095});
+        labels_single_pt10, opts, titles_eff_vs_eta, "SingleParticle10-efficiency_vs_eta", multiPagePdf, {0.825, 1.095});
 
     // ttbar
     DrawPubNoteEfficiencyPlot( 
         Plot<TH1>("", LoadIDPVMEfficiency(ttbarmu200,     eff_vs_eta), "ITk, #LT#mu#GT = 200", "PL"),
         Plot<TH1>("", LoadIDPVMEfficiency(run2_ttbarmu20, eff_vs_eta), "Run-2, #LT#mu#GT = 20", "L"),
-        labels_ttbar_pt, opts, "Truth #eta", "ttbar-efficiency_vs_eta", multiPagePdf, {0.64, 1.014});
+        labels_ttbar_pt, opts, titles_eff_vs_eta, "ttbar-efficiency_vs_eta", multiPagePdf, {0.64, 1.014});
 
     DrawPubNoteEfficiencyPlot( 
         Plot<TH1>("", LoadIDPVMEfficiency(ttbarmu200,     eff_vs_pt), "ITk |#eta| < 4.0, #LT#mu#GT = 200", "PL"),
         Plot<TH1>("", LoadIDPVMEfficiency(run2_ttbarmu20, eff_vs_pt), "Run-2 |#eta| < 2.4, #LT#mu#GT = 20", "L"),
-        labels_ttbar, opts, "Truth p_{T} [GeV]", "ttbar-efficiency_vs_pt", multiPagePdf, {0.78, 1.015});
+        labels_ttbar, opts, titles_eff_vs_pt, "ttbar-efficiency_vs_pt", multiPagePdf, {0.78, 1.015});
 
     ////////////////////// FAKE-RATES //////////////////////
 
     DrawPubNoteFakeRatePlot( 
         Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(ttbarmu200,     fake_vs_eta), "ITk, #LT#mu#GT = 200", "PL"),
         Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(run2_ttbarmu20, fake_vs_eta), "Run-2, #LT#mu#GT = 20", "L"),
-        labels_ttbar, opts_logY, "Track #eta", "ttbar-fakerate_vs_eta", multiPagePdf, {1.e-7, 1.5e0});
+        labels_ttbar, opts_logY, titles_fake_vs_eta, "ttbar-fakerate_vs_eta", multiPagePdf, {1.e-7, 1.5e0});
 
     DrawPubNoteFakeRatePlot( 
         Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(ttbarmu200,     fake_vs_pt), "ITk, #LT#mu#GT = 200", "PL"),
         Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(run2_ttbarmu20, fake_vs_pt), "Run-2, #LT#mu#GT = 20", "L"),
-        labels_ttbar, opts_logY, "Track p_{T} [GeV]", "ttbar-fakerate_vs_pt", multiPagePdf, {1.e-7, 1.5e0});
+        labels_ttbar, opts_logY, titles_fake_vs_pt, "ttbar-fakerate_vs_pt", multiPagePdf, {1.e-7, 1.5e0});
 
     DrawPubNoteFakeRatePlot( 
         Plot<TH1>("", LoadIDPVMEfficiency(ttbarmu200,     fake_primary_vs_eta), "ITk, #LT#mu#GT = 200", "PL"),
         Plot<TH1>("", LoadIDPVMEfficiency(run2_ttbarmu20, fake_primary_vs_eta), "Run-2, #LT#mu#GT = 20", "L"),
-        labels_ttbar, opts_logY, "Track #eta", "ttbar-fakerateprimary_vs_eta", multiPagePdf, {1.e-6, 5.e-1});
+        labels_ttbar, opts_logY, titles_fake_vs_eta, "ttbar-fakerateprimary_vs_eta", multiPagePdf, {1.e-6, 5.e-1});
         
     PlotUtils::endMultiPagePdfFile(multiPagePdf);
 
