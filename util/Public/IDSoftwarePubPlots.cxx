@@ -205,7 +205,7 @@ void drawDiskUsageSplitPad(Plot<TGraph> & graphR21, Plot<TGraph> & graphR22, Plo
 
     subp1->cd(); 
     /// Y Axis range is the same for left and right
-    TH1* topFrameLeft = subp1->DrawFrame(start,-15,leftMax,max*1.2); 
+    TH1* topFrameLeft = subp1->DrawFrame(start,-15,leftMax,max*1.05); 
     topFrameLeft->GetYaxis()->SetTitleFont(43); 
     topFrameLeft->GetYaxis()->SetTitleSize(20); 
     topFrameLeft->GetYaxis()->SetLabelFont(43); 
@@ -233,7 +233,7 @@ void drawDiskUsageSplitPad(Plot<TGraph> & graphR21, Plot<TGraph> & graphR22, Plo
     topFrameLeft->Draw("SAMEaxis");
 
     subp2->cd(); 
-    TH1* topFrameRight = subp2->DrawFrame(rightMin,-15,end+2,max*1.2); 
+    TH1* topFrameRight = subp2->DrawFrame(rightMin,-15,end+2,max*1.05); 
     topFrameRight->GetYaxis()->SetLabelFont(43); 
     topFrameRight->SetDrawOption("Y+");
     topFrameRight->SetDrawOption("Y+");
@@ -246,7 +246,8 @@ void drawDiskUsageSplitPad(Plot<TGraph> & graphR21, Plot<TGraph> & graphR22, Plo
     topFrameRight->GetYaxis()->SetLabelColor(kGray+2);
     topFrameRight->Draw("Y+"); 
     
-    PlotUtils::drawTLatex(0.05, 0.80, "Not on GRL", 18, 53, 11, kGray+3);
+    PlotUtils::drawTLatex(0.05, 0.07, "Run 364485", 18, 43, 11, kGray+3);
+    PlotUtils::drawTLatex(0.05, 0.02, "Not on GRL", 18, 53, 11, kGray+3);
     TBox theBox(topFrameRight->GetXaxis()->GetXmin(), topFrameRight->GetYaxis()->GetXmin(), topFrameRight->GetXaxis()->GetXmax(), topFrameRight->GetYaxis()->GetXmax()); 
     theBox.SetFillStyle(3004); 
     theBox.SetFillColor(kGray+2); 
@@ -374,14 +375,14 @@ void drawDiskUsageSplitPad(Plot<TGraph> & graphR21, Plot<TGraph> & graphR22, Plo
     canvasOpts.drawLabels({});
 
     canvasOpts = canvasOpts.doAtlasLabel(false).doLumiLabel(false).fontSize(22).otherLabelX(0.04).otherLabelStartY(-0.16);
-    canvasOpts.drawLabels({"Run 2 Data Reconstruction", "ATLAS ID Only"});
+    canvasOpts.drawLabels({"Inner Detector only", "Run 337833"});
 
     PlotUtils::drawLegend(std::vector<PlotUtils::LegendEntry>{
         PlotUtils::LegendEntry(graphR21(),      "Run 2 Reconstruction",         "PL"),
         PlotUtils::LegendEntry(graphR22(),      "Run 3 Reconstruction",         "PL"),
         PlotUtils::LegendEntry(graphR22NoLRT(), "Run 3 Reconstruction w/o LRT", "PL"),
     },
-        0.20, 0.42, 0.55, 0.62
+        0.20, 0.40, 0.55, 0.60
     );
     
     canvasOpts.SaveCanvas(can, "Size_vs_mu_run2_vs_run3_splitx");
