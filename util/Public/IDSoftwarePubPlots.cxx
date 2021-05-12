@@ -246,8 +246,8 @@ void drawDiskUsageSplitPad(Plot<TGraph> & graphR21, Plot<TGraph> & graphR22, Plo
     topFrameRight->GetYaxis()->SetLabelColor(kGray+2);
     topFrameRight->Draw("Y+"); 
     
-    PlotUtils::drawTLatex(0.05, 0.07, "Run 364485", 18, 43, 11, kGray+3);
-    PlotUtils::drawTLatex(0.05, 0.02, "Not on GRL", 18, 53, 11, kGray+3);
+    PlotUtils::drawTLatex(0.05, 0.07, "LHC Fill 7358", 16, 43, 11, kGray+3);
+    PlotUtils::drawTLatex(0.05, 0.02, "Not on GRL", 16 , 53, 11, kGray+3);
     TBox theBox(topFrameRight->GetXaxis()->GetXmin(), topFrameRight->GetYaxis()->GetXmin(), topFrameRight->GetXaxis()->GetXmax(), topFrameRight->GetYaxis()->GetXmax()); 
     theBox.SetFillStyle(3004); 
     theBox.SetFillColor(kGray+2); 
@@ -375,7 +375,7 @@ void drawDiskUsageSplitPad(Plot<TGraph> & graphR21, Plot<TGraph> & graphR22, Plo
     canvasOpts.drawLabels({});
 
     canvasOpts = canvasOpts.doAtlasLabel(false).doLumiLabel(false).fontSize(22).otherLabelX(0.04).otherLabelStartY(-0.16);
-    canvasOpts.drawLabels({"Inner Detector only", "Run 337833"});
+    canvasOpts.drawLabels({"Inner Detector only", "LHC Fill 6291"});
 
     PlotUtils::drawLegend(std::vector<PlotUtils::LegendEntry>{
         PlotUtils::LegendEntry(graphR21(),      "Run 2 Reconstruction",         "PL"),

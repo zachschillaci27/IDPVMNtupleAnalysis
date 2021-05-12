@@ -256,6 +256,7 @@ int main (int, char**) {
 
     // ATLAS-P2-ITK-23-00-03
     const std::string sglmu1     = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-03/sglmu1_PU0_IDPVM_r12440.root";
+    const std::string sglmu2     = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-03/sglmu2_PU0_IDPVM_r12440.root";
     const std::string sglmu10    = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-03/sglmu10_PU0_IDPVM_r12440.root";
     const std::string sglmu100   = "/scratch/Datasets/ANA-IDTR-2020-01/ATLAS-P2-ITK-23-00-03/sglmu100_PU0_IDPVM_r12440.root";
 
@@ -266,6 +267,7 @@ int main (int, char**) {
 
     // Run-2
     const std::string run2_sglmu1        = "/scratch/Datasets/ANA-IDTR-2020-01/Run2/MyPhysVal.sglmu1.mu0.run2.root";
+    const std::string run2_sglmu2        = "/scratch/Datasets/ANA-IDTR-2020-01/Run2/MyPhysVal.sglmu2.mu0.run2.root";
     const std::string run2_sglmu10       = "/scratch/Datasets/ANA-IDTR-2020-01/Run2/MyPhysVal.sglmu10.mu0.run2.root";
     const std::string run2_sglmu100      = "/scratch/Datasets/ANA-IDTR-2020-01/Run2/MyPhysVal.sglmu100.mu0.run2.root";
     const std::string run2_ttbarmu20     = "/scratch/Datasets/ANA-IDTR-2020-01/Run2/MyPhysVal.ttbar.mu20.eta0to2p4.run2.root";
@@ -286,6 +288,7 @@ int main (int, char**) {
 
     // Labels
     const std::vector<std::string> labels_muons_pt1   = {"ITk Layout: ATLAS-P2-ITK-23-00-03", "Single #mu, p_{T} = 1 GeV"}; 
+    const std::vector<std::string> labels_muons_pt2   = {"ITk Layout: ATLAS-P2-ITK-23-00-03", "Single #mu, p_{T} = 2 GeV"}; 
     const std::vector<std::string> labels_muons_pt10  = {"ITk Layout: ATLAS-P2-ITK-23-00-03", "Single #mu, p_{T} = 10 GeV"}; 
     const std::vector<std::string> labels_muons_pt100 = {"ITk Layout: ATLAS-P2-ITK-23-00-03", "Single #mu, p_{T} = 100 GeV"}; 
     const std::vector<std::string> labels_single_pt10 = {"ITk Layout: ATLAS-P2-ITK-23-00-03", "Single Particle, p_{T} = 10 GeV"}; 
@@ -317,7 +320,12 @@ int main (int, char**) {
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu1,      d0_vs_eta), "ATLAS-P2-ITK-23-00-03",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu1, d0_vs_eta), "Run-2", "L"),
         labels_muons_pt1, opts_logY, titles_d0_vs_eta, "SingleMu1-d0Resolution_vs_eta", multiPagePdf, {7.e0, 5.e3});
-    
+
+    DrawPubNoteResolutionPlots( 
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu2,      d0_vs_eta), "ATLAS-P2-ITK-23-00-03",  "PL"),
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu2, d0_vs_eta), "Run-2", "L"),
+        labels_muons_pt2, opts_logY, titles_d0_vs_eta, "SingleMu2-d0Resolution_vs_eta", multiPagePdf, {7.e0, 5.e3});
+
     DrawPubNoteResolutionPlots( 
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu10,      d0_vs_eta), "ATLAS-P2-ITK-23-00-03",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu10, d0_vs_eta), "Run-2", "L"),
@@ -333,6 +341,11 @@ int main (int, char**) {
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu1,      z0_vs_eta), "ATLAS-P2-ITK-23-00-03",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu1, z0_vs_eta), "Run-2", "L"),
         labels_muons_pt1, opts_logY, titles_z0_vs_eta, "SingleMu1-z0Resolution_vs_eta", multiPagePdf, {7.e0, 5.e5});
+
+    DrawPubNoteResolutionPlots( 
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu2,      z0_vs_eta), "ATLAS-P2-ITK-23-00-03",  "PL"),
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu2, z0_vs_eta), "Run-2", "L"),
+        labels_muons_pt2, opts_logY, titles_z0_vs_eta, "SingleMu2-z0Resolution_vs_eta", multiPagePdf, {7.e0, 5.e5});
 
     DrawPubNoteResolutionPlots( 
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu10,      z0_vs_eta), "ATLAS-P2-ITK-23-00-03",  "PL"),
@@ -351,6 +364,11 @@ int main (int, char**) {
         labels_muons_pt1, opts_logY, titles_pt_vs_eta, "SingleMu1-qOverptResolution_vs_eta", multiPagePdf, {5.e-3, 3.e0});
 
     DrawPubNoteResolutionPlots( 
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu2,      pt_vs_eta), "ATLAS-P2-ITK-23-00-03",  "PL"),
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu2, pt_vs_eta), "Run-2", "L"),
+        labels_muons_pt2, opts_logY, titles_pt_vs_eta, "SingleMu2-qOverptResolution_vs_eta", multiPagePdf, {5.e-3, 3.e0});
+
+    DrawPubNoteResolutionPlots( 
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu10,      pt_vs_eta), "ATLAS-P2-ITK-23-00-03",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu10, pt_vs_eta), "Run-2", "L"),
         labels_muons_pt10, opts_logY, titles_pt_vs_eta, "SingleMu10-qOverPtResolution_vs_eta", multiPagePdf, {5.e-3, 5.e0});
@@ -367,6 +385,11 @@ int main (int, char**) {
         Plot<TH1>("", LoadIDPVMEfficiency(sglmu1,      eff_vs_eta), "ATLAS-P2-ITK-23-00-03", "PL"),
         Plot<TH1>("", LoadIDPVMEfficiency(run2_sglmu1, eff_vs_eta), "Run-2", "L"),
         labels_muons_pt1, opts, titles_eff_vs_eta, "SingleMu1-efficiency_vs_eta", multiPagePdf, {0.967, 1.025});
+
+    DrawPubNoteEfficiencyPlot( 
+        Plot<TH1>("", LoadIDPVMEfficiency(sglmu2,      eff_vs_eta), "ATLAS-P2-ITK-23-00-03", "PL"),
+        Plot<TH1>("", LoadIDPVMEfficiency(run2_sglmu2, eff_vs_eta), "Run-2", "L"),
+        labels_muons_pt2, opts, titles_eff_vs_eta, "SingleMu2-efficiency_vs_eta", multiPagePdf, {0.967, 1.025});
 
     DrawPubNoteEfficiencyPlot( 
         Plot<TH1>("", LoadIDPVMEfficiency(sglmu10,      eff_vs_eta), "ATLAS-P2-ITK-23-00-03", "PL"),
