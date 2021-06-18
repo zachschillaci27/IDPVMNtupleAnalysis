@@ -371,7 +371,7 @@ void drawDiskUsageSplitPad(Plot<TGraph> & graphR21, Plot<TGraph> & graphR22, Plo
     CanvasOptions canvasOpts = CanvasOptions();
 
     subp1->cd(); 
-    canvasOpts = canvasOpts.doAtlasLabel(true).doLumiLabel(false).fontSize(24).atlasLabelX(0.04).atlasLabelY(-0.09);
+    canvasOpts = canvasOpts.doAtlasLabel(true).doLumiLabel(false).fontSize(24).atlasLabelX(0.04).atlasLabelY(-0.09).labelStatusTag("Preliminary");
     canvasOpts.drawLabels({});
 
     canvasOpts = canvasOpts.doAtlasLabel(false).doLumiLabel(false).fontSize(22).otherLabelX(0.04).otherLabelStartY(-0.16);
@@ -459,7 +459,7 @@ void drawDiskUsage(Plot<TGraph> & graphR21, Plot<TGraph> & graphR22, Plot<TGraph
 
     // Upper pad labels
     mpc.getPad(0)->cd();    
-    canvasOpts = canvasOpts.doAtlasLabel(true).doLumiLabel(false).fontSize(24).atlasLabelX(0.04).atlasLabelY(-0.09);
+    canvasOpts = canvasOpts.doAtlasLabel(true).doLumiLabel(false).fontSize(24).atlasLabelX(0.04).atlasLabelY(-0.09).labelStatusTag("Preliminary");
     canvasOpts.drawLabels({});
 
     canvasOpts = canvasOpts.doAtlasLabel(false).doLumiLabel(false).fontSize(22).otherLabelX(0.04).otherLabelStartY(-0.16);

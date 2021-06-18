@@ -108,7 +108,7 @@ template<class H> void DrawPubNoteFakeRatePlot(const Plot<H> & h_ITk, const Plot
     canvasOpts.SaveCanvas(can, filename, multiPagePdf);
 }
 
-void DrawPubNoteResolutionPlots(const Plot<TH1F> & h_ITk, const Plot<TH1F> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & titles, const std::string & filename, const std::string & multiPagePdf="", std::pair<double, double> minmax={0,0}) {
+void DrawPubNoteResolutionPlots(const Plot<TH1F> & h_ITk, const Plot<TH1F> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & titles, const std::string & filename, const std::string & multiPagePdf="", std::pair<double, double> minmax={0,0}, std::pair<double, double> rminmax={0,0}) {
     SetAtlasStyle();
     
     Plot<TH1F> itk("h_ITk", h_ITk);
@@ -147,8 +147,10 @@ void DrawPubNoteResolutionPlots(const Plot<TH1F> & h_ITk, const Plot<TH1F> & h_R
     if (canvasOpts.logX())     gPad->SetLogx();
     if (canvasOpts.logRatio()) gPad->SetLogy();
     
-    ratio->SetMinimum(0.0);
-    ratio->SetMaximum(1.49);
+    if (rminmax.first != rminmax.second) {
+        ratio->SetMinimum(rminmax.first);
+        ratio->SetMaximum(rminmax.second);
+    }
 
     ratio->Draw("HIST][");
     ratio->Draw("SAMEE1");
@@ -157,7 +159,7 @@ void DrawPubNoteResolutionPlots(const Plot<TH1F> & h_ITk, const Plot<TH1F> & h_R
     canvasOpts.SaveCanvas(mpc.getCanvas(), filename, multiPagePdf);
 }
 
-void DrawPubNoteEfficiencyPlot(const Plot<TH1> & h_ITk, const Plot<TH1> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & titles, const std::string & filename, const std::string & multiPagePdf="", std::pair<double, double> minmax={0,0}) {
+void DrawPubNoteEfficiencyPlot(const Plot<TH1> & h_ITk, const Plot<TH1> & h_Run2, const std::vector<std::string> & labels, CanvasOptions & canvasOpts, const std::string & titles, const std::string & filename, const std::string & multiPagePdf="", std::pair<double, double> minmax={0,0}, std::pair<double, double> rminmax={0,0}) {
     SetAtlasStyle();
 
     Plot<TH1> itk("h_ITk", h_ITk);
@@ -197,8 +199,10 @@ void DrawPubNoteEfficiencyPlot(const Plot<TH1> & h_ITk, const Plot<TH1> & h_Run2
     if (canvasOpts.logX())     gPad->SetLogx();
     if (canvasOpts.logRatio()) gPad->SetLogy();
     
-    ratio->SetMinimum(0.915);
-    ratio->SetMaximum(1.065);
+    if (rminmax.first != rminmax.second) {
+        ratio->SetMinimum(rminmax.first);
+        ratio->SetMaximum(rminmax.second);
+    }
     ratio->GetYaxis()->SetNdivisions(3,5,0);
 
     ratio->Draw("HIST][");
@@ -287,13 +291,13 @@ int main (int, char**) {
     const std::string fake_vs_pt          = "IDPerformanceMon/Tracks/SelectedFakeTracks/track_fakerate_vs_pt";
 
     // Labels
-    const std::vector<std::string> labels_muons_pt1   = {"ITk Layout: ATLAS-P2-ITK-23-00-03", "Single #mu, p_{T} = 1 GeV"}; 
-    const std::vector<std::string> labels_muons_pt2   = {"ITk Layout: ATLAS-P2-ITK-23-00-03", "Single #mu, p_{T} = 2 GeV"}; 
-    const std::vector<std::string> labels_muons_pt10  = {"ITk Layout: ATLAS-P2-ITK-23-00-03", "Single #mu, p_{T} = 10 GeV"}; 
-    const std::vector<std::string> labels_muons_pt100 = {"ITk Layout: ATLAS-P2-ITK-23-00-03", "Single #mu, p_{T} = 100 GeV"}; 
-    const std::vector<std::string> labels_single_pt10 = {"ITk Layout: ATLAS-P2-ITK-23-00-03", "Single Particle, p_{T} = 10 GeV"}; 
-    const std::vector<std::string> labels_ttbar_pt    = {"ITk Layout: ATLAS-P2-ITK-23-00-03", "t#bar{t}, p_{T} > 1 GeV"}; 
-    const std::vector<std::string> labels_ttbar       = {"ITk Layout: ATLAS-P2-ITK-23-00-03", "t#bar{t}"}; 
+    const std::vector<std::string> labels_muons_pt1   = {"ITk Layout: 23-00-03", "Single #mu, p_{T} = 1 GeV"}; 
+    const std::vector<std::string> labels_muons_pt2   = {"ITk Layout: 23-00-03", "Single #mu, p_{T} = 2 GeV"}; 
+    const std::vector<std::string> labels_muons_pt10  = {"ITk Layout: 23-00-03", "Single #mu, p_{T} = 10 GeV"}; 
+    const std::vector<std::string> labels_muons_pt100 = {"ITk Layout: 23-00-03", "Single #mu, p_{T} = 100 GeV"}; 
+    const std::vector<std::string> labels_single_pt10 = {"ITk Layout: 23-00-03", "Single Particle, p_{T} = 10 GeV"}; 
+    const std::vector<std::string> labels_ttbar_pt    = {"ITk Layout: 23-00-03", "t#bar{t}, p_{T} > 1 GeV"}; 
+    const std::vector<std::string> labels_ttbar       = {"ITk Layout: 23-00-03", "t#bar{t}"}; 
     
     // Axis Titles
     const std::string titles_d0_vs_eta   = "Truth #eta;#sigma(d_{0}) [#mum]";
@@ -317,89 +321,89 @@ int main (int, char**) {
     
     // d0
     DrawPubNoteResolutionPlots( 
-        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu1,      d0_vs_eta), "ATLAS-P2-ITK-23-00-03",  "PL"),
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu1,      d0_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu1, d0_vs_eta), "Run-2", "L"),
-        labels_muons_pt1, opts_logY, titles_d0_vs_eta, "SingleMu1-d0Resolution_vs_eta", multiPagePdf, {7.e0, 5.e3});
+        labels_muons_pt1, opts_logY, titles_d0_vs_eta, "SingleMu1-d0Resolution_vs_eta", multiPagePdf, {7.e0, 5.e3}, {0., 1.55});
 
     DrawPubNoteResolutionPlots( 
-        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu2,      d0_vs_eta), "ATLAS-P2-ITK-23-00-03",  "PL"),
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu2,      d0_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu2, d0_vs_eta), "Run-2", "L"),
-        labels_muons_pt2, opts_logY, titles_d0_vs_eta, "SingleMu2-d0Resolution_vs_eta", multiPagePdf, {7.e0, 5.e3});
+        labels_muons_pt2, opts_logY, titles_d0_vs_eta, "SingleMu2-d0Resolution_vs_eta", multiPagePdf, {7.e0, 5.e3}, {0., 1.55});
 
     DrawPubNoteResolutionPlots( 
-        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu10,      d0_vs_eta), "ATLAS-P2-ITK-23-00-03",  "PL"),
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu10,      d0_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu10, d0_vs_eta), "Run-2", "L"),
-        labels_muons_pt10, opts_logY, titles_d0_vs_eta, "SingleMu10-d0Resolution_vs_eta", multiPagePdf, {7.e-1, 1.e3});
+        labels_muons_pt10, opts_logY, titles_d0_vs_eta, "SingleMu10-d0Resolution_vs_eta", multiPagePdf, {7.e-1, 1.e3}, {0., 1.55});
 
     DrawPubNoteResolutionPlots( 
-        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu100,      d0_vs_eta), "ATLAS-P2-ITK-23-00-03",  "PL"),
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu100,      d0_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu100, d0_vs_eta), "Run-2", "L"),
-        labels_muons_pt100, opts_logY, titles_d0_vs_eta, "SingleMu100-d0Resolution_vs_eta", multiPagePdf, {7.e-1, 1.e3});
+        labels_muons_pt100, opts_logY, titles_d0_vs_eta, "SingleMu100-d0Resolution_vs_eta", multiPagePdf, {7.e-1, 1.e3}, {0., 1.55});
 
     // z0
     DrawPubNoteResolutionPlots( 
-        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu1,      z0_vs_eta), "ATLAS-P2-ITK-23-00-03",  "PL"),
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu1,      z0_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu1, z0_vs_eta), "Run-2", "L"),
-        labels_muons_pt1, opts_logY, titles_z0_vs_eta, "SingleMu1-z0Resolution_vs_eta", multiPagePdf, {7.e0, 5.e5});
+        labels_muons_pt1, opts_logY, titles_z0_vs_eta, "SingleMu1-z0Resolution_vs_eta", multiPagePdf, {7.e0, 5.e5}, {0., 1.55});
 
     DrawPubNoteResolutionPlots( 
-        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu2,      z0_vs_eta), "ATLAS-P2-ITK-23-00-03",  "PL"),
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu2,      z0_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu2, z0_vs_eta), "Run-2", "L"),
-        labels_muons_pt2, opts_logY, titles_z0_vs_eta, "SingleMu2-z0Resolution_vs_eta", multiPagePdf, {7.e0, 5.e5});
+        labels_muons_pt2, opts_logY, titles_z0_vs_eta, "SingleMu2-z0Resolution_vs_eta", multiPagePdf, {7.e0, 5.e5}, {0., 1.55});
 
     DrawPubNoteResolutionPlots( 
-        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu10,      z0_vs_eta), "ATLAS-P2-ITK-23-00-03",  "PL"),
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu10,      z0_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu10, z0_vs_eta), "Run-2", "L"),
-        labels_muons_pt10, opts_logY, titles_z0_vs_eta, "SingleMu10-z0Resolution_vs_eta", multiPagePdf, {7.e-1, 1.e4});
+        labels_muons_pt10, opts_logY, titles_z0_vs_eta, "SingleMu10-z0Resolution_vs_eta", multiPagePdf, {7.e-1, 1.e4}, {0., 1.55});
 
     DrawPubNoteResolutionPlots( 
-        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu100,      z0_vs_eta), "ATLAS-P2-ITK-23-00-03",  "PL"),
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu100,      z0_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu100, z0_vs_eta), "Run-2", "L"),
-        labels_muons_pt100, opts_logY, titles_z0_vs_eta, "SingleMu100-z0Resolution_vs_eta", multiPagePdf, {7.e-1, 1.e4});
+        labels_muons_pt100, opts_logY, titles_z0_vs_eta, "SingleMu100-z0Resolution_vs_eta", multiPagePdf, {7.e-1, 1.e4}, {0., 1.55});
 
     // q/pt
     DrawPubNoteResolutionPlots( 
-        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu1,      pt_vs_eta), "ATLAS-P2-ITK-23-00-03",  "PL"),
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu1,      pt_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu1, pt_vs_eta), "Run-2", "L"),
-        labels_muons_pt1, opts_logY, titles_pt_vs_eta, "SingleMu1-qOverptResolution_vs_eta", multiPagePdf, {5.e-3, 3.e0});
+        labels_muons_pt1, opts_logY, titles_pt_vs_eta, "SingleMu1-qOverptResolution_vs_eta", multiPagePdf, {5.e-3, 3.e0}, {0., 1.55});
 
     DrawPubNoteResolutionPlots( 
-        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu2,      pt_vs_eta), "ATLAS-P2-ITK-23-00-03",  "PL"),
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu2,      pt_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu2, pt_vs_eta), "Run-2", "L"),
-        labels_muons_pt2, opts_logY, titles_pt_vs_eta, "SingleMu2-qOverptResolution_vs_eta", multiPagePdf, {5.e-3, 3.e0});
+        labels_muons_pt2, opts_logY, titles_pt_vs_eta, "SingleMu2-qOverptResolution_vs_eta", multiPagePdf, {5.e-3, 3.e0}, {0., 1.55});
 
     DrawPubNoteResolutionPlots( 
-        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu10,      pt_vs_eta), "ATLAS-P2-ITK-23-00-03",  "PL"),
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu10,      pt_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu10, pt_vs_eta), "Run-2", "L"),
-        labels_muons_pt10, opts_logY, titles_pt_vs_eta, "SingleMu10-qOverPtResolution_vs_eta", multiPagePdf, {5.e-3, 5.e0});
+        labels_muons_pt10, opts_logY, titles_pt_vs_eta, "SingleMu10-qOverPtResolution_vs_eta", multiPagePdf, {5.e-3, 5.e0}, {0., 1.55});
 
     DrawPubNoteResolutionPlots( 
-        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu100,      pt_vs_eta), "ATLAS-P2-ITK-23-00-03",  "PL"),
+        Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(sglmu100,      pt_vs_eta), "ITk",  "PL"),
         Plot<TH1F>("", LoadIDPVMHistogram<TH1F>(run2_sglmu100, pt_vs_eta), "Run-2", "L"),
-        labels_muons_pt100, opts_logY, titles_pt_vs_eta, "SingleMu100-qOverPtResolution_vs_eta", multiPagePdf, {5.e-3, 3.e1});
+        labels_muons_pt100, opts_logY, titles_pt_vs_eta, "SingleMu100-qOverPtResolution_vs_eta", multiPagePdf, {5.e-3, 3.e1}, {0., 1.55});
 
     ////////////////////// EFFICIENCY //////////////////////
 
     // muons
     DrawPubNoteEfficiencyPlot( 
-        Plot<TH1>("", LoadIDPVMEfficiency(sglmu1,      eff_vs_eta), "ATLAS-P2-ITK-23-00-03", "PL"),
+        Plot<TH1>("", LoadIDPVMEfficiency(sglmu1,      eff_vs_eta), "ITk", "PL"),
         Plot<TH1>("", LoadIDPVMEfficiency(run2_sglmu1, eff_vs_eta), "Run-2", "L"),
-        labels_muons_pt1, opts, titles_eff_vs_eta, "SingleMu1-efficiency_vs_eta", multiPagePdf, {0.967, 1.025});
+        labels_muons_pt1, opts, titles_eff_vs_eta, "SingleMu1-efficiency_vs_eta", multiPagePdf, {0.967, 1.025}, {0.975, 1.0055});
 
     DrawPubNoteEfficiencyPlot( 
-        Plot<TH1>("", LoadIDPVMEfficiency(sglmu2,      eff_vs_eta), "ATLAS-P2-ITK-23-00-03", "PL"),
+        Plot<TH1>("", LoadIDPVMEfficiency(sglmu2,      eff_vs_eta), "ITk", "PL"),
         Plot<TH1>("", LoadIDPVMEfficiency(run2_sglmu2, eff_vs_eta), "Run-2", "L"),
-        labels_muons_pt2, opts, titles_eff_vs_eta, "SingleMu2-efficiency_vs_eta", multiPagePdf, {0.967, 1.025});
+        labels_muons_pt2, opts, titles_eff_vs_eta, "SingleMu2-efficiency_vs_eta", multiPagePdf, {0.967, 1.025}, {0.975, 1.0055});
 
     DrawPubNoteEfficiencyPlot( 
-        Plot<TH1>("", LoadIDPVMEfficiency(sglmu10,      eff_vs_eta), "ATLAS-P2-ITK-23-00-03", "PL"),
+        Plot<TH1>("", LoadIDPVMEfficiency(sglmu10,      eff_vs_eta), "ITk", "PL"),
         Plot<TH1>("", LoadIDPVMEfficiency(run2_sglmu10, eff_vs_eta), "Run-2", "L"),
-        labels_muons_pt10, opts, titles_eff_vs_eta, "SingleMu10-efficiency_vs_eta", multiPagePdf, {0.976, 1.015});
+        labels_muons_pt10, opts, titles_eff_vs_eta, "SingleMu10-efficiency_vs_eta", multiPagePdf, {0.976, 1.015}, {0.995, 1.0055});
     
     DrawPubNoteEfficiencyPlot( 
-        Plot<TH1>("", LoadIDPVMEfficiency(sglmu100,      eff_vs_eta), "ATLAS-P2-ITK-23-00-03", "PL"),
+        Plot<TH1>("", LoadIDPVMEfficiency(sglmu100,      eff_vs_eta), "ITk", "PL"),
         Plot<TH1>("", LoadIDPVMEfficiency(run2_sglmu100, eff_vs_eta), "Run-2", "L"),
-        labels_muons_pt100, opts, titles_eff_vs_eta, "SingleMu100-efficiency_vs_eta", multiPagePdf, {0.989, 1.009});
+        labels_muons_pt100, opts, titles_eff_vs_eta, "SingleMu100-efficiency_vs_eta", multiPagePdf, {0.989, 1.009}, {0.995, 1.0055});
 
     // single particles (ITk only)
     DrawPubNoteSingleParticleEfficiencyPlot( 
@@ -411,29 +415,30 @@ int main (int, char**) {
     // ttbar
     DrawPubNoteEfficiencyPlot( 
         Plot<TH1>("", LoadIDPVMEfficiency(ttbarmu200,     eff_vs_eta), "ITk, #LT#mu#GT = 200", "PL"),
-        Plot<TH1>("", LoadIDPVMEfficiency(run2_ttbarmu20, eff_vs_eta), "Run-2, #LT#mu#GT = 20", "L"),
-        labels_ttbar_pt, opts, titles_eff_vs_eta, "ttbar-efficiency_vs_eta", multiPagePdf, {0.64, 1.014});
+        Plot<TH1>("", LoadIDPVMEfficiency(run2_ttbarmu20, eff_vs_eta), "Run-2, #LT#mu#GT = 38", "L"),
+        labels_ttbar_pt, opts, titles_eff_vs_eta, "ttbar-efficiency_vs_eta", multiPagePdf, {0.64, 1.014}, {0.935, 1.0495});
+
 
     DrawPubNoteEfficiencyPlot( 
         Plot<TH1>("", LoadIDPVMEfficiency(ttbarmu200,     eff_vs_pt), "ITk |#eta| < 4.0, #LT#mu#GT = 200", "PL"),
-        Plot<TH1>("", LoadIDPVMEfficiency(run2_ttbarmu20, eff_vs_pt), "Run-2 |#eta| < 2.4, #LT#mu#GT = 20", "L"),
-        labels_ttbar, opts, titles_eff_vs_pt, "ttbar-efficiency_vs_pt", multiPagePdf, {0.78, 1.015});
+        Plot<TH1>("", LoadIDPVMEfficiency(run2_ttbarmu20, eff_vs_pt), "Run-2 |#eta| < 2.4, #LT#mu#GT = 38", "L"),
+        labels_ttbar, opts, titles_eff_vs_pt, "ttbar-efficiency_vs_pt", multiPagePdf, {0.78, 1.015}, {0.935, 1.0495});
 
     ////////////////////// FAKE-RATES //////////////////////
 
     DrawPubNoteFakeRatePlot( 
         Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(ttbarmu200,     fake_vs_eta), "ITk, #LT#mu#GT = 200", "PL"),
-        Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(run2_ttbarmu20, fake_vs_eta), "Run-2, #LT#mu#GT = 20", "L"),
+        Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(run2_ttbarmu20, fake_vs_eta), "Run-2, #LT#mu#GT = 38", "L"),
         labels_ttbar, opts_logY, titles_fake_vs_eta, "ttbar-fakerate_vs_eta", multiPagePdf, {1.e-7, 1.5e0});
 
     DrawPubNoteFakeRatePlot( 
         Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(ttbarmu200,     fake_vs_pt), "ITk, #LT#mu#GT = 200", "PL"),
-        Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(run2_ttbarmu20, fake_vs_pt), "Run-2, #LT#mu#GT = 20", "L"),
+        Plot<TProfile>("", LoadIDPVMHistogram<TProfile>(run2_ttbarmu20, fake_vs_pt), "Run-2, #LT#mu#GT = 38", "L"),
         labels_ttbar, opts_logY, titles_fake_vs_pt, "ttbar-fakerate_vs_pt", multiPagePdf, {1.e-7, 1.5e0});
 
     DrawPubNoteFakeRatePlot( 
         Plot<TH1>("", LoadIDPVMEfficiency(ttbarmu200,     fake_primary_vs_eta), "ITk, #LT#mu#GT = 200", "PL"),
-        Plot<TH1>("", LoadIDPVMEfficiency(run2_ttbarmu20, fake_primary_vs_eta), "Run-2, #LT#mu#GT = 20", "L"),
+        Plot<TH1>("", LoadIDPVMEfficiency(run2_ttbarmu20, fake_primary_vs_eta), "Run-2, #LT#mu#GT = 38", "L"),
         labels_ttbar, opts_logY, titles_fake_vs_eta, "ttbar-fakerateprimary_vs_eta", multiPagePdf, {1.e-6, 5.e-1});
         
     PlotUtils::endMultiPagePdfFile(multiPagePdf);
